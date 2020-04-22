@@ -1,26 +1,32 @@
 Instrucciones para desarrollo
 =============================
 
-1. Buildear la imagen
-```bash
-docker build --tag expo-chotuve-dependencies .
+1. Crearse una cuenta en [Expo](https://expo.io/).
+2. Crear el archivo `docker-compose.yml` en la raíz del proyecto con el siguiente contenido.
+
+```yaml
+version: '3.7' 
+
+services:
+   expo: 
+      container_name: expo-container
+      build: ./ 
+      ports:
+         - 19000-19006:19000-19006
+      volumes: 
+         - ./:/usr/src/app
+      environment: 
+         - REACT_NATIVE_PACKAGER_HOSTNAME=X.X.X.X
+         - EXPO_CLI_USERNAME=user
+         - EXPO_CLI_PASSWORD=pass
+
 ```
 
-2. Correr el contenedor
-```bash
-docker run \
-    --tty \
-    --interactive \
-    --volume ${pwd}:/usr/src/app \
-    --env EXPO_CLI_USERNAME=user \
-    --env EXPO_CLI_PASSWORD=password \
-    --env REACT_NATIVE_PACKAGER_HOSTNAME="192.168.0.16" \
-    --expose 19000-19002:19000-19002 \
-    --name chotuve-dev \
-    expo-chotuve-dependencies
-```
-NOTA: Reemplazar `user` y `password` por tus credenciales de expo.
+3. Reemplazar `X.X.X.X` por tu IP local (ejemplo: 192.168.0.7), `user` y `pass` por las credenciales de tu cuenta expo.
+4. Lanzar el contenedor.
 
-3. Ingresar en la app `expo` desde android con tu cuenta.
-4. En la lista de proyectos entrar en `Chotuve` para visualizar en vivo los cambios en la app.
-5. Siempre que se agregan dependencias en `package.json` hay que rebuildear la imagen con el comando del paso 1.
+```bash
+docker-compose up
+```
+
+5. Desde la aplicacion de Expo para Android ingresar con la cuenta, buscar el proyecto `Chotuve` y conectarse para tener las actualizaciones en vivo.
