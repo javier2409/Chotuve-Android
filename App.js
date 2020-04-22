@@ -1,10 +1,14 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Button } from 'react-native';
+
 
 export default function App() {
+
+
   return (
     <View style={styles.container}>
       <Text>Hello World!</Text>
+      <Button title="Hola mundo!"></Button>
     </View>
   );
 }
@@ -12,8 +16,8 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#af0000',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-around',
   },
 });
