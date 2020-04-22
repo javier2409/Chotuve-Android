@@ -12,3 +12,5 @@ services:
       env_file: 
          - credentials.env
       network_mode: "host"
+      tty: true
+      stdin_open: true
