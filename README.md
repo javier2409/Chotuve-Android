@@ -17,7 +17,7 @@ Reemplazar `user` y `pass` por las credenciales de tu cuenta Expo.
 3. Lanzar el contenedor desde una terminal ubicada en la raíz del proyecto:
 
 ```console
-$ docker-compose up
+$ docker-compose run expo
 ```
 
 4. Descargar la aplicación de Expo para Android, ingresar con tu cuenta, buscar el proyecto `Chotuve` y conectarse para tener las actualizaciones en vivo.
