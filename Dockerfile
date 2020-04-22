@@ -1,7 +1,6 @@
 FROM bycedric/expo-cli
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
-COPY package*.json app.json ./
 EXPOSE 19000
 EXPOSE 19001
 EXPOSE 19002
