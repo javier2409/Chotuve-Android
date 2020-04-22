@@ -9,7 +9,7 @@ npm-debug.*
 *.orig.*
 web-build/
 web-report/
-docker-compose.yml
+credentials.env
 
 # macOS
 .DS_Store
