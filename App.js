@@ -1,15 +1,21 @@
+import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import { StyleSheet } from 'react-native';
+import Tabs from './Tabs';
+import { NavigationContainer } from '@react-navigation/native';
 
+const Stack = createStackNavigator();
 
 export default function App() {
-
-
   return (
-    <View style={styles.container}>
-      <Text>Hello World!</Text>
-      <Button title="Hola mundo!"></Button>
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{
+        headerTintColor: '#ffffff',
+        headerStyle: {backgroundColor: '#990000'}
+      }}>
+        <Stack.Screen name="Chotuve" component={Tabs} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
