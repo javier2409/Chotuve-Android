@@ -2,7 +2,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 import Tabs from './Tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import Text from 'react-native';
+import {Text, View, StyleSheet} from 'react-native';
+import { Icon } from 'react-native-elements';
 const Stack = createStackNavigator();
 
 const Theme = {
@@ -14,7 +15,8 @@ const Theme = {
     card: 'rgb(255, 255, 255)',
     text: 'rgb(245,240,240)',
     border: 'rgb(100,0,0)',
-    lighterbackground: 'rgb(20,20,20)'
+    lighterbackground: 'rgb(20,20,20)',
+    highlight: 'rgb(255,200,200)'
   },
 };
 
@@ -25,8 +27,36 @@ export default function App() {
         headerTintColor: Theme.colors.title,
         headerStyle: {backgroundColor: Theme.colors.primary},
       }}>
-        <Stack.Screen name="Chotuve" component={Tabs}/>
+        <Stack.Screen
+          name="Chotuve"
+          component={Tabs}
+          options={{ 
+            headerTitle: props => {
+              return (
+                <View style={styles.header}>
+                  <Icon name='navigate-next' color={Theme.colors.highlight}/>
+                  <Text style={styles.title}>Chotuve</Text>
+                </View>
+              )
+            },
+            headerTitleAlign: 'left'
+          }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  header: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: Theme.colors.highlight,
+    marginLeft: 10
+  }
+})

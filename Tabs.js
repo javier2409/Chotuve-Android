@@ -13,7 +13,7 @@ export default function Tabs() {
   const {colors} = useTheme();
 
   return (
-    <BottomTab.Navigator initialRouteName="Home" shifting={true} inactiveColor={colors.border} 
+    <BottomTab.Navigator initialRouteName="Home" shifting={true} activeColor={colors.highlight} inactiveColor={colors.border} 
     barStyle={{
         backgroundColor: colors.primary
       }} 
