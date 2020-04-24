@@ -1,36 +1,40 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
-import { ScrollView } from 'react-native';
+import { useTheme } from '@react-navigation/native';
 
 const data = [
 ];
 
 for (let i = 0; i<20; i++){
-  data.push({});
+  data.push({key: i.toString()});
 }
 
 
-function VideoItem({props}) {
+function VideoItem(props) {
+  const {colors} = useTheme();
+
   return (
-    <View style={styles.videoitem}>
-      <Text style={{color: 'white', fontSize: 30}}>Soy un video</Text>
+    <View style={{...styles.videoitem, ...{backgroundColor: colors.lighterbackground}}}>
+      <Text style={{color: colors.text, fontSize: 30}}>Soy un video</Text>
     </View>
   );
 }
 
 export default function Home() {
+  const {colors} = useTheme();
+  
   return (
     <View style={styles.container}>
       <FlatList
         refreshing={false}
-        style={styles.flatlist}
+        style={{...styles.flatlist, ...{backgroundColor: colors.background}}}
         data={data}
         renderItem={({item}) => {
-          return <VideoItem />
+          return <VideoItem colors={colors}/>
         }}
         onRefresh={() => {
 
-        }}
+        }}        
       />
     </View>
   );
@@ -41,7 +45,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   videoitem: {
-    backgroundColor: '#343434',
     margin: 5,
     padding: 10,
     borderRadius: 5

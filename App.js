@@ -1,29 +1,32 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
-import { StyleSheet } from 'react-native';
 import Tabs from './Tabs';
 import { NavigationContainer } from '@react-navigation/native';
-
+import Text from 'react-native';
 const Stack = createStackNavigator();
+
+const Theme = {
+  dark: true,
+  colors: {
+    title: 'rgb(255,255,255)',
+    primary: 'rgb(200,33,33)',
+    background: 'rgb(0,0,0)',
+    card: 'rgb(255, 255, 255)',
+    text: 'rgb(245,240,240)',
+    border: 'rgb(100,0,0)',
+    lighterbackground: 'rgb(20,20,20)'
+  },
+};
 
 export default function App() {
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={Theme}>
       <Stack.Navigator screenOptions={{
-        headerTintColor: '#ffffff',
-        headerStyle: {backgroundColor: '#990000'}
+        headerTintColor: Theme.colors.title,
+        headerStyle: {backgroundColor: Theme.colors.primary},
       }}>
-        <Stack.Screen name="Chotuve" component={Tabs} />
+        <Stack.Screen name="Chotuve" component={Tabs}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#af0000',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-  },
-});

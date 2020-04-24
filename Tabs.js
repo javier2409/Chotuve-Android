@@ -5,16 +5,20 @@ import Friends from './tabs/Friends';
 import Home from './tabs/Home';
 import MyProfile from './tabs/MyProfile';
 import Upload from './tabs/Upload';
+import { useTheme } from '@react-navigation/native';
 
 const BottomTab = createMaterialBottomTabNavigator();
 
 export default function Tabs() {
+  const {colors} = useTheme();
+
   return (
-    <BottomTab.Navigator initialRouteName="Home" shifting={false} inactiveColor= '#bbbbbb' 
+    <BottomTab.Navigator initialRouteName="Home" shifting={true} inactiveColor={colors.border} 
     barStyle={{
-        backgroundColor: '#990000'}} 
+        backgroundColor: colors.primary
+      }} 
     style={{
-        backgroundColor: '#000000'
+        backgroundColor: colors.background
     }} >
       <BottomTab.Screen name="Home" component={Home} options={{
           tabBarIcon: ({color}) => {
