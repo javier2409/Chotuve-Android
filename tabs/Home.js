@@ -1,19 +1,52 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { ScrollView } from 'react-native';
+
+const data = [
+];
+
+for (let i = 0; i<20; i++){
+  data.push({});
+}
+
+
+function VideoItem({props}) {
+  return (
+    <View style={styles.videoitem}>
+      <Text style={{color: 'white', fontSize: 30}}>Soy un video</Text>
+    </View>
+  );
+}
 
 export default function Home() {
   return (
-      <View style={styles.container}>
-          <Text style={{color: '#ffffff'}}>Feed de videos</Text>
-      </View>
+    <View style={styles.container}>
+      <FlatList
+        refreshing={false}
+        style={styles.flatlist}
+        data={data}
+        renderItem={({item}) => {
+          return <VideoItem />
+        }}
+        onRefresh={() => {
+
+        }}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#242424',
-    alignItems: 'center',
-    justifyContent: 'space-around',
   },
+  videoitem: {
+    backgroundColor: '#343434',
+    margin: 5,
+    padding: 10,
+    borderRadius: 5
+  },
+  flatlist: {
+    backgroundColor: '#242424'
+  }
 });
