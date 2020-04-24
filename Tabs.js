@@ -10,24 +10,29 @@ const BottomTab = createMaterialBottomTabNavigator();
 
 export default function Tabs() {
   return (
-    <BottomTab.Navigator initialRouteName="Home" shifting={false} inactiveColor= '#bbbbbb' barStyle={{backgroundColor: '#990000'}} >
+    <BottomTab.Navigator initialRouteName="Home" shifting={false} inactiveColor= '#bbbbbb' 
+    barStyle={{
+        backgroundColor: '#990000'}} 
+    style={{
+        backgroundColor: '#000000'
+    }} >
       <BottomTab.Screen name="Home" component={Home} options={{
-          tabBarIcon: ({focused, color}) => {
+          tabBarIcon: ({color}) => {
               return <Icon name='home' color={color}/>
         }}
       } />
       <BottomTab.Screen name="Upload" component={Upload} options={{
-          tabBarIcon: ({focused, color}) => {
-              return <Icon name='add-circle' color={color}/>
+          tabBarIcon: ({color}) => {
+              return <Icon name='cloud-upload' color={color}/>
         }}
       } />
       <BottomTab.Screen name="Profile" component={MyProfile} options={{
-          tabBarIcon: ({focused, color}) => {
+          tabBarIcon: ({color}) => {
               return <Icon name='person' color={color}/>
         }}
       } />
       <BottomTab.Screen name="Friends" component={Friends} options={{
-          tabBarIcon: ({focused, color}) => {
+          tabBarIcon: ({color}) => {
               return <Icon name='people' color={color}/>
         }}
       } />
