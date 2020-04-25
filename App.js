@@ -4,6 +4,7 @@ import Tabs from './Tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import {Text, View, StyleSheet} from 'react-native';
 import { Icon } from 'react-native-elements';
+import Video from './subscreens/Video';
 const Stack = createStackNavigator();
 
 const Theme = {
@@ -42,6 +43,7 @@ export default function App() {
             headerTitleAlign: 'left'
           }}
         />
+        <Stack.Screen name="Video" component={Video} />
       </Stack.Navigator>
     </NavigationContainer>
   );

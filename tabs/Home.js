@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
-import { useTheme } from '@react-navigation/native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { useTheme, useNavigation } from '@react-navigation/native';
 
 const data = [
 ];
@@ -10,17 +10,19 @@ for (let i = 0; i<20; i++){
 }
 
 
-function VideoItem(props) {
+function VideoItem() {
   const {colors} = useTheme();
-
+  const navigation = useNavigation();
   return (
-    <View style={{...styles.videoitem, ...{backgroundColor: colors.lighterbackground}}}>
+    <TouchableOpacity style={{...styles.videoitem, ...{backgroundColor: colors.lighterbackground}}} onPress={() => {
+      navigation.navigate("Video");
+    }}>
       <Text style={{color: colors.text, fontSize: 30}}>Soy un video</Text>
-    </View>
+    </TouchableOpacity>
   );
 }
 
-export default function Home() {
+export default function Home({navigation}) {
   const {colors} = useTheme();
   
   return (
