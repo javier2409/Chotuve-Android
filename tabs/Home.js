@@ -1,30 +1,31 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { useTheme, useNavigation } from '@react-navigation/native';
-import { Image } from 'react-native-elements';
+import {View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator} from 'react-native';
+import {useTheme, useNavigation} from '@react-navigation/native';
+import {Image} from 'react-native-elements';
 
-//------------------------------------SOLO PARA TESTEAR-----------------------------------------------------------
+// ------------------------------------SOLO PARA TESTEAR-----------------------------------------------------------
 const data = [
 ];
 
-for (let i = 0; i<20; i++){
+for (let i = 0; i<20; i++) {
   data.push({
     key: i.toString(),
     title: 'Video '+i,
     author: 'Autor '+i,
-    video_url: 'xxxx',
+    description: 'A normal video',
+    video_url: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
     thumbnail_url: 'https://images.wallpaperscraft.com/image/city_vector_panorama_119914_3840x2160.jpg',
-    timestamp: '2020-04-25'
+    timestamp: '2020-04-25',
   });
 }
-//---------------------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------
 
 function VideoItem(props) {
   const {colors} = useTheme();
   const navigation = useNavigation();
   return (
     <TouchableOpacity style={{...styles.videoitem, ...{backgroundColor: colors.lighterbackground}}} onPress={() => {
-      navigation.navigate("Video");
+      navigation.navigate('Video', props.videoData);
     }}>
       <View style={{flexDirection: 'column'}}>
         <Image source={{uri: props.videoData.thumbnail_url}} style={{width: '100%', aspectRatio: 16/9}} PlaceholderContent={<ActivityIndicator/>}/>
@@ -39,7 +40,7 @@ function VideoItem(props) {
 
 export default function Home({navigation}) {
   const {colors} = useTheme();
-  
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -47,11 +48,11 @@ export default function Home({navigation}) {
         style={{...styles.flatlist, ...{backgroundColor: colors.background}}}
         data={data}
         renderItem={({item}) => {
-          return <VideoItem videoData={item}/>
+          return <VideoItem videoData={item}/>;
         }}
         onRefresh={() => {
 
-        }}        
+        }}
       />
     </View>
   );
@@ -64,9 +65,9 @@ const styles = StyleSheet.create({
   videoitem: {
     marginVertical: 5,
     padding: 0,
-    //alignItems: 'stretch'
+    // alignItems: 'stretch'
   },
   flatlist: {
-    backgroundColor: '#242424'
-  }
+    backgroundColor: '#242424',
+  },
 });
