@@ -1,21 +1,60 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { useTheme } from '@react-navigation/native';
+import { ListItem, Divider } from 'react-native-elements';
+import { FlatList } from 'react-native';
+
+let friends=[
+  {
+    name: 'Santiago'
+  },
+  {
+    name: 'Franco'
+  },
+  {
+    name: 'Sebastian'
+  },
+  {
+    name: 'Javier'
+  }
+];
+
+
+function FriendItem(props){
+  const {colors} = useTheme();
+  const {name} = props.data;
+  return (
+    <ListItem 
+      Component={TouchableOpacity}
+      containerStyle={{...styles.container, ...{backgroundColor: colors.lighterbackground}}}
+      title={name}
+      titleStyle={{...styles.text, ...{color: colors.text}}}
+      chevron
+    />
+  );
+}
 
 export default function Friends() {
   const {colors} = useTheme();
-  return (
-      <View style={{...styles.container, ...{backgroundColor: colors.background}}}>
-          <Text style={{color: colors.text}}>Lista de amigos</Text>
+    return (
+      <View>
+        <FlatList
+          data={friends}
+          renderItem={({item}) => {
+            return (
+              <FriendItem data={item}/>
+            );
+          }}
+        />
       </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#242424',
-    alignItems: 'center',
-    justifyContent: 'space-around',
+    margin:3
   },
+  title: {
+
+  }
 });
