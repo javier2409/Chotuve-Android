@@ -6,30 +6,35 @@ import { FlatList } from 'react-native';
 
 let friends=[
   {
-    name: 'Santiago'
+    name: 'Santiago',
+    avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
   },
   {
-    name: 'Franco'
+    name: 'Franco',
+    avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
   },
   {
-    name: 'Sebastian'
+    name: 'Sebastian',
+    avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
   },
   {
-    name: 'Javier'
+    name: 'Javier',
+    avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
   }
 ];
 
 
 function FriendItem(props){
   const {colors} = useTheme();
-  const {name} = props.data;
+  const {name, avatar_url} = props.data;
   return (
     <ListItem 
       Component={TouchableOpacity}
       containerStyle={{...styles.container, ...{backgroundColor: colors.lighterbackground}}}
       title={name}
-      titleStyle={{...styles.text, ...{color: colors.text}}}
+      titleStyle={{...styles.title, ...{color: colors.text}}}
       chevron
+      leftAvatar={{source:{uri: avatar_url}}}
     />
   );
 }
