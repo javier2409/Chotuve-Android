@@ -1,8 +1,7 @@
+import { useNavigation, useTheme } from '@react-navigation/native';
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { useTheme } from '@react-navigation/native';
-import { ListItem, Divider } from 'react-native-elements';
-import { FlatList } from 'react-native';
+import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ListItem } from 'react-native-elements';
 
 let friends=[
   {
@@ -26,6 +25,7 @@ let friends=[
 
 function FriendItem(props){
   const {colors} = useTheme();
+  const navigation = useNavigation();
   const {name, avatar_url} = props.data;
   return (
     <ListItem 
@@ -35,6 +35,9 @@ function FriendItem(props){
       titleStyle={{...styles.title, ...{color: colors.text}}}
       chevron
       leftAvatar={{source:{uri: avatar_url}}}
+      onPress={() => {
+        navigation.navigate("Chat", props.data);
+      }}
     />
   );
 }

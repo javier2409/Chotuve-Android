@@ -2,9 +2,10 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 import Tabs from './Tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import {Text, View, StyleSheet} from 'react-native';
+import {Text, View, StyleSheet, StatusBar} from 'react-native';
 import { Icon } from 'react-native-elements';
 import VideoScreen from './subscreens/VideoScreen';
+import ChatScreen from './subscreens/ChatScreen';
 const Stack = createStackNavigator();
 
 const Theme = {
@@ -24,6 +25,7 @@ const Theme = {
 export default function App() {
   return (
     <NavigationContainer theme={Theme}>
+      <StatusBar/>
       <Stack.Navigator screenOptions={{
         headerTintColor: Theme.colors.title,
         headerStyle: {backgroundColor: Theme.colors.primary},
@@ -44,6 +46,7 @@ export default function App() {
           }}
         />
         <Stack.Screen name="Video" component={VideoScreen} />
+        <Stack.Screen name="Chat" component={ChatScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
