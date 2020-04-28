@@ -42,7 +42,7 @@ function FriendItem(props){
   );
 }
 
-export default function Friends() {
+export default function Friends({navigation}) {
   const {colors} = useTheme();
     return (
       <View style={styles.view}>
@@ -67,6 +67,9 @@ export default function Friends() {
             end: 0,
             bottom: 0,
             padding: 10
+          }}
+          onPress={() => {
+            navigation.navigate("Friend Search");
           }}
         />
       </View>
