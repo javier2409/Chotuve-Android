@@ -1,0 +1,11 @@
+---
+language: node_js
+services:
+    - docker
+install:
+    - docker-compose run expo
+before_script:
+    - expo login
+script:
+    - expo build:android
+    - expo url:apk
