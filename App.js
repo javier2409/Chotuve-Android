@@ -7,6 +7,7 @@ import { Icon } from 'react-native-elements';
 import VideoScreen from './subscreens/VideoScreen';
 import ChatScreen from './subscreens/ChatScreen';
 import FriendSearch from './subscreens/FriendSearch';
+import UserProfile from './subscreens/UserProfile';
 const Stack = createStackNavigator();
 
 const Theme = {
@@ -49,6 +50,7 @@ export default function App() {
         <Stack.Screen name="Video" component={VideoScreen} />
         <Stack.Screen name="Chat" component={ChatScreen} />
         <Stack.Screen name="Friend Search" component={FriendSearch} />
+        <Stack.Screen name="UserProfile" component={UserProfile} />
       </Stack.Navigator>
     </NavigationContainer>
   );

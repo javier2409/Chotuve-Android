@@ -1,7 +1,8 @@
-import { useNavigation, useTheme } from '@react-navigation/native';
 import React from 'react';
+import { useNavigation, useTheme } from '@react-navigation/native';
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { ListItem, Icon, SearchBar } from 'react-native-elements';
+import { ListItem, SearchBar } from 'react-native-elements';
+
 let results=[
     {
         name: 'Santiago',
@@ -34,7 +35,7 @@ function FriendItem(props){
             chevron
             leftAvatar={{source:{uri: avatar_url}}}
             onPress={() => {
-                navigation.navigate("UserProfile", props.data);
+                navigation.navigate("UserProfile", {name});
             }}
         />
     );

@@ -24,7 +24,12 @@ export default function ChatScreen({route, navigation}){
     navigation.setOptions({
         headerTitle: () => {
             return (
-                <TouchableOpacity style={styles.headerview}>
+                <TouchableOpacity 
+                    style={styles.headerview}
+                    onPress={() => {
+                        navigation.navigate("UserProfile", {name});
+                    }}
+                >
                     <Avatar source={{uri: avatar_url}} rounded/>
                     <Text style={{...styles.headertitle, ...{color: colors.highlight}}}>{name}</Text>
                 </TouchableOpacity>
