@@ -5,6 +5,8 @@ Requisitos para el desarrollo
 
 # Instrucciones
 
+A continuacion se detallan los pasos necesarios para lanzar el servidor de Expo, con el cual podemos ver los cambios en la aplicación en tiempo real en nuestro celular, a través de la app de Expo.
+
 1. Crearse una cuenta en [Expo](https://expo.io/).
 2. Crear un archivo `credentials.env` en la raíz del proyecto con el siguiente contenido:
 
@@ -20,4 +22,13 @@ Reemplazar `user` y `pass` por las credenciales de tu cuenta Expo.
 $ docker-compose run expo
 ```
 
-4. Descargar la aplicación de Expo para Android, ingresar con tu cuenta, buscar el proyecto `Chotuve` y conectarse para tener las actualizaciones en vivo.
+4. En la terminal del contenedor, correr el servidor de Expo con el comando:
+
+```console
+$ expo start
+```
+
+## Para conectarse al servidor:
+
+1. Ingresar en la app de Expo con tu cuenta.
+2. Seleccionar la aplicacion `Chotuve` en la lista.

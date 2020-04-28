@@ -8,4 +8,4 @@ EXPOSE 19003
 EXPOSE 19004
 EXPOSE 19005
 EXPOSE 19006
-CMD expo install && expo start
+CMD expo install && bash
