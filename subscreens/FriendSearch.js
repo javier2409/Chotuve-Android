@@ -44,21 +44,31 @@ function FriendItem(props){
 export default function FriendSearch ({navigation}){
     const {colors} = useTheme();
     navigation.setOptions({
-        headerTitle: () => {
-            return (
-                <SearchBar 
-                    platform='android' 
-                    placeholder='Buscar amigos'
-                    containerStyle={{
-                        backgroundColor: '#00000000'
-                    }}
-                    cancelIcon={null}
-                />
-            );
-        }
+        headerTitle: 'Añadir amigo'
     });
     return (
         <View>
+            <SearchBar 
+                style={styles.searchbar}
+                platform='android'
+                placeholder='Buscar amigos'
+                containerStyle={{
+                    backgroundColor: '#00000000'
+                }}
+                placeholderTextColor={colors.grey}
+                searchIcon={{
+                    color: colors.text
+                }}
+                cancelIcon={{
+                    color: colors.text
+                }}
+                inputStyle={{
+                    color: colors.text
+                }}
+                clearIcon={{
+                    color: colors.text
+                }}
+            />
             <FlatList
                 data={results}
                 renderItem={({item}) => {
@@ -75,5 +85,8 @@ export default function FriendSearch ({navigation}){
 const styles = StyleSheet.create({
     container: {
         margin: 3
+    },
+    searchbar: {
+        flex: 1,
     }
 });
