@@ -1,10 +1,10 @@
-import React from 'react';
-import { useNavigation, useTheme } from '@react-navigation/native';
-import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { ListItem, SearchBar } from 'react-native-elements';
+import * as React from 'react';
+import { useState } from 'react';
+import { FlatList, StyleSheet, View } from 'react-native';
+import { SearchBar } from 'react-native-elements';
 import FriendItem from './../components/FriendItem';
 
-let results=[
+const results=[
     {
         name: 'Santiago',
         full_name: 'Santiago Mariani',
@@ -28,14 +28,13 @@ let results=[
 ];
   
 export default function FriendSearch ({navigation}){
+    const [search, setSearch] = useState('');
     navigation.setOptions({
         headerTitle: 'Añadir amigo'
     });
     return (
         <View style={styles.container}>
-            <SearchBar 
-                placeholder='Buscar amigos'
-            />
+            <SearchBar placeholder='Buscar...' onChangeText={setSearch} value={search}/>
             <FlatList
                 data={results}
                 renderItem={({item}) => {
@@ -54,9 +53,6 @@ export default function FriendSearch ({navigation}){
 
 const styles = StyleSheet.create({
     container: {
-        margin: 3
+        margin: 0
     },
-    searchbar: {
-        flex: 1,
-    }
 });
