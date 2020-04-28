@@ -1,7 +1,7 @@
 import { useNavigation, useTheme } from '@react-navigation/native';
 import React from 'react';
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { ListItem } from 'react-native-elements';
+import { ListItem, Icon } from 'react-native-elements';
 
 let friends=[
   {
@@ -45,7 +45,7 @@ function FriendItem(props){
 export default function Friends() {
   const {colors} = useTheme();
     return (
-      <View>
+      <View style={styles.view}>
         <FlatList
           data={friends}
           renderItem={({item}) => {
@@ -55,6 +55,20 @@ export default function Friends() {
           }}
           keyExtractor={item => item.name}
         />
+        <Icon 
+          name='person-add' 
+          raised 
+          reverse
+          color={colors.primary}
+          reverseColor={colors.highlight}
+          containerStyle={{
+            position: 'absolute',
+            direction: 'rtl',
+            end: 0,
+            bottom: 0,
+            padding: 10
+          }}
+        />
       </View>
   );
 }
@@ -63,7 +77,7 @@ const styles = StyleSheet.create({
   container: {
     margin:3
   },
-  title: {
-
+  view: {
+    flex: 1
   }
 });
