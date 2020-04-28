@@ -9,9 +9,11 @@ import { useTheme } from '@react-navigation/native';
 
 const BottomTab = createMaterialBottomTabNavigator();
 
-export default function Tabs() {
+export default function Tabs({navigation}) {
   const {colors} = useTheme();
-
+  navigation.setOptions({
+    header: () => {return null}
+  });
   return (
     <BottomTab.Navigator initialRouteName="Home" shifting={true} activeColor={colors.highlight} inactiveColor={colors.border} 
     barStyle={{
