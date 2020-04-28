@@ -14,3 +14,13 @@ services:
       network_mode: "host"
       tty: true
       stdin_open: true
+   travis_expo: # Name of the frontend service
+      container_name: travis-expo-container
+      build: ./ # Specify the directory of the Dockerfile
+      ports:
+         - 19000-19006:19000-19006 # Specify port-forwarding
+      volumes: # Mount host path in the container
+         - ./:/usr/src/app
+      network_mode: "host"
+      tty: true
+      stdin_open: true

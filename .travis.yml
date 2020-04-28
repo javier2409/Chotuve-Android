@@ -3,7 +3,7 @@ language: node_js
 services:
     - docker
 install:
-    - docker-compose run expo
+    - docker-compose run travis_expo
 before_script:
     - expo login
 script:
