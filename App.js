@@ -20,7 +20,8 @@ const Theme = {
     text: 'rgb(245,240,240)',
     border: 'rgb(100,0,0)',
     lighterbackground: 'rgb(20,20,20)',
-    highlight: 'rgb(255,200,200)'
+    highlight: 'rgb(255,200,200)',
+    grey: 'rgb(100,100,100'
   },
 };
 
