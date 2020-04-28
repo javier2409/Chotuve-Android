@@ -53,6 +53,7 @@ export default function Friends() {
               <FriendItem data={item}/>
             );
           }}
+          keyExtractor={item => item.name}
         />
       </View>
   );
