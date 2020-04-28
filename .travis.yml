@@ -3,7 +3,8 @@ language: node_js
 services:
     - docker
 install:
-    - docker-compose run travis_expo
+    - docker build --tag expo_image .
+    - docker run -it -v $(pwd):/usr/src/app -P --network="host" expo_image
 before_script:
     - expo login
 script:
