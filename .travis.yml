@@ -2,11 +2,7 @@
 language: node_js
 services:
     - docker
-install:
-    - docker build --tag expo_image .
-    - docker run -it -v $(pwd):/usr/src/app -P --network="host" expo_image "npm install && expo login && expo build:android"
 before_script:
-    - expo login
+    - docker build --tag expo_image .
 script:
-    - expo build:android
-    - expo url:apk
+    - docker run -it -v $(pwd):/usr/src/app -P --network="host" expo_image "npm install && expo login && expo build:android"
