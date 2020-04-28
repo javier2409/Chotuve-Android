@@ -4,7 +4,7 @@ services:
     - docker
 install:
     - docker build --tag expo_image .
-    - docker run -it -v $(pwd):/usr/src/app -P --network="host" expo_image
+    - docker run -it -v $(pwd):/usr/src/app -P --network="host" expo_image "npm install && expo login && expo build:android"
 before_script:
     - expo login
 script:
