@@ -4,7 +4,7 @@ services:
     - docker
 before_install:
     - docker build --tag expo_image .
-    - docker run -d -v $(pwd):/usr/src/app --name expo_container expo_image bash
+    - docker run -itd -v $(pwd):/usr/src/app --name expo_container expo_image bash
 install:
     - docker exec expo_container npm install
 before_script:
