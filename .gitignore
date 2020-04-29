@@ -10,6 +10,7 @@ npm-debug.*
 web-build/
 web-report/
 credentials.env
+keystore_info.txt
 
 # macOS
 .DS_Store
