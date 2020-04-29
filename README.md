@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/javier2409/Chotuve-Android.svg?token=6UKn2UCvxXefMef1FKs7&branch=master)](https://travis-ci.com/javier2409/Chotuve-Android)
+
 Requisitos para el desarrollo
 =============================
 - [Docker Engine](https://docs.docker.com/engine/install/)
