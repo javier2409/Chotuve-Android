@@ -4,5 +4,11 @@ services:
     - docker
 before_script:
     - docker build --tag expo_image .
+    - docker run -d -v $(pwd):/usr/src/app --name expo_container expo_image bash
+    - docker exec expo_container npm install
 script:
-    - docker run -it -v $(pwd):/usr/src/app expo_image /bin/bash -c "npm install && expo login && expo build:android && expo url:apk"
+    - docker exec expo_container expo login
+    - docker exec expo_container expo build:android
+    - docker exec expo_container expo url:apk
+after_script:
+    - docker stop expo_container
