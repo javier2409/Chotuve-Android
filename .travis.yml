@@ -5,11 +5,11 @@ services:
     - docker
 before_install:
     - docker build --tag expo_image .
-    - docker run -itd -v $(pwd):/usr/src/app -e EXPO_CLI_USERNAME=$(EXPO_CLI_USERNAME) -e EXPO_CLI_PASSWORD=$(EXPO_CLI_PASSWORD) --name expo_container expo_image bash
+    - docker run -itd -v $(pwd):/usr/src/app --env EXPO_CLI_PASSWORD --name expo_container expo_image bash
 install:
     - docker exec expo_container npm install
 before_script:
-    - docker exec expo_container expo login
+    - docker exec expo_container expo login javier2409
 script:
     - docker exec expo_container expo build:android --no-wait -t apk
 after_script:
