@@ -5,4 +5,4 @@ services:
 before_script:
     - docker build --tag expo_image .
 script:
-    - docker run -it -v $(pwd):/usr/src/app -P --network="host" expo_image /bin/bash "npm install && expo login && expo build:android && expo url:apk"
+    - docker run -it -v $(pwd):/usr/src/app expo_image /bin/bash -c "npm install && expo login && expo build:android && expo url:apk"
