@@ -1,11 +1,18 @@
 [![Build Status](https://travis-ci.com/javier2409/Chotuve-Android.svg?token=6UKn2UCvxXefMef1FKs7&branch=master)](https://travis-ci.com/javier2409/Chotuve-Android)
 
+Probar la App
+=============
+
+1. Ingresar a la aplicación Expo.
+2. Escanear el código QR del proyecto [aquí](https://expo.io/@javier2409/Chotuve).
+
+
 Requisitos para el desarrollo
 =============================
 - [Docker Engine](https://docs.docker.com/engine/install/)
 - [Docker Compose](https://docs.docker.com/compose/install/)
 
-# Instrucciones
+## Instrucciones para el desarrollo
 
 A continuacion se detallan los pasos necesarios para lanzar el servidor de Expo, con el cual podemos ver los cambios en la aplicación en tiempo real en nuestro celular, a través de la app de Expo.
 
@@ -30,7 +37,7 @@ $ docker-compose run expo
 $ expo start
 ```
 
-## Para conectarse al servidor:
+### Para conectarse al servidor de cambios en vivo:
 
 1. Ingresar en la app de Expo con tu cuenta.
 2. Seleccionar la aplicacion `Chotuve` en la lista.
