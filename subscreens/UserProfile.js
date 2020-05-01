@@ -33,7 +33,7 @@ export default function UserProfile({route, navigation}){
         headerTitle: 'Perfil de ' + name
     });
     return (
-        <View style={styles.general}>
+        <ScrollView style={styles.general}>
             <View style={styles.avatarview}>
                 <Avatar rounded size={150} source={{uri: user.avatar_uri}}/>
             </View>
@@ -72,10 +72,11 @@ export default function UserProfile({route, navigation}){
                             </TouchableOpacity>
                         );
                     }}
+                    keyExtractor={item => item.video_url}
                     style={{alignSelf: 'flex-start'}}
                 />
             </View>
-        </View>
+        </ScrollView>
     );
 }
 
