@@ -27,18 +27,16 @@ export default function Upload() {
     }
   };
   return (
-      <View style={{...styles.container, ...{backgroundColor: colors.lighterbackground}}}>
+      <View style={{...styles.container, ...{backgroundColor: colors.background}}}>
         <View style={styles.block}>
           <Icon name='attach-file' containerStyle={styles.icon} color={colors.primary} size={40} onPress={pickImage} reverse />
           <Text style={{...styles.filename, ...{color: colors.text}}}>{filename}</Text>
         </View>
-        <Divider/>
-        <View style={styles.block}>
+        <View style={{...styles.block, ...{backgroundColor: colors.lighterbackground}}}>
           <Text style={{...styles.title, ...{color: colors.text}}}>Título</Text>
           <Input inputStyle={{...styles.titleinput, ...{color: colors.text}}} selectionColor={colors.text}/>
         </View>
-        <Divider/>
-        <View style={styles.block}>
+        <View style={{...styles.block, ...{backgroundColor: colors.lighterbackground}}}>
           <Text style={{...styles.description, ...{color: colors.text}}}>Descripción</Text>
           <Input inputStyle={{...styles.descinput, ...{color: colors.text}}} multiline/>
         </View>
@@ -61,6 +59,7 @@ const styles = StyleSheet.create({
     padding: 10
   },
   block: {
+    margin: 10,
     padding: 20,
   },
   buttonview: {
