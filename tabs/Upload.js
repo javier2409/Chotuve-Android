@@ -1,6 +1,6 @@
 import { useTheme } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Divider, Icon, Input } from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
 import { Button } from 'react-native';
@@ -34,16 +34,19 @@ export default function Upload() {
         </View>
         <Divider/>
         <View style={styles.block}>
-          <Text style={{...styles.title, ...{color: colors.title}}}>Título</Text>
+          <Text style={{...styles.title, ...{color: colors.text}}}>Título</Text>
           <Input inputStyle={{...styles.titleinput, ...{color: colors.text}}} selectionColor={colors.text}/>
         </View>
         <Divider/>
         <View style={styles.block}>
-          <Text style={{...styles.description, ...{color: colors.title}}}>Descripción</Text>
+          <Text style={{...styles.description, ...{color: colors.text}}}>Descripción</Text>
           <Input inputStyle={{...styles.descinput, ...{color: colors.text}}} multiline/>
         </View>
         <View style={styles.buttonview}>
-          <Button title='SUBIR VIDEO' color={colors.primary} style={styles.button} />
+          <TouchableOpacity style={{...styles.publishbtn, ...{backgroundColor: colors.primary}}}>
+            <Icon size={30} name='publish' color={colors.text}/>
+            <Text style={{...styles.uploadtext, ...{color: colors.text}}}>Publicar video</Text>
+          </TouchableOpacity>
         </View>
       </View>
   );
@@ -54,15 +57,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#242424',
     alignItems: 'stretch',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
     padding: 10
   },
   block: {
     padding: 20,
   },
   buttonview: {
-    flex: 1,
-    alignItems: 'stretch',
+    alignItems: 'center',
     justifyContent: 'center',
   },
   button: {
@@ -81,5 +83,16 @@ const styles = StyleSheet.create({
   },
   icon: {
     alignSelf: 'center'
+  },
+  uploadtext: {
+    fontSize: 22,
+    fontWeight: 'bold'
+  },
+  publishbtn: {
+    margin: 30,
+    padding: 15,
+    borderRadius: 20,
+    flexDirection: 'row',
+    alignItems: 'center'
   }
 });
