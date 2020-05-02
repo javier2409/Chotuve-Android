@@ -14,13 +14,13 @@ const Theme = {
   dark: true,
   colors: {
     title: 'rgb(255,255,255)',
-    primary: 'rgb(200,33,33)',
+    primary: 'rgb(71,196,71)',
     background: 'rgb(0,0,0)',
     card: 'rgb(255, 255, 255)',
-    text: 'rgb(245,240,240)',
-    border: 'rgb(100,0,0)',
+    text: 'rgb(240,245,240)',
+    border: 'rgb(0,100,0)',
     lighterbackground: 'rgb(20,20,20)',
-    highlight: 'rgb(255,200,200)',
+    highlight: 'rgb(200,255,200)',
     grey: 'rgb(100,100,100)'
   },
 };
