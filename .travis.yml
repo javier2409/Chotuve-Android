@@ -11,6 +11,6 @@ install:
 before_script:
     - docker exec expo_container expo login -u $EXPO_CLI_USERNAME -p $EXPO_CLI_PASSWORD
 script:
-    - docker exec expo_container expo build:android -t apk
+    - docker exec expo_container expo publish --non-interactive --max-workers 1
 after_script:
     - docker stop expo_container
