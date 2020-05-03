@@ -1,21 +1,21 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { useTheme } from '@react-navigation/native';
+import { StyleSheet } from 'react-native';
+import UserProfile from './../subscreens/UserProfile';
 
-export default function MyProfile() {
-  const {colors} = useTheme();
+const myName = "Javier";
+
+export default function MyProfile({navigation}) {
   return (
-      <View style={{...styles.container, ...{backgroundColor: colors.background}}}>
-          <Text style={{color: colors.text}}>Mi perfil</Text>
-      </View>
+      <UserProfile 
+        route={{
+          params: {
+            name: myName
+          }
+        }}
+        navigation={navigation}
+      />
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#242424',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-  },
 });
