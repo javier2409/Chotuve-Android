@@ -8,6 +8,7 @@ const user={
     full_name: 'Javier Ferreyra',
     videos: [
         {
+            id: '1',
             title: 'Videazo',
             author: 'autorazo',
             description: 'Dale like y suscribete',
@@ -16,6 +17,7 @@ const user={
             timestamp: '2020-04-28'
         },
         {
+            id: '2',
             title: 'Especial 1 suscriptor',
             author: 'autorazo',
             description: 'Dale like y suscribete',
@@ -72,7 +74,7 @@ export default function UserProfile({route, navigation}){
                             </TouchableOpacity>
                         );
                     }}
-                    keyExtractor={item => item.video_url}
+                    keyExtractor={item => item.id}
                     style={{alignSelf: 'flex-start'}}
                 />
             </View>

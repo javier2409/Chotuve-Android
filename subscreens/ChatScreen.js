@@ -5,14 +5,17 @@ import { Avatar, Icon, Input, Text } from 'react-native-elements';
 
 const messages=[
     {
+        id: '1',
         name: 'Franco',
         msg: 'Hola, todo bien?'
     },
     {
+        id: '2',
         name: 'Javier',
         msg: 'Holaaa todo bien y vos?'
     },
     {
+        id: '3',
         name: 'Franco',
         msg: 'Viste esta nueva app Chotuve? Dicen que esta buenisima'
     },
@@ -58,6 +61,7 @@ export default function ChatScreen({route, navigation}){
                         </View>
                     );
                 }}
+                keyExtractor={item => item.id}
             />
             <View style={{...styles.messagebar}}>
                 <View style={{...styles.inputview, ...{backgroundColor: colors.primary}}}>
