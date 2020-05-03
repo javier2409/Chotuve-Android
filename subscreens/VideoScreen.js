@@ -7,6 +7,7 @@ import { Divider, Text } from 'react-native-elements';
 let comments = [];
 for (let i=0; i<30; i++){
 	comments.push({
+		id: i.toString(),
 		author: 'SomeGuy '+i,
 		text: 'Hola soy el comentario '+i,
 	})
@@ -47,6 +48,7 @@ export default function VideoScreen({route}){
 							</View>
 						);
 					}}
+					keyExtractor={item => item.id}
 				/>
 			</View>
         </View>
