@@ -27,17 +27,17 @@ export default function Tabs({navigation}) {
               return <Icon name='home' color={color}/>
         }}
       } />
-      <BottomTab.Screen name="Upload" component={Upload} options={{
+      <BottomTab.Screen name="Publicar" component={Upload} options={{
           tabBarIcon: ({color}) => {
               return <Icon name='cloud-upload' color={color}/>
         }}
       } />
-      <BottomTab.Screen name="Profile" component={MyProfile} options={{
+      <BottomTab.Screen name="Perfil" component={MyProfile} options={{
           tabBarIcon: ({color}) => {
               return <Icon name='person' color={color}/>
         }}
       } />
-      <BottomTab.Screen name="Friends" component={Friends} options={{
+      <BottomTab.Screen name="Amigos" component={Friends} options={{
           tabBarIcon: ({color}) => {
               return <Icon name='people' color={color}/>
         }}

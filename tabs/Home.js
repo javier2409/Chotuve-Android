@@ -9,7 +9,7 @@ const data = [
 
 for (let i = 0; i<20; i++) {
   data.push({
-    key: i.toString(),
+    id: i.toString(),
     title: 'Video '+i,
     author: 'Autor '+i,
     description: 'A normal video',
@@ -53,6 +53,7 @@ export default function Home({navigation}) {
         onRefresh={() => {
 
         }}
+        keyExtractor={item => item.id}
       />
     </View>
   );
