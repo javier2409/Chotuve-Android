@@ -6,6 +6,10 @@ Probar la App
 1. Ingresar a la aplicación Expo.
 2. Escanear el código QR del proyecto [aquí](https://expo.io/@javier2409/Chotuve).
 
+Trello
+========
+
+Roadmap en Trello: [Link](https://trello.com/invite/b/8W86DsUl/ab98b2135c832c132ce42357f1546798/chotuve-android)
 
 Requisitos para el desarrollo
 =============================
