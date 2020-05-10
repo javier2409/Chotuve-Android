@@ -1,5 +1,5 @@
 import { createStackNavigator } from '@react-navigation/stack';
-import React from 'react';
+import React, { useState, createContext } from 'react';
 import Tabs from './Tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import {Text, View, StyleSheet, StatusBar} from 'react-native';
@@ -8,6 +8,8 @@ import VideoScreen from './subscreens/VideoScreen';
 import ChatScreen from './subscreens/ChatScreen';
 import FriendSearch from './subscreens/FriendSearch';
 import UserProfile from './subscreens/UserProfile';
+import { AppLoading } from 'expo';
+import LoginScreen from './login/LoginScreen';
 const Stack = createStackNavigator();
 
 const Theme = {
@@ -25,35 +27,80 @@ const Theme = {
   },
 };
 
-export default function App() {
+function MainApp(){
   return (
-    <NavigationContainer theme={Theme}>
-      <StatusBar/>
-      <Stack.Navigator screenOptions={{
-        headerTintColor: Theme.colors.title,
-        headerStyle: {backgroundColor: Theme.colors.primary},
-      }}>
-        <Stack.Screen
-          name="Chotuve"
-          component={Tabs}
-          options={{ 
-            headerTitle: props => {
-              return (
-                <View style={styles.header}>
-                  <Icon name='navigate-next' color={Theme.colors.highlight}/>
-                  <Text style={styles.title}>Chotuve</Text>
-                </View>
-              )
-            },
-            headerTitleAlign: 'left'
-          }}
-        />
-        <Stack.Screen name="Video" component={VideoScreen} />
-        <Stack.Screen name="Chat" component={ChatScreen} />
-        <Stack.Screen name="Friend Search" component={FriendSearch} />
-        <Stack.Screen name="UserProfile" component={UserProfile} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Stack.Navigator screenOptions={{
+      headerTintColor: Theme.colors.title,
+      headerStyle: {backgroundColor: Theme.colors.primary},
+    }}>
+      <Stack.Screen
+        name="Chotuve"
+        component={Tabs}
+        options={{ 
+          headerTitle: props => {
+            return (
+              <View style={styles.header}>
+                <Icon name='navigate-next' color={Theme.colors.highlight}/>
+                <Text style={styles.title}>Chotuve</Text>
+              </View>
+            )
+          },
+          headerTitleAlign: 'left'
+        }}
+      />
+      <Stack.Screen name="Video" component={VideoScreen} />
+      <Stack.Screen name="Chat" component={ChatScreen} />
+      <Stack.Screen name="Friend Search" component={FriendSearch} />
+      <Stack.Screen name="UserProfile" component={UserProfile} />
+    </Stack.Navigator>
+  )
+}
+
+function LoginScreens(){
+  return(
+    <Stack.Navigator screenOptions={{
+      headerTintColor: Theme.colors.title,
+      headerStyle: {backgroundColor: Theme.colors.primary},
+    }}>
+      <Stack.Screen name="Login" component={LoginScreen} /> 
+    </Stack.Navigator>
+  )
+}
+
+const AuthContext = createContext(null);
+
+export default function App() {
+
+  const [userData, setUserData] = useState({
+    username: null,
+    token: null
+  });
+
+  const [ready, setReady] = useState(false);
+
+  function fetchToken(){
+  }
+
+  if (!ready){
+    return (
+      <AppLoading
+        startAsync={fetchToken}
+        onFinish={() => {setReady(true)}}
+      />
+    )
+  }
+
+  return (
+    <AuthContext.Provider value={[userData, setUserData]}>
+      <NavigationContainer theme={Theme}>
+        <StatusBar/>
+        {userData.token ? (
+          <MainApp/>
+        ) : (
+          <LoginScreens/>
+        )}
+      </NavigationContainer>
+    </AuthContext.Provider>
   );
 }
 
