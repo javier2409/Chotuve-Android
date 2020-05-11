@@ -84,7 +84,10 @@ export default function App() {
       const username = await AsyncStorage.getItem('USERNAME');
       const password = await AsyncStorage.getItem('PASSWORD');
     } catch(e) {
-
+      setUserData({
+        username: null,
+        token: null
+      });
     }
   }
 
