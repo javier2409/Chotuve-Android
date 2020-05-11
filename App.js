@@ -67,7 +67,7 @@ function LoginScreens(){
   )
 }
 
-const AuthContext = createContext(null);
+export const AuthContext = createContext(null);
 
 export default function App() {
 
