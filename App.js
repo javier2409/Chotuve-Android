@@ -10,6 +10,7 @@ import FriendSearch from './subscreens/FriendSearch';
 import UserProfile from './subscreens/UserProfile';
 import { AppLoading } from 'expo';
 import LoginScreen from './login/LoginScreen';
+import { AuthContext } from './login/AuthContext';
 
 const Stack = createStackNavigator();
 
@@ -63,12 +64,10 @@ function LoginScreens(){
       headerTintColor: Theme.colors.title,
       headerStyle: {backgroundColor: Theme.colors.primary},
     }}>
-      <Stack.Screen name="Login" component={LoginScreen} /> 
+      <Stack.Screen name="Ingreso" component={LoginScreen} /> 
     </Stack.Navigator>
   )
 }
-
-export const AuthContext = createContext(null);
 
 export default function App() {
 
