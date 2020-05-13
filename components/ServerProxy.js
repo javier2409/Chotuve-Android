@@ -2,6 +2,8 @@ class ServerProxy{
 
     constructor(){
         this.userData = null;
+        this.published_videos = [];
+        this.published_comments = [];
     }
 
     //get auth token from username and password
@@ -38,7 +40,7 @@ class ServerProxy{
                 timestamp: '2020-04-25',
             });
         }
-        return data;
+        return data.concat(this.published_videos);
     }
 
     //get information to show user profile
@@ -106,9 +108,10 @@ class ServerProxy{
                 id: i.toString(),
                 author: 'SomeGuy '+i,
                 text: 'Hola soy el comentario '+i,
+                timestamp: '2020-05-13'
             })
         }
-        return comments        
+        return comments.concat(this.published_comments);        
     }
 
     //get list of users that match the search
@@ -140,11 +143,34 @@ class ServerProxy{
 
     //send a new video
     async publishVideo(video_data){
-
+        const {id, title, description, thumbnail_uri, video_url, timestamp} = video_data;
+        const new_video = {
+            id: id,
+            title: title,
+            author: this.userData.username,
+            description: description,
+            thumbnail_uri: thumbnail_uri,
+            video_url: video_url,
+            timestamp: timestamp   
+        }
+        this.published_videos.push(new_video);
     }
 
     //send a new comment
     async publishComment(comment_data){
+        const {id, video_id, comment_id, text, timestamp} = comment_data;
+        const new_comment = {
+            video_id = video_id,
+            comment_id = id,
+            author = this.userData.username,
+            text = text,
+            timestamp = timestamp
+        }
+        this.published_comments.push(new_comment);
+    }
+
+    //send a message to another user
+    async sendMessage(message_data){
 
     }
 
