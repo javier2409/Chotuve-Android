@@ -11,6 +11,7 @@ import UserProfile from './subscreens/UserProfile';
 import { AppLoading } from 'expo';
 import LoginScreen from './login/LoginScreen';
 import { AuthContext } from './login/AuthContext';
+import RegisterScreen from './login/RegisterScreen';
 
 const Stack = createStackNavigator();
 
@@ -64,7 +65,8 @@ function LoginScreens(){
       headerTintColor: Theme.colors.title,
       headerStyle: {backgroundColor: Theme.colors.primary},
     }}>
-      <Stack.Screen name="Ingreso" component={LoginScreen} /> 
+      <Stack.Screen name="Ingreso" component={LoginScreen} />
+      <Stack.Screen name="Registro" component={RegisterScreen} /> 
     </Stack.Navigator>
   )
 }
