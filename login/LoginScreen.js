@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { useTheme } from '@react-navigation/native';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
-import { Text, Divider, Icon, Input, Image, SocialIcon } from 'react-native-elements';
-import { Button } from 'react-native';
+import { Button, Text, Divider, Icon, Input, Image, SocialIcon } from 'react-native-elements';
 import { AuthContext } from './AuthContext';
 import { useContext } from 'react';
 
@@ -49,7 +48,9 @@ export default function LoginScreen({navigation}){
         <View style={styles.buttonview}>
             <SocialIcon button type='facebook' title='Ingresar con Facebook'/>
             <SocialIcon button type='google' title='Ingresar con Google'/>
-            <Text style={{...styles.register, ...{color: colors.grey}}}>¿No tienes una cuenta? Regístrate aquí</Text>
+            <TouchableOpacity onPress={() => {navigation.navigate("Registro")}}>
+              <Text style={{...styles.register, ...{color: colors.grey}}}>¿No tienes una cuenta? Regístrate aquí</Text>
+            </TouchableOpacity>
         </View>
       </View>
     )
