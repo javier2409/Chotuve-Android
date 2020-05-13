@@ -4,6 +4,7 @@ class ServerProxy{
         this.userData = null;
         this.published_videos = [];
         this.published_comments = [];
+        this.new_users = [];
     }
 
     //get auth token from username and password
@@ -137,8 +138,11 @@ class ServerProxy{
                 full_name: 'Javier Ferreyra',
                 avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
             }
-        ];
-        return results
+        ].concat(this.new_users);
+
+        return results.filter(user => {
+            user.name.includes(search);
+        })
     }
 
     //send a new video
@@ -199,6 +203,17 @@ class ServerProxy{
             }
         ];
         return friends
+    }
+
+    async registerNewUser(user_data){
+        const {username, email, password, full_name} = user_data;
+        const new_user = {
+            name: username,
+            full_name: full_name,
+            avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
+        };
+        this.new_users.push(new_user);
+        return 'success';
     }
 }
 
