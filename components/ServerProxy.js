@@ -164,11 +164,11 @@ class ServerProxy{
     async publishComment(comment_data){
         const {id, video_id, comment_id, text, timestamp} = comment_data;
         const new_comment = {
-            video_id = video_id,
-            comment_id = id,
-            author = this.userData.username,
-            text = text,
-            timestamp = timestamp
+            video_id: video_id,
+            comment_id: id,
+            author: this.userData.username,
+            text: text,
+            timestamp: timestamp
         }
         this.published_comments.push(new_comment);
     }
