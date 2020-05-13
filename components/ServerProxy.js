@@ -118,22 +118,22 @@ class ServerProxy{
     async getUserSearch(search){
         const results=[
             {
-                name: 'Santiago',
+                name: 'santi78434',
                 full_name: 'Santiago Mariani',
                 avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
             },
             {
-                name: 'Franco',
+                name: 'fran_giordano',
                 full_name: 'Franco Giordano',
                 avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
             },
             {
-                name: 'Sebastian',
+                name: 'sebalogue',
                 full_name: 'Sebastian Loguercio',
                 avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
             },
             {
-                name: 'Javier',
+                name: 'javiferr',
                 full_name: 'Javier Ferreyra',
                 avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
             }
@@ -178,22 +178,22 @@ class ServerProxy{
     async getFriendList(){
         let friends=[
             {
-                name: 'Santiago',
+                name: 'santi78434',
                 full_name: 'Santiago Mariani',
                 avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
             },
             {
-                name: 'Franco',
+                name: 'fran_giordano',
                 full_name: 'Franco Giordano',
                 avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
             },
             {
-                name: 'Sebastian',
+                name: 'sebalogue',
                 full_name: 'Sebastian Loguercio',
                 avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
             },
             {
-                name: 'Javier',
+                name: 'javiferr',
                 full_name: 'Javier Ferreyra',
                 avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
             }
