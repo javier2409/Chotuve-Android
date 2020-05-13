@@ -12,6 +12,7 @@ import { AppLoading } from 'expo';
 import LoginScreen from './login/LoginScreen';
 import { AuthContext } from './login/AuthContext';
 import RegisterScreen from './login/RegisterScreen';
+import { server } from './components/ServerProxy';
 
 const Stack = createStackNavigator();
 
@@ -84,6 +85,11 @@ export default function App() {
     try {
       const username = await AsyncStorage.getItem('USERNAME');
       const password = await AsyncStorage.getItem('PASSWORD');
+      const token = server.getToken(username, password);
+      setUserData({
+        username: username,
+        token: token
+      })
     } catch(e) {
       setUserData({
         username: null,
