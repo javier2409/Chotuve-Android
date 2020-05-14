@@ -21,15 +21,33 @@ function Field(props){
             selectionColor={colors.text} 
             secureTextEntry={props.secure}
             ref={props.ref}
+            onChangeText={text => props.set(text)}
         />
     )
 }
 
 export default function RegisterScreen({navigation}){
     const {colors} = useTheme();
+    const [user, setUser] = React.useState(null);
+    const [email, setEmail] = React.useState(null);
+    const [pwd1, setPwd1] = React.useState(null);
+    const [pwd2, setPwd2] = React.useState(null);
+    const [fullname, setFullname] = React.useState(null);
+    const [_a, _b, server] = useContext(AuthContext);
 
-    function registerCheck(){
-      return true;
+    async function tryRegisterUser(){
+      const result = await server.registerNewUser({
+        user: user,
+        email: email,
+        password: pwd1,
+        full_name: fullname
+      });
+      if (result === 'success'){
+        alert('Cuenta creada! Te hemos enviado un correo de verificación');
+        navigation.goBack();
+      } else {
+        alert(result);
+      }
     }
 
     return(
@@ -38,24 +56,18 @@ export default function RegisterScreen({navigation}){
             <Text h4 style={{...styles.title, color: colors.title}}>Crear una nueva cuenta</Text>
         </View>
         <View style={{...styles.block, ...{backgroundColor: colors.background}}}>
-            <Field label='Nombre de usuario' icon='person' />
-            <Field label='Correo Electrónico' icon='mail' />
-            <Field label='Contraseña' icon='vpn-key' secure />
-            <Field label='Repetir contraseña' icon='vpn-key' secure />
-            <Field label='Nombre a mostrar' icon='account-box' />
+            <Field label='Nombre de usuario' icon='person' set={setUser} />
+            <Field label='Correo Electrónico' icon='mail' set={setEmail} />
+            <Field label='Contraseña' icon='vpn-key' secure set={setPwd1} />
+            <Field label='Repetir contraseña' icon='vpn-key' secure set={setPwd2} />
+            <Field label='Nombre a mostrar' icon='account-box' set={setFullname} />
         </View>
         <View style={{...styles.buttonview}}>
-            <Button 
+            <Button
               title='Registrar' 
               buttonStyle={{...styles.button, backgroundColor:colors.primary}} 
               icon={{name:'check-circle', color: colors.text}}
-              onPress={() => {
-                if (!registerCheck()){
-                  return null
-                }
-                alert('Cuenta creada! Verifica la dirección de correo');
-                navigation.goBack();
-              }}
+              onPress={tryRegisterUser}
             />
         </View>
       </ScrollView>
