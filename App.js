@@ -81,7 +81,7 @@ function Main() {
       const username = await AsyncStorage.getItem('USERNAME');
       const password = await AsyncStorage.getItem('PASSWORD');
       console.log(`Credentials saved in async storage: ${username}, ${password}`);
-      await serverProxy.getToken(username, password);
+      await serverProxy.tryLogin(username, password);
     } catch(e) {
       setUserData({
         username: null,

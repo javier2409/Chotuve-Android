@@ -53,7 +53,7 @@ export default function LoginScreen({navigation}){
                 secureTextEntry
                 ref={pwd_input}
                 onSubmitEditing={async () => {
-                  await server.getToken(user, pass);
+                  await server.tryLogin(user, pass);
                 }}
                 onChangeText={text => setPass(text)}
             />

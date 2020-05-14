@@ -9,7 +9,7 @@ export class ServerProxy{
     }
 
     //get auth token from username and password
-    async getToken(user, pass){
+    async tryLogin(user, pass){
         this.userData = null;
         console.log("Getting token");
         //do fetch stuff...
