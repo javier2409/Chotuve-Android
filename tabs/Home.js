@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useCallback, useContext } from 'react';
 import {View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator} from 'react-native';
-import {useTheme, useNavigation} from '@react-navigation/native';
+import {useTheme, useNavigation, useFocusEffect} from '@react-navigation/native';
 import {Image} from 'react-native-elements';
+import {AuthContext} from '../login/AuthContext';
 
 // ------------------------------------SOLO PARA TESTEAR-----------------------------------------------------------
 const data = [
@@ -40,19 +41,24 @@ function VideoItem(props) {
 
 export default function Home({navigation}) {
   const {colors} = useTheme();
+  const [_a, _b, server] = useContext(AuthContext);
+  const [videoList, setVideoList] = useState([]);
+  
+  fetchVideos = useCallback(() => {
+    setVideoList([]);
+    server.getVideos().then(result => setVideoList(result));
+  });
 
   return (
     <View style={styles.container}>
       <FlatList
         refreshing={false}
         style={{...styles.flatlist, ...{backgroundColor: colors.background}}}
-        data={data}
+        data={videoList}
         renderItem={({item}) => {
           return <VideoItem videoData={item}/>;
         }}
-        onRefresh={() => {
-
-        }}
+        onRefresh={fetchVideos}
         keyExtractor={item => item.id}
       />
     </View>
