@@ -1,9 +1,9 @@
-import * as React from 'react';
 import { useTheme } from '@react-navigation/native';
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
-import { Button, Text, Divider, Icon, Input, Image, SocialIcon } from 'react-native-elements';
+import * as React from 'react';
+import { useContext, useRef, useState } from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Image, Input, SocialIcon, Text } from 'react-native-elements';
 import { AuthContext } from './AuthContext';
-import { useContext } from 'react';
 
 export default function LoginScreen({navigation}){
     navigation.setOptions({
@@ -11,7 +11,11 @@ export default function LoginScreen({navigation}){
     });
 
     const {colors} = useTheme();
-    const [userData, setUserData] = useContext(AuthContext);
+    const [userData, setUserData, server] = useContext(AuthContext);
+    const [user, setUser] = useState(null);
+    const [pass, setPass] = useState(null);
+    const user_input = useRef();
+    const pwd_input = useRef();
 
     return (
         <View style={{...styles.container, ...{backgroundColor: colors.lighterbackground}}}>
@@ -31,7 +35,11 @@ export default function LoginScreen({navigation}){
                 }}
                 label='Nombre de Usuario' 
                 inputStyle={{...styles.titleinput, ...{color: colors.grey}}} 
-                selectionColor={colors.text} 
+                selectionColor={colors.text}
+                ref={user_input}
+                onSubmitEditing={() => {pwd_input.current.focus()}}
+                onChangeText={text => setUser(text)}
+                autoFocus
             />
             <Text> </Text>
             <Input 
@@ -43,6 +51,11 @@ export default function LoginScreen({navigation}){
                 label='Contraseña' 
                 inputStyle={{...styles.descinput, ...{color: colors.grey}}} 
                 secureTextEntry
+                ref={pwd_input}
+                onSubmitEditing={async () => {
+                  await server.getToken(user, pass);
+                }}
+                onChangeText={text => setPass(text)}
             />
         </View>
         <View style={styles.buttonview}>

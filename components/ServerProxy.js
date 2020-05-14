@@ -1,7 +1,8 @@
-class ServerProxy{
+export class ServerProxy{
 
-    constructor(){
-        this.userData = null;
+    constructor(data, setData){
+        this.userData = data;
+        this.setUserData = setData;
         this.published_videos = [];
         this.published_comments = [];
         this.new_users = [];
@@ -10,19 +11,22 @@ class ServerProxy{
     //get auth token from username and password
     async getToken(user, pass){
         this.userData = null;
-        
+        console.log("Getting token");
         //do fetch stuff...
         await new Promise(r => setTimeout(r, 1000));
-        const token = 'abcdefghij'
+        const token = 'abcdefghij';
 
-        if (user === 'invalid'){
-            return null
+        if (user && pass){
+            this.setUserData({
+                username: user,
+                token: token
+            })
+        } else {
+            this.setUserData({
+                username: null,
+                token: null
+            })
         }
-        this.userData={
-            token: token,
-            username: user
-        }
-        return token
     }
 
     //get video feed
@@ -216,5 +220,3 @@ class ServerProxy{
         return 'success';
     }
 }
-
-export const server = new ServerProxy();

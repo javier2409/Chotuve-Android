@@ -1,5 +1,5 @@
 import { createStackNavigator } from '@react-navigation/stack';
-import React, { useState, createContext } from 'react';
+import React, { useState, useContext } from 'react';
 import Tabs from './Tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import {Text, View, StyleSheet, StatusBar, AsyncStorage} from 'react-native';
@@ -10,9 +10,8 @@ import FriendSearch from './subscreens/FriendSearch';
 import UserProfile from './subscreens/UserProfile';
 import { AppLoading } from 'expo';
 import LoginScreen from './login/LoginScreen';
-import { AuthContext } from './login/AuthContext';
+import { AuthContext, AuthContextProvider } from './login/AuthContext';
 import RegisterScreen from './login/RegisterScreen';
-import { server } from './components/ServerProxy';
 
 const Stack = createStackNavigator();
 
@@ -72,24 +71,17 @@ function LoginScreens(){
   )
 }
 
-export default function App() {
+function Main() {
 
-  const [userData, setUserData] = useState({
-    username: null,
-    token: null
-  });
-
+  const [userData, setUserData, serverProxy] = useContext(AuthContext);
   const [ready, setReady] = useState(false);
 
   async function fetchToken(){
     try {
       const username = await AsyncStorage.getItem('USERNAME');
       const password = await AsyncStorage.getItem('PASSWORD');
-      const token = server.getToken(username, password);
-      setUserData({
-        username: username,
-        token: token
-      })
+      console.log(`Credentials saved in async storage: ${username}, ${password}`);
+      await serverProxy.getToken(username, password);
     } catch(e) {
       setUserData({
         username: null,
@@ -108,17 +100,23 @@ export default function App() {
   }
 
   return (
-    <AuthContext.Provider value={[userData, setUserData]}>
-      <NavigationContainer theme={Theme}>
-        <StatusBar/>
-        {userData.token ? (
-          <MainApp/>
-        ) : (
-          <LoginScreens/>
-        )}
-      </NavigationContainer>
-    </AuthContext.Provider>
+    <NavigationContainer theme={Theme}>
+      <StatusBar/>
+      {userData.token ? (
+        <MainApp/>
+      ) : (
+        <LoginScreens/>
+      )}
+    </NavigationContainer>
   );
+}
+
+export default function App(){
+  return(
+    <AuthContextProvider>
+      <Main/>
+    </AuthContextProvider>
+  )
 }
 
 const styles = StyleSheet.create({
