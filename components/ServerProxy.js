@@ -1,11 +1,28 @@
 export class ServerProxy{
 
     constructor(data, setData){
-        this.userData = data;
+        this.username = null;
+        this.token = null;
         this.setUserData = setData;
         this.published_videos = [];
         this.published_comments = [];
         this.new_users = [];
+    }
+
+    updateUserData(user, token){
+        this.username = user;
+        this.token = token;
+        this.setUserData({
+            username: user,
+            token: token
+        })
+    }
+
+    get userData(){
+        return {
+            username: this.username,
+            token: this.token
+        }
     }
 
     //get auth token from username and password
@@ -17,15 +34,9 @@ export class ServerProxy{
         const token = 'abcdefghij';
 
         if (user && pass){
-            this.setUserData({
-                username: user,
-                token: token
-            })
+            this.updateUserData(user, token);
         } else {
-            this.setUserData({
-                username: null,
-                token: null
-            })
+            this.updateUserData(null, null)
         }
     }
 
@@ -159,7 +170,7 @@ export class ServerProxy{
         const new_video = {
             id: id,
             title: title,
-            author: this.userData.username,
+            author: this.username,
             description: description,
             thumbnail_uri: thumbnail_uri,
             video_url: video_url,
@@ -170,13 +181,12 @@ export class ServerProxy{
 
     //send a new comment
     async publishComment(comment_data){
-        const {id, video_id, comment_id, text, timestamp} = comment_data;
+        const {video_id, text} = comment_data;
         const new_comment = {
             video_id: video_id,
-            comment_id: id,
-            author: this.userData.username,
+            author: this.username,
             text: text,
-            timestamp: timestamp
+            timestamp: '2020-05-14'
         }
         this.published_comments.push(new_comment);
     }

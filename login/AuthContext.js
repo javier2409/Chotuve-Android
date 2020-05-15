@@ -8,11 +8,15 @@ export function AuthContextProvider(props){
         username: null,
         token: null
     });
-    
-    const server = useRef(new ServerProxy(userData, setUserData));
+
+    function dataAccess(){
+        return userData
+    }
+
+    const [server, _] = useState(new ServerProxy(dataAccess, setUserData));
 
     return(
-        <AuthContext.Provider value={[userData, setUserData, server.current]}>
+        <AuthContext.Provider value={[userData, setUserData, server]}>
             {props.children}
         </AuthContext.Provider>
     )

@@ -1,21 +1,36 @@
-import React from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import { StyleSheet, View, FlatList, ScrollView } from "react-native"
 import { useTheme } from '@react-navigation/native';
 import { Video } from 'expo-av';
-import { Divider, Text } from 'react-native-elements';
+import {Divider, Icon, Input, Text} from 'react-native-elements';
+import {AuthContext} from "../login/AuthContext";
 
-let comments = [];
-for (let i=0; i<30; i++){
-	comments.push({
-		id: i.toString(),
-		author: 'SomeGuy '+i,
-		text: 'Hola soy el comentario '+i,
-	})
-}
-
-export default function VideoScreen({route}){
+export default function VideoScreen({route, navigation}){
     const {colors} = useTheme();
-    const {video_url, title, author, description} = route.params;
+    const {id, video_url, title, author, description} = route.params;
+	const [localUser, setLocalUser, server] = useContext(AuthContext);
+	const [comments, setComments] = useState([]);
+	const [myComment, setMyComment] = useState('');
+
+	function sendComment(){
+		server.publishComment({
+			video_id: id,
+			text: myComment
+		}).then(() => {
+			setMyComment('');
+		})
+	}
+
+	function fetchComments(){
+        server.getVideoComments(id).then(result => setComments(result));
+    }
+
+    useEffect(() => {
+        return navigation.addListener('focus', () => {
+        	fetchComments()
+        })
+    }, [navigation])
+
     return (
         <View style={{...styles.container, ...{backgroundColor: colors.background}}}>
 			<Video
@@ -34,6 +49,22 @@ export default function VideoScreen({route}){
 				<Text style={{color:colors.title}}>{description}</Text>
 			</View>
 			<Divider/>
+			<View style={{...styles.commentView}}>
+				<View style={{flex:1}}>
+					<Input
+						inputStyle={{...styles.input, color: colors.text}}
+						leftIcon={{name:'comment', color:colors.grey}}
+						leftIconContainerStyle={{marginLeft:0, marginRight: 5}}
+						containerStyle={{...styles.inputContainer}}
+						placeholder={'Escribe un comentario...'}
+						placeholderTextColor={colors.grey}
+						underlineColorAndroid={colors.background}
+						onChangeText={setMyComment}
+					/>
+				</View>
+				<Icon name={'send'} color={colors.text} containerStyle={{margin:20}} onPress={sendComment}/>
+			</View>
+	        <Divider/>
 			<View style={styles.videoInfo}>
 				<FlatList 
 					ListHeaderComponent={              
@@ -49,6 +80,8 @@ export default function VideoScreen({route}){
 						);
 					}}
 					keyExtractor={item => item.id}
+					refreshing={false}
+					onRefresh={fetchComments}
 				/>
 			</View>
         </View>
@@ -57,7 +90,8 @@ export default function VideoScreen({route}){
 
 const styles = StyleSheet.create({
     container: {
-		flex: 1
+		flex: 1,
+	    alignItems: 'stretch'
     },
     videoInfo: {
 		padding: 10,
@@ -69,5 +103,17 @@ const styles = StyleSheet.create({
 	},
 	comment: {
 		margin:10
+	},
+	input: {
+    	marginRight: 10
+	},
+	inputContainer: {
+    	margin: 10,
+		marginRight: 20
+	},
+	commentView: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center'
 	}
 });
