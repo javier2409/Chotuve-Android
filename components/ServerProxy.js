@@ -122,6 +122,9 @@ export class ServerProxy{
 
     //get list of users that match the search
     async getUserSearch(search){
+        if (search.length < 1){
+            return []
+        }
         const results=[
             {
                 name: 'santi78434',
@@ -143,11 +146,11 @@ export class ServerProxy{
                 full_name: 'Javier Ferreyra',
                 avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
             }
-        ].concat(this.new_users);
-
-        return results.filter(user => {
-            user.name.includes(search);
-        })
+        ];
+        console.log(`Searching ${search} now`);
+        const filtered = results.filter(user => user.name.includes(search));
+        filtered.forEach(val => {console.log(val.name)});
+        return filtered;
     }
 
     //send a new video
