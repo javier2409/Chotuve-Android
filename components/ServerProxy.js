@@ -53,6 +53,7 @@ export class ServerProxy{
         const user={
             avatar_uri: 'xd',
             full_name: 'Javier Ferreyra',
+            friends: false,
             videos: [
                 {
                     id: '1',
@@ -218,5 +219,9 @@ export class ServerProxy{
         };
         this.new_users.push(new_user);
         return 'success';
+    }
+
+    async addFriend(username){
+        return 'Success'
     }
 }
