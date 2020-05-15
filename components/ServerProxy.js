@@ -116,6 +116,7 @@ export class ServerProxy{
         for (let i=0; i<30; i++){
             comments.push({
                 id: i.toString(),
+                video_id: 1,
                 author: 'SomeGuy '+i,
                 text: 'Hola soy el comentario '+i,
                 timestamp: '2020-05-13'
@@ -176,6 +177,7 @@ export class ServerProxy{
     async publishComment(comment_data){
         const {video_id, text} = comment_data;
         const new_comment = {
+            id: (await this.getVideoComments()).length,
             video_id: video_id,
             author: this.username,
             text: text,

@@ -1,5 +1,5 @@
-import React, {useContext, useEffect, useState} from 'react';
-import { StyleSheet, View, FlatList, ScrollView } from "react-native"
+import React, {useContext, useEffect, useRef, useState} from 'react';
+import { StyleSheet, View, FlatList, ActivityIndicator } from "react-native"
 import { useTheme } from '@react-navigation/native';
 import { Video } from 'expo-av';
 import {Divider, Icon, Input, Text} from 'react-native-elements';
@@ -11,14 +11,20 @@ export default function VideoScreen({route, navigation}){
 	const [userData, server] = useContext(AuthContext);
 	const [comments, setComments] = useState([]);
 	const [myComment, setMyComment] = useState('');
+	const [sending, setSending] = useState(false);
 
 	function sendComment(){
+		if (myComment.length < 1){
+			return
+		}
+		setSending(true);
 		server.publishComment({
 			video_id: id,
 			text: myComment
 		}).then(() => {
-			setMyComment('');
+			setSending(false);
 		})
+		setMyComment('');
 	}
 
 	function fetchComments(){
@@ -51,21 +57,28 @@ export default function VideoScreen({route, navigation}){
 			<Divider/>
 			<View style={{...styles.commentView}}>
 				<View style={{flex:1}}>
-					<Input
-						inputStyle={{...styles.input, color: colors.text}}
-						leftIcon={{name:'comment', color:colors.grey}}
-						leftIconContainerStyle={{marginLeft:0, marginRight: 5}}
-						containerStyle={{...styles.inputContainer}}
-						placeholder={'Escribe un comentario...'}
-						placeholderTextColor={colors.grey}
-						underlineColorAndroid={colors.background}
-						onChangeText={setMyComment}
-					/>
+					{
+						sending
+							?
+							<ActivityIndicator/>
+							:
+							<Input
+								inputStyle={{...styles.input, color: colors.text}}
+								leftIcon={{name:'comment', color:colors.grey}}
+								leftIconContainerStyle={{marginLeft:0, marginRight: 5}}
+								containerStyle={{...styles.inputContainer}}
+								placeholder={'Escribe un comentario...'}
+								placeholderTextColor={colors.grey}
+								underlineColorAndroid={colors.background}
+								onChangeText={setMyComment}
+								value={myComment}
+							/>
+					}
 				</View>
-				<Icon name={'send'} color={colors.text} containerStyle={{margin:20}} onPress={sendComment}/>
+				<Icon name={'send'} color={colors.background} containerStyle={{margin:0}} onPress={sendComment} raised reverse/>
 			</View>
 	        <Divider/>
-			<View style={styles.videoInfo}>
+			<View style={styles.commentList}>
 				<FlatList 
 					ListHeaderComponent={              
 						<Text style={{color:colors.title, fontSize: 18, fontWeight: 'bold'}}>Comentarios</Text>
@@ -115,5 +128,9 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center'
+	},
+	commentList: {
+    	flex: 1,
+		padding: 10
 	}
 });
