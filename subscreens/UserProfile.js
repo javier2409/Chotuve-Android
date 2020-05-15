@@ -1,43 +1,78 @@
-import React from 'react';
+import React, {useCallback, useContext, useState} from 'react';
 import { View, StyleSheet, FlatList, Image, ScrollView, TouchableOpacity } from "react-native";
-import { Avatar, Divider, ListItem, colors, Text } from 'react-native-elements';
+import {Avatar, Divider, ListItem, colors, Text, Icon, Overlay} from 'react-native-elements';
 import { useTheme } from '@react-navigation/native';
-
-const user={
-    avatar_uri: 'xd',
-    full_name: 'Javier Ferreyra',
-    videos: [
-        {
-            id: '1',
-            title: 'Videazo',
-            author: 'autorazo',
-            description: 'Dale like y suscribete',
-            thumbnail_uri: 'https://images.wallpaperscraft.com/image/city_vector_panorama_119914_3840x2160.jpg',
-            video_url: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
-            timestamp: '2020-04-28'
-        },
-        {
-            id: '2',
-            title: 'Especial 1 suscriptor',
-            author: 'autorazo',
-            description: 'Dale like y suscribete',
-            thumbnail_uri: 'https://images.wallpaperscraft.com/image/city_vector_panorama_119914_3840x2160.jpg',
-            video_url: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
-            timestamp: '2020-04-28'
-        }
-    ]
-};
+import { useFocusEffect } from "@react-navigation/native";
+import {AuthContext} from "../login/AuthContext";
 
 export default function UserProfile({route, navigation}){
+
     const {colors} = useTheme();
     const {name} = route.params;
+    const [userData, setUserData] = useState({});
+    const [localUserData, b, server] = useContext(AuthContext);
+    const [overlayVisible, setOverlayVisible] = useState(false);
+
     navigation.setOptions({
         headerTitle: 'Perfil de ' + name
     });
+
+    useFocusEffect(
+        useCallback(
+            () => {
+                fetchUserData();
+            }, [name]
+        )
+    );
+
+    function fetchUserData(){
+        server.getUserInfo(name).then(result => {
+            setUserData(result);
+        }, () => {
+            navigation.goBack();
+        })
+    }
+
+    function toggleOverlay(){
+        setOverlayVisible(!overlayVisible)
+    }
+
+    function addAsFriend(){
+        server.addFriend(name).then(result => {
+            setOverlayVisible(false);
+        });
+    }
+
     return (
         <ScrollView style={styles.general}>
+            <Overlay isVisible={overlayVisible} onBackdropPress={toggleOverlay} overlayStyle={{height: 'auto'}}>
+                <View>
+                    {
+                        (name === localUserData.username)
+                            ?
+                            <View>
+                                <ListItem title='Preferencias' leftIcon={{name:'settings'}} chevron />
+                            </View>
+                            :
+                            <View>
+                                <ListItem
+                                    title='Añadir como amigo'
+                                    leftIcon={{name:'person'}}
+                                    disabled={userData.friends}
+                                    onPress={addAsFriend}
+                                />
+                            </View>
+                    }
+                </View>
+            </Overlay>
             <View style={styles.avatarview}>
-                <Avatar rounded size={150} source={{uri: user.avatar_uri}}/>
+                <Icon
+                    name='more-vert'
+                    color={colors.text}
+                    containerStyle={{alignSelf: 'flex-end'}}
+                    onPress={toggleOverlay}
+                />
+                <Avatar rounded size={150} source={{uri: userData.avatar_uri}}/>
             </View>
             <Divider/>
             <View style={styles.nameview}>
@@ -53,7 +88,7 @@ export default function UserProfile({route, navigation}){
                     titleStyle={{color: colors.title}}
                     subtitleStyle={{color: colors.text}}
                     title='Nombre' 
-                    subtitle={user.full_name}
+                    subtitle={userData.full_name}
                 />
             </View>
             <Divider/>
@@ -61,7 +96,7 @@ export default function UserProfile({route, navigation}){
                 <Text style={{...styles.videolisttitle,...{color: colors.title}}}>Videos subidos</Text>
                 <FlatList
                     horizontal
-                    data={user.videos}
+                    data={userData.videos}
                     renderItem={({item}) => {
                         return (
                             <TouchableOpacity 
