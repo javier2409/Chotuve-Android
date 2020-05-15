@@ -59,6 +59,7 @@ export default function UserProfile({route, navigation}){
                                     title='Añadir como amigo'
                                     leftIcon={{name:'person'}}
                                     disabled={userData.friends}
+                                    disabledStyle={{opacity: 0.3}}
                                     onPress={addAsFriend}
                                 />
                             </View>
