@@ -16,17 +16,17 @@ export default function Friends({navigation}) {
                 setFriends(result);
             })
         })
-    })
+    }, [navigation])
 
     return (
         <View style={styles.view}>
             <FlatList
                 data={friends}
                 renderItem={({item}) => {
-                    const {name, avatar_url} = item;
+                    const {name, full_name, avatar_url} = item;
                     return (
                         <FriendItem data={item} onPress={() => {
-                            navigation.navigate('Chat', {name, avatar_url})
+                            navigation.navigate('Chat', {name, full_name, avatar_url})
                         }}/>
                     );
                 }}

@@ -93,17 +93,17 @@ export class ServerProxy{
         const messages=[
             {
                 id: '1',
-                name: 'Franco',
+                name: 'fran_giordano',
                 msg: 'Hola, todo bien?'
             },
             {
                 id: '2',
-                name: 'Javier',
+                name: 'javiferr',
                 msg: 'Holaaa todo bien y vos?'
             },
             {
                 id: '3',
-                name: 'Franco',
+                name: 'fran_giordano',
                 msg: 'Viste esta nueva app Chotuve? Dicen que esta buenisima'
             },
         ];
