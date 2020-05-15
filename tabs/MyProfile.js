@@ -5,13 +5,13 @@ import {AuthContext} from "../login/AuthContext";
 
 export default function MyProfile({navigation}) {
 
-    const [localUserData, b, server] = useContext(AuthContext);
+    const [userData, server] = useContext(AuthContext);
 
   return (
       <UserProfile 
         route={{
           params: {
-            name: localUserData.username
+            name: userData.username
           }
         }}
         navigation={navigation}

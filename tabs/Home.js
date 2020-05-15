@@ -41,7 +41,7 @@ function VideoItem(props) {
 
 export default function Home({navigation}) {
   const {colors} = useTheme();
-  const [_a, _b, server] = useContext(AuthContext);
+  const [userData, server] = useContext(AuthContext);
   const [videoList, setVideoList] = useState([]);
   
   function fetchVideos(){

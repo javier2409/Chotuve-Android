@@ -10,7 +10,7 @@ export default function UserProfile({route, navigation}){
     const {colors} = useTheme();
     const {name} = route.params;
     const [userData, setUserData] = useState({});
-    const [localUserData, b, server] = useContext(AuthContext);
+    const [localUserData, server] = useContext(AuthContext);
     const [overlayVisible, setOverlayVisible] = useState(false);
 
     navigation.setOptions({

@@ -73,7 +73,7 @@ function LoginScreens(){
 
 function Main() {
 
-  const [userData, setUserData, serverProxy] = useContext(AuthContext);
+  const [userData, serverProxy] = useContext(AuthContext);
   const [ready, setReady] = useState(false);
 
   async function fetchToken(){
@@ -83,10 +83,7 @@ function Main() {
       console.log(`Credentials saved in async storage: ${username}, ${password}`);
       await serverProxy.tryLogin(username, password);
     } catch(e) {
-      setUserData({
-        username: null,
-        token: null
-      });
+      serverProxy.updateUserData(null, null);
     }
   }
 

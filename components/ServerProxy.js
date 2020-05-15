@@ -1,28 +1,21 @@
 export class ServerProxy{
 
-    constructor(data, setData){
+    constructor(setUserData){
         this.username = null;
         this.token = null;
-        this.setUserData = setData;
+        this.setUserData = setUserData;
         this.published_videos = [];
         this.published_comments = [];
         this.new_users = [];
     }
 
     updateUserData(user, token){
-        this.username = user;
-        this.token = token;
         this.setUserData({
             username: user,
             token: token
         })
-    }
-
-    get userData(){
-        return {
-            username: this.username,
-            token: this.token
-        }
+        this.username = user;
+        this.token = token;
     }
 
     //get auth token from username and password

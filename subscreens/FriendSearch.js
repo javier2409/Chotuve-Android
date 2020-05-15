@@ -8,7 +8,7 @@ import {AuthContext} from "../login/AuthContext";
 export default function FriendSearch ({navigation}){
     const [search, setSearch] = useState('');
     const [searchResult, setSearchResult] = useState([]);
-    const [localUserData, set, server] = useContext(AuthContext);
+    const [userData, server] = useContext(AuthContext);
 
     navigation.setOptions({
         headerTitle: 'Añadir amigo'

@@ -33,7 +33,7 @@ export default function RegisterScreen({navigation}){
     const [pwd1, setPwd1] = React.useState(null);
     const [pwd2, setPwd2] = React.useState(null);
     const [fullname, setFullname] = React.useState(null);
-    const [_a, _b, server] = useContext(AuthContext);
+    const [userData, server] = useContext(AuthContext);
 
     async function tryRegisterUser(){
       const result = await server.registerNewUser({

@@ -8,7 +8,7 @@ import {AuthContext} from "../login/AuthContext";
 export default function VideoScreen({route, navigation}){
     const {colors} = useTheme();
     const {id, video_url, title, author, description} = route.params;
-	const [localUser, setLocalUser, server] = useContext(AuthContext);
+	const [userData, server] = useContext(AuthContext);
 	const [comments, setComments] = useState([]);
 	const [myComment, setMyComment] = useState('');
 

@@ -11,7 +11,7 @@ export default function LoginScreen({navigation}){
     });
 
     const {colors} = useTheme();
-    const [userData, setUserData, server] = useContext(AuthContext);
+    const [userData, server] = useContext(AuthContext);
     const [user, setUser] = useState(null);
     const [pass, setPass] = useState(null);
     const user_input = useRef();

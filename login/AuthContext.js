@@ -7,16 +7,11 @@ export function AuthContextProvider(props){
     const [userData, setUserData] = useState({
         username: null,
         token: null
-    });
-
-    function dataAccess(){
-        return userData
-    }
-
-    const [server, _] = useState(new ServerProxy(dataAccess, setUserData));
+    })
+    const server = useRef(new ServerProxy(setUserData));
 
     return(
-        <AuthContext.Provider value={[userData, setUserData, server]}>
+        <AuthContext.Provider value={[userData, server.current]}>
             {props.children}
         </AuthContext.Provider>
     )
