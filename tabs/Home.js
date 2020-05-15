@@ -1,6 +1,6 @@
-import React, { useState, useCallback, useContext } from 'react';
-import {View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator} from 'react-native';
-import {useTheme, useNavigation, useFocusEffect} from '@react-navigation/native';
+import React, {useContext, useEffect, useState} from 'react';
+import {ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {useNavigation, useTheme} from '@react-navigation/native';
 import {Image} from 'react-native-elements';
 import {AuthContext} from '../login/AuthContext';
 
@@ -44,10 +44,16 @@ export default function Home({navigation}) {
   const [_a, _b, server] = useContext(AuthContext);
   const [videoList, setVideoList] = useState([]);
   
-  fetchVideos = useCallback(() => {
+  function fetchVideos(){
     setVideoList([]);
     server.getVideos().then(result => setVideoList(result));
-  });
+  }
+
+  useEffect(() => {
+    return navigation.addListener('focus', () => {
+      fetchVideos();
+    });
+  }, [navigation]);
 
   return (
     <View style={styles.container}>
