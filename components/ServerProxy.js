@@ -1,4 +1,5 @@
 import * as firebase from 'firebase';
+import * as facebook from 'expo-facebook';
 
 const firebaseConfig = {
     apiKey: "AIzaSyDlBeowWP8UPWsvk9kXj9JDaN5_xsuNu4I",
@@ -32,6 +33,7 @@ export class ServerProxy{
     }
 
     manageCredential = credential => {
+        console.log('Trying to get token ID');
         credential.user.getIdToken().then(
             token => {
                 this.updateUserData(credential.user.email, token);
@@ -44,12 +46,27 @@ export class ServerProxy{
         alert(reason);
     }
 
-        //get auth token from username and password
+    //get auth token from username and password
     tryLogin(user, pass){
-        firebase.auth().signInWithEmailAndPassword(user, pass).then(this.manageCredential, this.manageFailure);
+        if (user && pass){
+            firebase.auth().signInWithEmailAndPassword(user, pass).then(this.manageCredential, this.manageFailure);
+        }
     }
 
     tryFacebookLogin(){
+        const appId = "591659228371489";
+        facebook.initializeAsync(appId).then(() => {
+            facebook.logInWithReadPermissionsAsync({
+                permissions: ['public_profile', 'email']
+            }).then(result => {
+                if (result.type === 'success'){
+                    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
+                        const credential = firebase.auth.FacebookAuthProvider.credential(result.token);
+                        firebase.auth().signInWithCredential(credential).then(this.manageCredential, this.manageFailure);
+                    });
+                }
+            });
+        });
     }
 
     tryGoogleLogin(){
