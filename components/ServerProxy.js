@@ -1,3 +1,17 @@
+import * as firebase from 'firebase';
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDlBeowWP8UPWsvk9kXj9JDaN5_xsuNu4I",
+    authDomain: "chotuve-videos.firebaseapp.com",
+    databaseURL: "https://chotuve-videos.firebaseio.com",
+    projectId: "chotuve-videos",
+    storageBucket: "chotuve-videos.appspot.com",
+    messagingSenderId: "662757364228",
+    appId: "1:662757364228:web:02d934f2819b5d58581b51"
+};
+
+firebase.initializeApp(firebaseConfig);
+
 export class ServerProxy{
 
     constructor(setUserData){
@@ -20,17 +34,18 @@ export class ServerProxy{
 
     //get auth token from username and password
     async tryLogin(user, pass){
-        this.userData = null;
-        console.log("Getting token");
-        //do fetch stuff...
-        await new Promise(r => setTimeout(r, 1000));
-        const token = 'abcdefghij';
 
-        if (user && pass){
-            this.updateUserData(user, token);
-        } else {
-            this.updateUserData(null, null)
-        }
+        firebase.auth().signInWithEmailAndPassword(user, pass).then(
+            async credential => {
+                const token = await credential.user.getIdToken();
+                const username = credential.user.email;
+                console.log(`Obtained token ID from firebase:\n${token}`);
+                this.updateUserData(username, token);
+            }, reason => {
+                console.log(`Login rejected: ${reason}`);
+            }
+        );
+
     }
 
     //get video feed
@@ -215,13 +230,7 @@ export class ServerProxy{
 
     async registerNewUser(user_data){
         const {username, email, password, full_name} = user_data;
-        const new_user = {
-            name: username,
-            full_name: full_name,
-            avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
-        };
-        this.new_users.push(new_user);
-        return 'success';
+        return firebase.auth().createUserWithEmailAndPassword(email, password);
     }
 
     async addFriend(username){
