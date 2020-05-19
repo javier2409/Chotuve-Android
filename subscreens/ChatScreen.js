@@ -1,29 +1,38 @@
 import { useTheme } from '@react-navigation/native';
-import React from 'react';
-import { FlatList, StyleSheet, View, TouchableOpacity, TextInput } from 'react-native';
+import React, {useContext, useEffect, useState, useRef, useLayoutEffect} from 'react';
+import { FlatList, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Avatar, Icon, Input, Text } from 'react-native-elements';
-
-const messages=[
-    {
-        id: '1',
-        name: 'Franco',
-        msg: 'Hola, todo bien?'
-    },
-    {
-        id: '2',
-        name: 'Javier',
-        msg: 'Holaaa todo bien y vos?'
-    },
-    {
-        id: '3',
-        name: 'Franco',
-        msg: 'Viste esta nueva app Chotuve? Dicen que esta buenisima'
-    },
-];
+import {AuthContext} from "../login/AuthContext";
+import hash from "react-native-web/dist/vendor/hash";
 
 export default function ChatScreen({route, navigation}){
     const {colors} = useTheme();
-    const {name, avatar_url} = route.params;
+    const {name, full_name, avatar_url} = route.params;
+    const [userData, server] = useContext(AuthContext);
+    const [messages, setMessages] = useState([]);
+    const [myMessage, setMyMessage] = useState('');
+    const flatlist = useRef();
+
+    function sendMessage(){
+        const newMessage = {
+            id: hash(name+myMessage+messages.length),
+            name: userData.username,
+            msg: myMessage
+        }
+        setMessages(messages.concat([newMessage]));
+        setMyMessage('');
+    }
+
+    function fetchMessages(){
+        server.getChatInfo(name).then(result => {
+            setMessages(result)
+        })
+    }
+
+    useEffect(() => {
+        return navigation.addListener('focus', fetchMessages);
+    }, [navigation])
+
     navigation.setOptions({
         headerTitle: () => {
             return (
@@ -34,43 +43,51 @@ export default function ChatScreen({route, navigation}){
                     }}
                 >
                     <Avatar source={{uri: avatar_url}} rounded/>
-                    <Text style={{...styles.headertitle, ...{color: colors.highlight}}}>{name}</Text>
+                    <Text style={{...styles.headertitle, ...{color: colors.highlight}}}>{full_name}</Text>
                 </TouchableOpacity>
             );
         }
     });
+
     return (
         <View style={styles.screenview}>
-            <FlatList
-                data={messages}
-                renderItem={({item}) => {
-                    return (
-                        <View style={{
-                            alignSelf: 
-                                (item.name === name)
-                                ? 'flex-start'
-                                : 'flex-end',
-                            padding: 10,
-                            margin: 10,
-                            backgroundColor: colors.lighterbackground,
-                            maxWidth: '50%'
-                        }}>
-                            <Text style={{color: colors.text}}>
-                                {item.msg}
-                            </Text>
-                        </View>
-                    );
-                }}
-                keyExtractor={item => item.id}
-            />
+            <View style={styles.list}>
+                <FlatList
+                    data={messages}
+                    renderItem={({item}) => {
+                        return (
+                            <View style={{
+                                alignSelf:
+                                    (item.name === name)
+                                        ? 'flex-start'
+                                        : 'flex-end',
+                                padding: 10,
+                                margin: 10,
+                                backgroundColor: colors.lighterbackground,
+                                maxWidth: '70%'
+                            }}>
+                                <Text style={{...styles.message, color: colors.text}}>
+                                    {item.msg}
+                                </Text>
+                            </View>
+                        );
+                    }}
+                    keyExtractor={item => item.id}
+                    ref={flatlist}
+                    onContentSizeChange={() => {
+                        flatlist.current.scrollToEnd()
+                    }}
+                />
+            </View>
             <View style={{...styles.messagebar}}>
-                <View style={{...styles.inputview, ...{backgroundColor: colors.primary}}}>
-                    <TextInput
-                        placeholder= 'Mensaje' 
-                        selectionColor= {colors.text}
-                        style={{
-                            color: colors.text
-                        }}
+                <View style={{...styles.inputview, ...{backgroundColor: colors.lighterbackground}}}>
+                    <Input
+                        placeholder= 'Escribe un mensaje...'
+                        placeholderTextColor={colors.grey}
+                        inputStyle={{ color: colors.text }}
+                        inputContainerStyle={{borderBottomWidth: 0}}
+                        onChangeText={setMyMessage}
+                        value={myMessage}
                     />
                 </View>
                 <Icon 
@@ -78,6 +95,7 @@ export default function ChatScreen({route, navigation}){
                     color={colors.primary} 
                     raised
                     reverse
+                    onPress={sendMessage}
                 />
             </View>
         </View>
@@ -110,5 +128,11 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         padding: 12,
         paddingLeft: 17
+    },
+    list: {
+        flex: 1
+    },
+    message: {
+        fontSize: 17
     }
 });

@@ -11,6 +11,7 @@ web-build/
 web-report/
 credentials.env
 keystore_info.txt
+.idea/*
 
 # macOS
 .DS_Store
