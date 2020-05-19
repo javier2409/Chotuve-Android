@@ -20,7 +20,6 @@ export class ServerProxy{
         this.setUserData = setUserData;
         this.published_videos = [];
         this.published_comments = [];
-        this.new_users = [];
     }
 
     updateUserData(user, token){
@@ -32,20 +31,28 @@ export class ServerProxy{
         this.token = token;
     }
 
-    //get auth token from username and password
-    async tryLogin(user, pass){
-
-        firebase.auth().signInWithEmailAndPassword(user, pass).then(
-            async credential => {
-                const token = await credential.user.getIdToken();
-                const username = credential.user.email;
+    manageCredential = credential => {
+        credential.user.getIdToken().then(
+            token => {
+                this.updateUserData(credential.user.email, token);
                 console.log(`Obtained token ID from firebase:\n${token}`);
-                this.updateUserData(username, token);
-            }, reason => {
-                console.log(`Login rejected: ${reason}`);
             }
         );
+    }
 
+    manageFailure = reason => {
+        alert(reason);
+    }
+
+        //get auth token from username and password
+    tryLogin(user, pass){
+        firebase.auth().signInWithEmailAndPassword(user, pass).then(this.manageCredential, this.manageFailure);
+    }
+
+    tryFacebookLogin(){
+    }
+
+    tryGoogleLogin(){
     }
 
     //get video feed
