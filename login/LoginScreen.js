@@ -21,6 +21,14 @@ export default function LoginScreen({navigation}){
         server.tryLogin(user, pass);
     }
 
+    function tryFacebookLogin(){
+        server.tryFacebookLogin();
+    }
+
+    function tryGoogleLogin() {
+        server.tryGoogleLogin();
+    }
+
     return (
         <View style={{...styles.container, ...{backgroundColor: colors.lighterbackground}}}>
         <View style={styles.block}>
@@ -61,7 +69,7 @@ export default function LoginScreen({navigation}){
             />
         </View>
         <View style={styles.buttonview}>
-            <SocialIcon button type='facebook' title='Ingresar con Facebook' onPress={server.tryFacebookLogin}/>
+            <SocialIcon button type='facebook' title='Ingresar con Facebook' onPress={tryFacebookLogin}/>
             <SocialIcon button type='google' title='Ingresar con Google' onPress={server.tryGoogleLogin}/>
             <TouchableOpacity onPress={() => {navigation.navigate("Registro")}}>
               <Text style={{...styles.register, ...{color: colors.grey}}}>¿No tienes una cuenta? Regístrate aquí</Text>
