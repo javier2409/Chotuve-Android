@@ -1,15 +1,17 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { StyleSheet } from 'react-native';
 import UserProfile from './../subscreens/UserProfile';
-
-const myName = "Javier";
+import {AuthContext} from "../login/AuthContext";
 
 export default function MyProfile({navigation}) {
+
+    const [userData, server] = useContext(AuthContext);
+
   return (
       <UserProfile 
         route={{
           params: {
-            name: myName
+            name: userData.username
           }
         }}
         navigation={navigation}
