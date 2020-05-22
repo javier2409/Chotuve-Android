@@ -37,12 +37,16 @@ export class ServerProxy{
         console.log('Trying to get token ID');
         const token = await credential.user.getIdToken();
         this.updateUserData(credential.user.email, token);
-        console.log(`Obtained token ID from firebase:\n${token}`);
+        console.log(`Obtained token ID from firebase: ${token.substring(0, 30)}...`);
 
+        console.log(credential.user.displayName);
+        console.log(credential.user.email);
+        let provider = 'firebase';
+        if (credential.credential) {
+            provider = credential.credential.providerId;
+        }
+        console.log(provider);
         if (credential.additionalUserInfo.isNewUser){
-            console.log(credential.user.displayName);
-            console.log(credential.user.email);
-            console.log(credential.user.providerId);
         }
     }
 
