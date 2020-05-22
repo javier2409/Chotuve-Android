@@ -5,28 +5,7 @@ import { Button, Text, Divider, Icon, Input, Image, SocialIcon } from 'react-nat
 import { AuthContext } from './AuthContext';
 import {useContext, useState} from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
-
-function Field(props){
-    const {colors} = useTheme();
-    return(
-        <Input 
-            leftIcon={{name:props.icon, color:colors.grey}} 
-            leftIconContainerStyle={{
-                marginRight: 10,
-                marginLeft: 0
-            }}
-            label={props.label}
-            inputStyle={{...styles.input, ...{color: colors.grey}}} 
-            containerStyle={{...styles.field}}
-            selectionColor={colors.text} 
-            secureTextEntry={props.secure}
-            ref={props.ref}
-            onChangeText={text => props.set(text)}
-            autoCompleteType={props.type}
-            autoCapitalize={props.capitalize? 'words' : 'none'}
-        />
-    )
-}
+import Field from './Field';
 
 export default function RegisterScreen({navigation}){
     const {colors} = useTheme();
