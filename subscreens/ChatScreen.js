@@ -7,7 +7,7 @@ import hash from "react-native-web/dist/vendor/hash";
 
 export default function ChatScreen({route, navigation}){
     const {colors} = useTheme();
-    const {name, full_name, avatar_url} = route.params;
+    const {email, full_name, avatar_url} = route.params;
     const [userData, server] = useContext(AuthContext);
     const [messages, setMessages] = useState([]);
     const [myMessage, setMyMessage] = useState('');
@@ -16,7 +16,7 @@ export default function ChatScreen({route, navigation}){
     function sendMessage(){
         const newMessage = {
             id: hash(name+myMessage+messages.length),
-            name: userData.username,
+            email: userData.email,
             msg: myMessage
         }
         setMessages(messages.concat([newMessage]));
@@ -24,7 +24,7 @@ export default function ChatScreen({route, navigation}){
     }
 
     function fetchMessages(){
-        server.getChatInfo(name).then(result => {
+        server.getChatInfo(email).then(result => {
             setMessages(result)
         })
     }
@@ -39,7 +39,7 @@ export default function ChatScreen({route, navigation}){
                 <TouchableOpacity 
                     style={styles.headerview}
                     onPress={() => {
-                        navigation.navigate("UserProfile", {name});
+                        navigation.navigate("UserProfile", {email});
                     }}
                 >
                     <Avatar source={{uri: avatar_url}} rounded/>
@@ -58,7 +58,7 @@ export default function ChatScreen({route, navigation}){
                         return (
                             <View style={{
                                 alignSelf:
-                                    (item.name === name)
+                                    (item.email === email)
                                         ? 'flex-start'
                                         : 'flex-end',
                                 padding: 10,

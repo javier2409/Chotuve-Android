@@ -8,25 +8,25 @@ import {AuthContext} from "../login/AuthContext";
 export default function UserProfile({route, navigation}){
 
     const {colors} = useTheme();
-    const {name} = route.params;
+    const {email} = route.params;
     const [userData, setUserData] = useState({});
     const [localUserData, server] = useContext(AuthContext);
     const [overlayVisible, setOverlayVisible] = useState(false);
 
     navigation.setOptions({
-        headerTitle: 'Perfil de ' + name
+        headerTitle: 'Perfil de ' + email
     });
 
     useFocusEffect(
         useCallback(
             () => {
                 fetchUserData();
-            }, [name]
+            }, [email]
         )
     );
 
     function fetchUserData(){
-        server.getUserInfo(name).then(result => {
+        server.getUserInfo(email).then(result => {
             setUserData(result);
         }, () => {
             navigation.goBack();
@@ -38,7 +38,7 @@ export default function UserProfile({route, navigation}){
     }
 
     function addAsFriend(){
-        server.addFriend(name).then(result => {
+        server.addFriend(email).then(result => {
             setOverlayVisible(false);
         });
     }
@@ -48,7 +48,7 @@ export default function UserProfile({route, navigation}){
             <Overlay isVisible={overlayVisible} onBackdropPress={toggleOverlay} overlayStyle={{height: 'auto'}}>
                 <View>
                     {
-                        (name === localUserData.username)
+                        (email === localUserData.email)
                             ?
                             <View>
                                 <ListItem title='Preferencias' leftIcon={{name:'settings'}} chevron />
@@ -81,15 +81,15 @@ export default function UserProfile({route, navigation}){
                     containerStyle={{backgroundColor: colors.lighterbackground}}
                     titleStyle={{color: colors.title}}
                     subtitleStyle={{color: colors.text}}
-                    title='Nick' 
-                    subtitle={name}
+                    title='Nombre'
+                    subtitle={userData.full_name}
                 />
-                <ListItem  
+                <ListItem
                     containerStyle={{backgroundColor: colors.lighterbackground}}
                     titleStyle={{color: colors.title}}
                     subtitleStyle={{color: colors.text}}
-                    title='Nombre' 
-                    subtitle={userData.full_name}
+                    title='Correo Electrónico'
+                    subtitle={email}
                 />
             </View>
             <Divider/>

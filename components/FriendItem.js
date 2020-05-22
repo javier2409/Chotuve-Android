@@ -5,14 +5,14 @@ import { ListItem, Icon } from 'react-native-elements';
 
 export default function FriendItem(props){
     const {colors} = useTheme();
-    const {name, full_name, avatar_url} = props.data;
+    const {email, full_name, avatar_url} = props.data;
     return (
         <ListItem 
             Component={TouchableOpacity}
             containerStyle={{...styles.container, ...{backgroundColor: colors.lighterbackground}}}
             title={full_name}
             titleStyle={{...styles.title, ...{color: colors.text}}}
-            subtitle={`@${name}`}
+            subtitle={email}
             subtitleStyle={{...styles.subtitle, ...{color: colors.grey}}}
             chevron
             leftAvatar={{source:{uri: avatar_url}}}

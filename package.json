@@ -16,6 +16,11 @@
     "@react-navigation/stack": "^5.2.13",
     "expo": "~37.0.3",
     "expo-av": "~8.1.0",
+    "expo-facebook": "~8.1.0",
+    "expo-google-app-auth": "^8.1.0",
+    "expo-image-picker": "~8.1.0",
+    "expo-video-thumbnails": "~4.1.0",
+    "firebase": "7.9.0",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-37.0.1.tar.gz",
@@ -26,9 +31,7 @@
     "react-native-safe-area-context": "^0.7.3",
     "react-native-screens": "^2.2.0",
     "react-native-vector-icons": "^6.6.0",
-    "react-native-web": "~0.11.7",
-    "expo-image-picker": "~8.1.0",
-    "expo-video-thumbnails": "~4.1.0"
+    "react-native-web": "~0.11.7"
   },
   "devDependencies": {
     "@babel/core": "^7.8.6",
