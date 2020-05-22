@@ -17,26 +17,21 @@ firebase.initializeApp(firebaseConfig);
 export class ServerProxy{
 
     constructor(setUserData){
-        this.username = null;
-        this.token = null;
+        this.user = null;
         this.setUserData = setUserData;
         this.published_videos = [];
         this.published_comments = [];
     }
 
-    updateUserData(user, token){
-        this.setUserData({
-            username: user,
-            token: token
-        })
-        this.username = user;
-        this.token = token;
+    updateUserData(user){
+        this.setUserData(user)
+        this.user = user;
     }
 
     manageCredential = async credential => {
         console.log('Trying to get token ID');
         const token = await credential.user.getIdToken();
-        this.updateUserData(credential.user.email, token);
+        this.updateUserData(credential.user);
         console.log(`Obtained token ID from firebase: ${token.substring(0, 30)}...`);
 
         console.log(credential.user.displayName);
@@ -185,17 +180,17 @@ export class ServerProxy{
         const messages=[
             {
                 id: '1',
-                name: 'fran_giordano',
+                email: 'fran_giordano',
                 msg: 'Hola, todo bien?'
             },
             {
                 id: '2',
-                name: 'javiferr',
+                email: 'javiferr',
                 msg: 'Holaaa todo bien y vos?'
             },
             {
                 id: '3',
-                name: 'fran_giordano',
+                email: 'fran_giordano',
                 msg: 'Viste esta nueva app Chotuve? Dicen que esta buenisima'
             },
         ];
@@ -223,29 +218,28 @@ export class ServerProxy{
         }
         const results=[
             {
-                name: 'santi78434',
+                email: 'santi78434',
                 full_name: 'Santiago Mariani',
                 avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
             },
             {
-                name: 'fran_giordano',
+                email: 'fran_giordano',
                 full_name: 'Franco Giordano',
                 avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
             },
             {
-                name: 'sebalogue',
+                email: 'sebalogue',
                 full_name: 'Sebastian Loguercio',
                 avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
             },
             {
-                name: 'javiferr',
+                email: 'javiferr',
                 full_name: 'Javier Ferreyra',
                 avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
             }
         ];
         console.log(`Searching ${search} now`);
-        const filtered = results.filter(user => user.name.includes(search));
-        filtered.forEach(val => {console.log(val.name)});
+        const filtered = results.filter(user => user.email.includes(search));
         return filtered;
     }
 
@@ -254,7 +248,7 @@ export class ServerProxy{
         const {title, description, thumbnail_uri, video_url, timestamp} = video_data;
         const new_video = {
             title: title,
-            author: this.username,
+            author: this.user.displayName,
             description: description,
             thumbnail_uri: thumbnail_uri,
             video_url: video_url,
@@ -281,22 +275,22 @@ export class ServerProxy{
     async getFriendList(){
         let friends=[
             {
-                name: 'santi78434',
+                email: 'santi78434',
                 full_name: 'Santiago Mariani',
                 avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
             },
             {
-                name: 'fran_giordano',
+                email: 'fran_giordano',
                 full_name: 'Franco Giordano',
                 avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
             },
             {
-                name: 'sebalogue',
+                email: 'sebalogue',
                 full_name: 'Sebastian Loguercio',
                 avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
             },
             {
-                name: 'javiferr',
+                email: 'javiferr',
                 full_name: 'Javier Ferreyra',
                 avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
             }
