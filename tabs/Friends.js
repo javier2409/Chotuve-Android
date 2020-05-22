@@ -7,7 +7,7 @@ import {AuthContext} from "../login/AuthContext";
 
 export default function Friends({navigation}) {
     const {colors} = useTheme();
-    const [friends, setFriends] = useState();
+    const [friends, setFriends] = useState([]);
     const [userData, server] = useContext(AuthContext);
 
     useEffect(() => {
@@ -23,14 +23,14 @@ export default function Friends({navigation}) {
             <FlatList
                 data={friends}
                 renderItem={({item}) => {
-                    const {name, full_name, avatar_url} = item;
+                    const {email, full_name, avatar_url} = item;
                     return (
                         <FriendItem data={item} onPress={() => {
-                            navigation.navigate('Chat', {name, full_name, avatar_url})
+                            navigation.navigate('Chat', {email, full_name, avatar_url})
                         }}/>
                     );
                 }}
-                keyExtractor={item => item.name}
+                keyExtractor={item => item.email}
             />
             <Icon
                 name='person-add'

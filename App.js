@@ -83,7 +83,7 @@ function Main() {
       console.log(`Credentials saved in async storage: ${username}, ${password}`);
       await serverProxy.tryLogin(username, password);
     } catch(e) {
-      serverProxy.updateUserData(null, null);
+      serverProxy.updateUserData(null);
     }
   }
 
@@ -99,7 +99,7 @@ function Main() {
   return (
     <NavigationContainer theme={Theme}>
       <StatusBar/>
-      {userData.token ? (
+      {userData ? (
         <MainApp/>
       ) : (
         <LoginScreens/>
