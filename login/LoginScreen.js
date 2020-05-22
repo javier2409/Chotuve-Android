@@ -25,8 +25,8 @@ export default function LoginScreen({navigation}){
         server.tryFacebookLogin();
     }
 
-    function tryGoogleLogin() {
-        server.tryGoogleLogin();
+    async function tryGoogleLogin() {
+        await server.tryGoogleLogin();
     }
 
     return (
@@ -70,7 +70,7 @@ export default function LoginScreen({navigation}){
         </View>
         <View style={styles.buttonview}>
             <SocialIcon button type='facebook' title='Ingresar con Facebook' onPress={tryFacebookLogin}/>
-            <SocialIcon button type='google' title='Ingresar con Google' onPress={server.tryGoogleLogin}/>
+            <SocialIcon button type='google' title='Ingresar con Google' onPress={tryGoogleLogin}/>
             <TouchableOpacity onPress={() => {navigation.navigate("Registro")}}>
               <Text style={{...styles.register, ...{color: colors.grey}}}>¿No tienes una cuenta? Regístrate aquí</Text>
             </TouchableOpacity>

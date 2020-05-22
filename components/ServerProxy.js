@@ -1,5 +1,7 @@
 import * as firebase from 'firebase';
 import * as facebook from 'expo-facebook';
+import * as google from 'expo-google-app-auth';
+import {acc} from "react-native-reanimated";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDlBeowWP8UPWsvk9kXj9JDaN5_xsuNu4I",
@@ -70,6 +72,17 @@ export class ServerProxy{
     }
 
     tryGoogleLogin(){
+        google.logInAsync({
+            androidClientId: `662757364228-7cm7fs8d3e5r22tdbk0mandpqhsm3876.apps.googleusercontent.com`,
+            androidStandaloneAppClientId: `662757364228-7cm7fs8d3e5r22tdbk0mandpqhsm3876.apps.googleusercontent.com`,
+        }).then(googleLoginResult => {
+            if (googleLoginResult.type === 'success'){
+                firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
+                    const credential = firebase.auth.GoogleAuthProvider.credential(googleLoginResult.idToken);
+                    firebase.auth().signInWithCredential(credential).then(this.manageCredential, this.manageFailure);
+                })
+            }
+        })
     }
 
     //get video feed
