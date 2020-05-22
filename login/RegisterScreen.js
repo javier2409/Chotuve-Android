@@ -43,6 +43,7 @@ export default function RegisterScreen({navigation}){
         <ScrollView contentContainerStyle={{...styles.container, backgroundColor: colors.lighterbackground}}>
             <View style={styles.block}>
                 <Text h4 style={{...styles.title, color: colors.title}}>Crear una nueva cuenta</Text>
+                <ActivityIndicator color={colors.text} animating={loading}/>
             </View>
             <View style={{...styles.block, ...{backgroundColor: colors.background}}}>
                 <Field label='Nombre y Apellido' icon='account-box' set={setFullname} type={'name'} capitalize />
@@ -54,13 +55,9 @@ export default function RegisterScreen({navigation}){
                 <Button
                     title='Registrar'
                     buttonStyle={{...styles.button, backgroundColor:colors.primary}}
-                    icon={
-                      loading?
-                          <ActivityIndicator color={colors.text}/>
-                      :
-                          {name:'check-circle', color: colors.text}
-                    }
+                    icon={{name:'check-circle', color: colors.text}}
                     onPress={tryRegisterUser}
+                    disabled={loading}
                 />
             </View>
         </ScrollView>

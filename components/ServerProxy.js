@@ -100,7 +100,7 @@ export class ServerProxy{
             }
         } catch (error){
             this.manageFailure(error);
-            return Promise.reject();
+            return Promise.reject('Error al ingresar.');
         }
     }
 
@@ -115,7 +115,7 @@ export class ServerProxy{
             await this.manageCredential(registerResult);
         } catch (error){
             console.log(error);
-            return Promise.reject();
+            return Promise.reject('Hubo un error al crear la cuenta');
         }
     }
 
