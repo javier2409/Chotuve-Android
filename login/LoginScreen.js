@@ -1,7 +1,7 @@
 import { useTheme } from '@react-navigation/native';
 import * as React from 'react';
 import { useContext, useRef, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import { Image, Input, SocialIcon, Text } from 'react-native-elements';
 import { AuthContext } from './AuthContext';
 
@@ -11,6 +11,7 @@ export default function LoginScreen({navigation}){
     });
 
     const {colors} = useTheme();
+    const [loading, setLoading] = useState(false);
     const [userData, server] = useContext(AuthContext);
     const [user, setUser] = useState(null);
     const [pass, setPass] = useState(null);
@@ -18,64 +19,73 @@ export default function LoginScreen({navigation}){
     const pwd_input = useRef();
 
     function tryLoginWithUserAndPass(){
-        server.tryLogin(user, pass);
+        setLoading(true);
+        server.tryLogin(user, pass).then(null, () => {
+            setLoading(false);
+        });
     }
 
     function tryFacebookLogin(){
-        server.tryFacebookLogin();
+        setLoading(true);
+        server.tryFacebookLogin().then(null, () => {
+            setLoading(false);
+        });
     }
 
-    async function tryGoogleLogin() {
-        await server.tryGoogleLogin();
+    function tryGoogleLogin() {
+        setLoading(true);
+        server.tryGoogleLogin().then(null, () => {
+            setLoading(false);
+        });
     }
 
     return (
         <View style={{...styles.container, ...{backgroundColor: colors.lighterbackground}}}>
-        <View style={styles.block}>
-            <Image 
-                source={require('../assets/icon.png')} 
-                style={{width:150, aspectRatio:1}}
-                resizeMode='contain'
-            />
+            <View style={styles.block}>
+                <Image
+                    source={require('../assets/icon.png')}
+                    style={{width:150, aspectRatio:1}}
+                    resizeMode='contain'
+                />
+            </View>
+            <ActivityIndicator color={loading? colors.text : '#00000000'}/>
+            <View style={{...styles.block, ...{backgroundColor: colors.background}}}>
+                <Input
+                    leftIcon={{name:'person', color:colors.grey}}
+                    leftIconContainerStyle={{
+                        marginRight: 10,
+                        marginLeft: 0
+                    }}
+                    label='Nombre de Usuario'
+                    inputStyle={{...styles.titleinput, ...{color: colors.grey}}}
+                    selectionColor={colors.text}
+                    ref={user_input}
+                    onSubmitEditing={() => {pwd_input.current.focus()}}
+                    onChangeText={text => setUser(text)}
+                />
+                <Text> </Text>
+                <Input
+                    leftIcon={{name:'vpn-key', color:colors.grey}}
+                    leftIconContainerStyle={{
+                        marginRight: 10,
+                        marginLeft: 0
+                    }}
+                    label='Contraseña'
+                    inputStyle={{...styles.descinput, ...{color: colors.grey}}}
+                    secureTextEntry
+                    ref={pwd_input}
+                    onSubmitEditing={tryLoginWithUserAndPass}
+                    onChangeText={text => setPass(text)}
+                />
+            </View>
+            <View style={styles.buttonview}>
+                <SocialIcon button type='facebook' title='Ingresar con Facebook' onPress={tryFacebookLogin}/>
+                <SocialIcon button type='google' title='Ingresar con Google' onPress={tryGoogleLogin}/>
+                <TouchableOpacity onPress={() => {navigation.navigate("Registro")}}>
+                  <Text style={{...styles.register, ...{color: colors.grey}}}>¿No tienes una cuenta? Regístrate aquí</Text>
+                </TouchableOpacity>
+            </View>
         </View>
-        <View style={{...styles.block, ...{backgroundColor: colors.background}}}>
-            <Input 
-                leftIcon={{name:'person', color:colors.grey}} 
-                leftIconContainerStyle={{
-                    marginRight: 10,
-                    marginLeft: 0
-                }}
-                label='Nombre de Usuario' 
-                inputStyle={{...styles.titleinput, ...{color: colors.grey}}} 
-                selectionColor={colors.text}
-                ref={user_input}
-                onSubmitEditing={() => {pwd_input.current.focus()}}
-                onChangeText={text => setUser(text)}
-                autoFocus
-            />
-            <Text> </Text>
-            <Input 
-                leftIcon={{name:'vpn-key', color:colors.grey}}
-                leftIconContainerStyle={{
-                    marginRight: 10,
-                    marginLeft: 0
-                }}
-                label='Contraseña' 
-                inputStyle={{...styles.descinput, ...{color: colors.grey}}} 
-                secureTextEntry
-                ref={pwd_input}
-                onSubmitEditing={tryLoginWithUserAndPass}
-                onChangeText={text => setPass(text)}
-            />
-        </View>
-        <View style={styles.buttonview}>
-            <SocialIcon button type='facebook' title='Ingresar con Facebook' onPress={tryFacebookLogin}/>
-            <SocialIcon button type='google' title='Ingresar con Google' onPress={tryGoogleLogin}/>
-            <TouchableOpacity onPress={() => {navigation.navigate("Registro")}}>
-              <Text style={{...styles.register, ...{color: colors.grey}}}>¿No tienes una cuenta? Regístrate aquí</Text>
-            </TouchableOpacity>
-        </View>
-      </View>
     )
 }
 

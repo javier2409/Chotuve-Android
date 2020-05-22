@@ -30,7 +30,6 @@ function Field(props){
 
 export default function RegisterScreen({navigation}){
     const {colors} = useTheme();
-    const [user, setUser] = React.useState(null);
     const [email, setEmail] = React.useState(null);
     const [pwd1, setPwd1] = React.useState(null);
     const [pwd2, setPwd2] = React.useState(null);
@@ -47,13 +46,11 @@ export default function RegisterScreen({navigation}){
         setLoading(true);
 
         server.registerNewUser({
-            user: user,
             email: email,
             password: pwd1,
             full_name: fullname
         }).then(
             () => {
-                alert("Cuenta creada, ahora puedes ingresar.");
                 navigation.goBack();
             },
             reason => {

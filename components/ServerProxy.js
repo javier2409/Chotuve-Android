@@ -1,7 +1,6 @@
 import * as firebase from 'firebase';
 import * as facebook from 'expo-facebook';
 import * as google from 'expo-google-app-auth';
-import {acc} from "react-native-reanimated";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDlBeowWP8UPWsvk9kXj9JDaN5_xsuNu4I",
@@ -34,14 +33,17 @@ export class ServerProxy{
         this.token = token;
     }
 
-    manageCredential = credential => {
+    manageCredential = async credential => {
         console.log('Trying to get token ID');
-        credential.user.getIdToken().then(
-            token => {
-                this.updateUserData(credential.user.email, token);
-                console.log(`Obtained token ID from firebase:\n${token}`);
-            }
-        );
+        const token = await credential.user.getIdToken();
+        this.updateUserData(credential.user.email, token);
+        console.log(`Obtained token ID from firebase:\n${token}`);
+
+        if (credential.additionalUserInfo.isNewUser){
+            console.log(credential.user.displayName);
+            console.log(credential.user.email);
+            console.log(credential.user.providerId);
+        }
     }
 
     manageFailure = reason => {
@@ -49,40 +51,73 @@ export class ServerProxy{
     }
 
     //get auth token from username and password
-    tryLogin(user, pass){
-        if (user && pass){
-            firebase.auth().signInWithEmailAndPassword(user, pass).then(this.manageCredential, this.manageFailure);
+    async tryLogin(user, pass){
+        if (user && pass) {
+            try {
+                const loginResult = await firebase.auth().signInWithEmailAndPassword(user, pass);
+                await this.manageCredential(loginResult);
+            } catch (error) {
+                this.manageFailure(error);
+                return Promise.reject();
+            }
+        } else {
+            return Promise.reject();
         }
     }
 
-    tryFacebookLogin(){
+    async tryFacebookLogin(){
         const appId = "591659228371489";
-        facebook.initializeAsync(appId).then(() => {
-            facebook.logInWithReadPermissionsAsync({
+
+        try {
+            await facebook.initializeAsync(appId);
+            const facebookLoginResult = await facebook.logInWithReadPermissionsAsync({
                 permissions: ['public_profile', 'email']
-            }).then(result => {
-                if (result.type === 'success'){
-                    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
-                        const credential = firebase.auth.FacebookAuthProvider.credential(result.token);
-                        firebase.auth().signInWithCredential(credential).then(this.manageCredential, this.manageFailure);
-                    });
-                }
-            });
-        });
+            })
+
+            if (facebookLoginResult.type === 'success') {
+                await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+                const credential = firebase.auth.FacebookAuthProvider.credential(facebookLoginResult.token);
+                const loginResult = await firebase.auth().signInWithCredential(credential);
+                await this.manageCredential(loginResult);
+            }
+        } catch(error){
+            this.manageFailure(error);
+            return Promise.reject();
+        }
     }
 
-    tryGoogleLogin(){
-        google.logInAsync({
-            androidClientId: `662757364228-7cm7fs8d3e5r22tdbk0mandpqhsm3876.apps.googleusercontent.com`,
-            androidStandaloneAppClientId: `662757364228-7cm7fs8d3e5r22tdbk0mandpqhsm3876.apps.googleusercontent.com`,
-        }).then(googleLoginResult => {
-            if (googleLoginResult.type === 'success'){
-                firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
-                    const credential = firebase.auth.GoogleAuthProvider.credential(googleLoginResult.idToken);
-                    firebase.auth().signInWithCredential(credential).then(this.manageCredential, this.manageFailure);
-                })
+    async tryGoogleLogin() {
+        try {
+            const googleLoginResult = await google.logInAsync({
+                androidClientId: `662757364228-7cm7fs8d3e5r22tdbk0mandpqhsm3876.apps.googleusercontent.com`,
+                androidStandaloneAppClientId: `662757364228-7cm7fs8d3e5r22tdbk0mandpqhsm3876.apps.googleusercontent.com`,
+            });
+
+            if (googleLoginResult.type === 'success') {
+                await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+                const credential = firebase.auth.GoogleAuthProvider.credential(googleLoginResult.idToken);
+                const loginResult = await firebase.auth().signInWithCredential(credential);
+                await this.manageCredential(loginResult);
             }
-        })
+        } catch (error){
+            this.manageFailure(error);
+            return Promise.reject();
+        }
+    }
+
+    async registerNewUser(user_data){
+        const {email, password, full_name} = user_data;
+        try{
+            const registerResult = await firebase.auth().createUserWithEmailAndPassword(email, password);
+            await registerResult.user.updateProfile({
+                displayName: full_name
+            });
+            await registerResult.user.reload();
+            await this.manageCredential(registerResult);
+        } catch (error){
+            console.log(error);
+            return Promise.reject();
+        }
     }
 
     //get video feed
@@ -263,11 +298,6 @@ export class ServerProxy{
             }
         ];
         return friends
-    }
-
-    async registerNewUser(user_data){
-        const {username, email, password, full_name} = user_data;
-        return firebase.auth().createUserWithEmailAndPassword(email, password);
     }
 
     async addFriend(username){
