@@ -301,4 +301,12 @@ export class ServerProxy{
     async addFriend(username){
         return 'Success'
     }
+
+    async requestResetPasswordEmail(email){
+
+    }
+
+    async sendCodeAndNewPassword(code, newPassword){
+
+    }
 }

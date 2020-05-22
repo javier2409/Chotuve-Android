@@ -6,20 +6,48 @@ import {Button, Text} from 'react-native-elements';
 import { AuthContext } from './AuthContext';
 import Field from "./Field";
 
-export default function RecoverPasswordScreen(){
+export default function RecoverPasswordScreen({navigation}){
     const {colors} = useTheme();
     const [userData, server] = useContext(AuthContext);
     const [email, setEmail] = useState('');
+    const [code, setCode] = useState('');
     const [pwd1, setPwd1] = useState('');
     const [pwd2, setPwd2] = useState('');
     const [loading, setLoading] = useState(false);
 
     function requestReset(){
-
+        setLoading(true);
+        server.requestResetPasswordEmail(email).then(() => {
+            alert("Hemos enviado el correo, revisa tu bandeja de entrada");
+            setLoading(false);
+        }, () => {
+            alert("Hubo un error, revisa la dirección ingresada o intenta más tarde");
+            setLoading(false);
+        })
     }
 
     function sendCodeAndPassword(){
+        setLoading(true);
 
+        if (pwd1 !== pwd2){
+            alert("Las contraseñas no coinciden");
+            setLoading(false);
+            return
+        }
+
+        if (pwd1.length < 6){
+            alert("La contraseña no puede tener menos de 6 caracteres");
+            setLoading(false);
+            return
+        }
+
+        server.sendCodeAndNewPassword(code, pwd1).then(() => {
+            alert("Contraseña actualizada con éxito");
+            navigation.navigate("Login");
+        }, () => {
+            alert("Hubo un error");
+            setLoading(false);
+        })
     }
 
     return(
@@ -49,7 +77,7 @@ export default function RecoverPasswordScreen(){
                 />
             </View>
             <View style={{...styles.block, ...{backgroundColor: colors.background}}}>
-                <Field label='Código' icon='confirmation-number' set={setEmail} type={'email'} />
+                <Field label='Código' icon='confirmation-number' set={setCode} type={'email'} />
                 <Field label='Contraseña nueva' icon='vpn-key' set={setPwd1} secure type={'password'} />
                 <Field label='Repetir contraseña nueva' icon='vpn-key' set={setPwd2} secure type={'password'} />
             </View>
