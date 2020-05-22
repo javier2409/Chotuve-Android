@@ -5,28 +5,7 @@ import { Button, Text, Divider, Icon, Input, Image, SocialIcon } from 'react-nat
 import { AuthContext } from './AuthContext';
 import {useContext, useState} from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
-
-function Field(props){
-    const {colors} = useTheme();
-    return(
-        <Input 
-            leftIcon={{name:props.icon, color:colors.grey}} 
-            leftIconContainerStyle={{
-                marginRight: 10,
-                marginLeft: 0
-            }}
-            label={props.label}
-            inputStyle={{...styles.input, ...{color: colors.grey}}} 
-            containerStyle={{...styles.field}}
-            selectionColor={colors.text} 
-            secureTextEntry={props.secure}
-            ref={props.ref}
-            onChangeText={text => props.set(text)}
-            autoCompleteType={props.type}
-            autoCapitalize={props.capitalize? 'words' : 'none'}
-        />
-    )
-}
+import Field from './Field';
 
 export default function RegisterScreen({navigation}){
     const {colors} = useTheme();
@@ -64,6 +43,7 @@ export default function RegisterScreen({navigation}){
         <ScrollView contentContainerStyle={{...styles.container, backgroundColor: colors.lighterbackground}}>
             <View style={styles.block}>
                 <Text h4 style={{...styles.title, color: colors.title}}>Crear una nueva cuenta</Text>
+                <ActivityIndicator color={colors.text} animating={loading}/>
             </View>
             <View style={{...styles.block, ...{backgroundColor: colors.background}}}>
                 <Field label='Nombre y Apellido' icon='account-box' set={setFullname} type={'name'} capitalize />
@@ -75,13 +55,9 @@ export default function RegisterScreen({navigation}){
                 <Button
                     title='Registrar'
                     buttonStyle={{...styles.button, backgroundColor:colors.primary}}
-                    icon={
-                      loading?
-                          <ActivityIndicator color={colors.text}/>
-                      :
-                          {name:'check-circle', color: colors.text}
-                    }
+                    icon={{name:'check-circle', color: colors.text}}
                     onPress={tryRegisterUser}
+                    disabled={loading}
                 />
             </View>
         </ScrollView>

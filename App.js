@@ -12,6 +12,7 @@ import { AppLoading } from 'expo';
 import LoginScreen from './login/LoginScreen';
 import { AuthContext, AuthContextProvider } from './login/AuthContext';
 import RegisterScreen from './login/RegisterScreen';
+import RecoverPasswordScreen from './login/RecoverPasswordScreen';
 
 const Stack = createStackNavigator();
 
@@ -66,7 +67,8 @@ function LoginScreens(){
       headerStyle: {backgroundColor: Theme.colors.primary},
     }}>
       <Stack.Screen name="Ingreso" component={LoginScreen} />
-      <Stack.Screen name="Registro" component={RegisterScreen} /> 
+      <Stack.Screen name="Registro" component={RegisterScreen} />
+      <Stack.Screen name="Restablecer contraseña" component={RecoverPasswordScreen} />
     </Stack.Navigator>
   )
 }

@@ -82,7 +82,10 @@ export default function LoginScreen({navigation}){
                 <SocialIcon button type='facebook' title='Ingresar con Facebook' onPress={tryFacebookLogin}/>
                 <SocialIcon button type='google' title='Ingresar con Google' onPress={tryGoogleLogin}/>
                 <TouchableOpacity onPress={() => {navigation.navigate("Registro")}}>
-                  <Text style={{...styles.register, ...{color: colors.grey}}}>¿No tienes una cuenta? Regístrate aquí</Text>
+                    <Text style={{...styles.register, ...{color: colors.grey}}}>¿No tienes una cuenta? Regístrate aquí</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => {navigation.navigate("Restablecer contraseña")}}>
+                    <Text style={{...styles.register, ...{color: colors.grey}}}>¿Olvidaste tu contraseña?</Text>
                 </TouchableOpacity>
             </View>
         </View>
