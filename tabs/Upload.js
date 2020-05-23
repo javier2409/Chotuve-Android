@@ -1,11 +1,13 @@
 import { useTheme } from '@react-navigation/native';
-import React, {useContext, useState} from 'react';
+import React, {useContext, useRef, useState} from 'react';
 import {StyleSheet, Text, View, TouchableOpacity, ScrollView} from 'react-native';
 import { Button, Divider, Icon, Input } from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
+import * as Thumbnails from 'expo-video-thumbnails';
 import { Video } from 'expo-av';
 import Field from "../login/Field";
 import {AuthContext} from "../login/AuthContext";
+import * as firebase from "firebase";
 
 export default function Upload() {
     const {colors} = useTheme();
@@ -14,6 +16,11 @@ export default function Upload() {
     const [desc, setDesc] = useState('');
     const [uploading, setUploading] = useState(false);
     const [user, server] = useContext(AuthContext);
+    const [progress, setProgress] = useState(0);
+    const video_ref = useRef({});
+    const thumb_ref = useRef({});
+    const uploadTask_video = useRef({});
+    const uploadTask_thumb = useRef({});
 
     async function pickImage(){
         try {
@@ -26,14 +33,50 @@ export default function Upload() {
             if (!result.cancelled) {
                 setFile(result);
             }
-            console.log(result);
         } catch (E) {
             console.log(E);
         }
     };
 
     async function uploadVideo(){
+        setUploading(true);
+        try {
+            const {uri} = await Thumbnails.getThumbnailAsync(file.uri);
 
+            /* Upload Thumbnail */
+            const response_thumb = await fetch(uri);
+            const blob_thumb = await response_thumb.blob();
+            thumb_ref.current = firebase.storage().ref().child(`${user.email}/${title}_thumbnail`);
+            thumb_ref.current.put(blob_thumb);
+
+            /* Upload Video */
+            const response_video = await fetch(file.uri);
+            const blob = await response_video.blob();
+            video_ref.current = firebase.storage().ref().child(`${user.email}/${title}`);
+            const uploadTask_video = video_ref.current.put(blob);
+            uploadTask_video.on(firebase.storage.TaskEvent.STATE_CHANGED, next, error, complete);
+
+        } catch (error) {
+            alert(error);
+            setUploading(false);
+        }
+    }
+
+    function next(snapshot){
+        setProgress(snapshot.bytesTransferred/snapshot.totalBytes * 100);
+    }
+    function error(error){
+        alert("Hubo un error, intenta nuevamente");
+        setUploading(false);
+    }
+    async function complete(){
+        await server.publishVideo({
+            title: title,
+            description: desc,
+            thumbnail_uri: await thumb_ref.current.getDownloadURL(),
+            video_uri: await video_ref.current.getDownloadURL()
+        });
+        setUploading(false);
     }
 
     return (
@@ -51,14 +94,13 @@ export default function Upload() {
                     resizeMode={Video.RESIZE_MODE_CONTAIN}
                     source={{uri: file.uri}}
                     shouldPlay
-                    isMuted
                     useNativeControls
                 />
                 }
             </View>
             <View style={{...styles.block, ...{backgroundColor: colors.lighterbackground}}}>
-                <Field label={'Título'} />
-                <Field label={'Descripción'} />
+                <Field label={'Título'} set={setTitle} />
+                <Field label={'Descripción'} set={setDesc} multiline/>
             </View>
             <View style={styles.buttonview}>
                 <Button
@@ -68,6 +110,9 @@ export default function Upload() {
                     disabled={uploading}
                     onPress={uploadVideo}
                 />
+                {uploading && <Text style={{...styles.uploadtext, color: colors.text}}>
+                    {`Progreso de la carga: ${Math.trunc(progress)}%`}
+                </Text>}
             </View>
         </ScrollView>
     );
@@ -105,8 +150,9 @@ const styles = StyleSheet.create({
         fontSize: 20
     },
     uploadtext: {
-        fontSize: 22,
-        fontWeight: 'bold'
+        fontSize: 18,
+        fontWeight: 'bold',
+        alignSelf: 'center'
     },
     videoview: {
         alignItems: 'center'
