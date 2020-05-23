@@ -15,7 +15,7 @@ export default function ChatScreen({route, navigation}){
 
     function sendMessage(){
         const newMessage = {
-            id: hash(name+myMessage+messages.length),
+            id: hash(email+myMessage+messages.length),
             email: userData.email,
             msg: myMessage
         }
