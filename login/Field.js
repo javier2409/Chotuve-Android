@@ -15,12 +15,12 @@ export default function Field(props){
             label={props.label}
             inputStyle={{...styles.input, ...{color: colors.grey}}}
             containerStyle={{...styles.field}}
-            selectionColor={colors.text}
             secureTextEntry={props.secure}
             ref={props.ref}
             onChangeText={text => props.set(text)}
             autoCompleteType={props.type}
             autoCapitalize={props.capitalize? 'words' : 'none'}
+            multiline={props.multiline}
         />
     )
 }
