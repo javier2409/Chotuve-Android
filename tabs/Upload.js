@@ -1,13 +1,14 @@
 import { useTheme } from '@react-navigation/native';
 import React, {useContext, useRef, useState} from 'react';
-import {StyleSheet, Text, View, TouchableOpacity, ScrollView} from 'react-native';
-import { Button, Divider, Icon, Input } from 'react-native-elements';
+import {StyleSheet, View, ScrollView} from 'react-native';
+import { Button, Icon, Text } from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
 import * as Thumbnails from 'expo-video-thumbnails';
 import { Video } from 'expo-av';
 import Field from "../login/Field";
 import {AuthContext} from "../login/AuthContext";
 import * as firebase from "firebase";
+import ProgressCircle from 'react-native-progress-circle';
 
 export default function Upload() {
     const {colors} = useTheme();
@@ -21,6 +22,18 @@ export default function Upload() {
     const thumb_ref = useRef({});
     const uploadTask_video = useRef({});
     const uploadTask_thumb = useRef({});
+
+    function checkVideo(){
+        return (file && (title.length > 0) && (desc.length > 0))
+    }
+
+    function reset(){
+        setFile(null);
+        setTitle('');
+        setDesc('');
+        setProgress(0);
+        setUploading(false);
+    }
 
     async function pickImage(){
         try {
@@ -39,6 +52,9 @@ export default function Upload() {
     };
 
     async function uploadVideo(){
+        if (!checkVideo()){
+            return
+        }
         setUploading(true);
         try {
             const {uri} = await Thumbnails.getThumbnailAsync(file.uri);
@@ -58,7 +74,7 @@ export default function Upload() {
 
         } catch (error) {
             alert(error);
-            setUploading(false);
+            reset();
         }
     }
 
@@ -66,8 +82,8 @@ export default function Upload() {
         setProgress(snapshot.bytesTransferred/snapshot.totalBytes * 100);
     }
     function error(error){
-        alert("Hubo un error, intenta nuevamente");
-        setUploading(false);
+        alert("Hubo un error al subir el video, intenta nuevamente");
+        reset();
     }
     async function complete(){
         await server.publishVideo({
@@ -76,45 +92,58 @@ export default function Upload() {
             thumbnail_uri: await thumb_ref.current.getDownloadURL(),
             video_uri: await video_ref.current.getDownloadURL()
         });
-        setUploading(false);
+        reset();
     }
 
-    return (
-        <ScrollView contentContainerStyle={{...styles.container, ...{backgroundColor: colors.background}}}>
-            <View style={styles.block}>
-                <Icon name='attach-file' containerStyle={styles.icon} color={colors.primary} size={40} onPress={pickImage} reverse />
-                <Text style={{...styles.filename, ...{color: colors.text}}}>
-                    {file? file.uri : 'Ningún archivo seleccionado'}
-                </Text>
+    return (uploading
+            ?
+            <View style={{flex:1, alignItems:'center', justifyContent: 'center'}}>
+                <Text h4 style={{color: colors.text}}>{'Tu video se está subiendo\n'}</Text>
+                <ProgressCircle
+                    percent={progress}
+                    radius={60}
+                    borderWidth={5}
+                    color={colors.text}
+                    bgColor={colors.background}
+                >
+                    <Text style={{...styles.percentText, color:colors.text}}>
+                        {`${Math.trunc(progress)}%`}
+                    </Text>
+                </ProgressCircle>
             </View>
-            <View style={{...styles.videoview}} >
-                {file &&
-                <Video
-                    style={{width: '90%', aspectRatio: file.width/file.height}}
-                    resizeMode={Video.RESIZE_MODE_CONTAIN}
-                    source={{uri: file.uri}}
-                    shouldPlay
-                    useNativeControls
-                />
-                }
-            </View>
-            <View style={{...styles.block, ...{backgroundColor: colors.lighterbackground}}}>
-                <Field label={'Título'} set={setTitle} />
-                <Field label={'Descripción'} set={setDesc} multiline/>
-            </View>
-            <View style={styles.buttonview}>
-                <Button
-                    title='Publicar video'
-                    buttonStyle={{...styles.button, backgroundColor: colors.primary}}
-                    icon={{name:'file-upload', color: colors.text}}
-                    disabled={uploading}
-                    onPress={uploadVideo}
-                />
-                {uploading && <Text style={{...styles.uploadtext, color: colors.text}}>
-                    {`Progreso de la carga: ${Math.trunc(progress)}%`}
-                </Text>}
-            </View>
-        </ScrollView>
+            :
+                <ScrollView contentContainerStyle={{...styles.container, ...{backgroundColor: colors.background}}}>
+                    <View style={styles.block}>
+                        <Icon name='attach-file' containerStyle={styles.icon} color={colors.primary} size={40} onPress={pickImage} reverse />
+                        <Text style={{...styles.filename, ...{color: colors.text}}}>
+                            {file? file.uri : 'Ningún archivo seleccionado'}
+                        </Text>
+                    </View>
+                    <View style={{...styles.videoview}} >
+                        {file &&
+                        <Video
+                            style={{width: '90%', aspectRatio: file.width/file.height}}
+                            resizeMode={Video.RESIZE_MODE_CONTAIN}
+                            source={{uri: file.uri}}
+                            shouldPlay
+                            useNativeControls
+                        />
+                        }
+                    </View>
+                    <View style={{...styles.block, ...{backgroundColor: colors.lighterbackground}}}>
+                        <Field label={'Título'} set={setTitle} />
+                        <Field label={'Descripción'} set={setDesc} multiline/>
+                    </View>
+                    <View style={styles.buttonview}>
+                        <Button
+                            title='Publicar video'
+                            buttonStyle={{...styles.button, backgroundColor: colors.primary}}
+                            icon={{name:'file-upload', color: colors.text}}
+                            disabled={uploading || !checkVideo()}
+                            onPress={uploadVideo}
+                        />
+                    </View>
+                </ScrollView>
     );
 }
 
@@ -156,5 +185,8 @@ const styles = StyleSheet.create({
     },
     videoview: {
         alignItems: 'center'
+    },
+    percentText: {
+        fontSize: 18
     }
 });
