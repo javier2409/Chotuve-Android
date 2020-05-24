@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useTheme } from '@react-navigation/native';
-import {StyleSheet, View, TouchableOpacity, ActivityIndicator} from 'react-native';
-import { Button, Text, Divider, Icon, Input, Image, SocialIcon } from 'react-native-elements';
+import {StyleSheet, View, ActivityIndicator} from 'react-native';
+import { Button, Text } from 'react-native-elements';
 import { AuthContext } from './AuthContext';
 import {useContext, useState} from 'react';
 import { ScrollView } from 'react-native-gesture-handler';

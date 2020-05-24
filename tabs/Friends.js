@@ -1,7 +1,7 @@
-import { useNavigation, useTheme } from '@react-navigation/native';
+import { useTheme } from '@react-navigation/native';
 import React, {useContext, useEffect, useState} from 'react';
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { ListItem, Icon } from 'react-native-elements';
+import { Icon } from 'react-native-elements';
 import FriendItem from './../components/FriendItem';
 import {AuthContext} from "../login/AuthContext";
 
