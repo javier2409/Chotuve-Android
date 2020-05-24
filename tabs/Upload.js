@@ -20,8 +20,6 @@ export default function Upload() {
     const [progress, setProgress] = useState(0);
     const video_ref = useRef({});
     const thumb_ref = useRef({});
-    const uploadTask_video = useRef({});
-    const uploadTask_thumb = useRef({});
 
     function checkVideo(){
         return (file && (title.length > 0) && (desc.length > 0))

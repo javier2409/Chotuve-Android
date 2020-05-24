@@ -1,7 +1,7 @@
-import { useNavigation, useTheme } from '@react-navigation/native';
+import { useTheme } from '@react-navigation/native';
 import React from 'react';
-import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { ListItem, Icon } from 'react-native-elements';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ListItem } from 'react-native-elements';
 
 export default function FriendItem(props){
     const {colors} = useTheme();

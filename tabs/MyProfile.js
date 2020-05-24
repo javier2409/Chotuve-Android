@@ -7,16 +7,16 @@ export default function MyProfile({navigation}) {
 
     const [userData, server] = useContext(AuthContext);
 
-  return (
-      <UserProfile 
-        route={{
-          params: {
-            email: userData.email
-          }
-        }}
-        navigation={navigation}
-      />
-  );
+    return (
+        <UserProfile
+            route={{
+                params: {
+                    email: userData.email
+                }
+            }}
+            navigation={navigation}
+        />
+    );
 }
 
 const styles = StyleSheet.create({
