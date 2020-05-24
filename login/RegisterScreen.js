@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useTheme } from '@react-navigation/native';
-import {StyleSheet, View, TouchableOpacity, ActivityIndicator} from 'react-native';
-import { Button, Text, Divider, Icon, Input, Image, SocialIcon } from 'react-native-elements';
+import {StyleSheet, View, ActivityIndicator} from 'react-native';
+import { Button, Text } from 'react-native-elements';
 import { AuthContext } from './AuthContext';
 import {useContext, useState} from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -36,6 +36,15 @@ export default function RegisterScreen({navigation}){
                 alert(reason);
                 setLoading(false);
             }
+        )
+    }
+
+    if (loading) {
+        return (
+            <View style={{...styles.loadingview}}>
+                <Text style={{fontSize: 22, color: colors.text}}>{'Espera...\n'}</Text>
+                <ActivityIndicator size={60} color={colors.text} />
+            </View>
         )
     }
 
@@ -92,5 +101,10 @@ const styles = StyleSheet.create({
     },
     field: {
         margin: 8
+    },
+    loadingview: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center'
     }
 });  

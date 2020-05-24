@@ -78,6 +78,8 @@ export class ServerProxy{
                 const credential = firebase.auth.FacebookAuthProvider.credential(facebookLoginResult.token);
                 const loginResult = await firebase.auth().signInWithCredential(credential);
                 await this.manageCredential(loginResult);
+            } else {
+                return Promise.reject('No se ha podido iniciar sesión');
             }
         } catch(error){
             this.manageFailure(error);
@@ -97,6 +99,8 @@ export class ServerProxy{
                 const credential = firebase.auth.GoogleAuthProvider.credential(googleLoginResult.idToken);
                 const loginResult = await firebase.auth().signInWithCredential(credential);
                 await this.manageCredential(loginResult);
+            } else {
+                return Promise.reject('No se ha podido iniciar sesión');
             }
         } catch (error){
             this.manageFailure(error);
@@ -245,15 +249,7 @@ export class ServerProxy{
 
     //send a new video
     async publishVideo(video_data){
-        const {title, description, thumbnail_uri, video_url, timestamp} = video_data;
-        const new_video = {
-            title: title,
-            author: this.user.displayName,
-            description: description,
-            thumbnail_uri: thumbnail_uri,
-            video_url: video_url,
-        }
-        this.published_videos.push(new_video);
+        console.log(video_data);
     }
 
     //send a new comment

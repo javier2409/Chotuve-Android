@@ -1,97 +1,190 @@
 import { useTheme } from '@react-navigation/native';
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { Divider, Icon, Input } from 'react-native-elements';
+import React, {useContext, useRef, useState} from 'react';
+import {StyleSheet, View, ScrollView} from 'react-native';
+import { Button, Icon, Text } from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
-import { Button } from 'react-native';
+import * as Thumbnails from 'expo-video-thumbnails';
 import { Video } from 'expo-av';
+import Field from "../login/Field";
+import {AuthContext} from "../login/AuthContext";
+import * as firebase from "firebase";
+import ProgressCircle from 'react-native-progress-circle';
 
 export default function Upload() {
-  const {colors} = useTheme();
-  const [filename, setFilename] = useState("Ningún archivo seleccionado");
+    const {colors} = useTheme();
+    const [file, setFile] = useState(null);
+    const [title, setTitle] = useState('');
+    const [desc, setDesc] = useState('');
+    const [uploading, setUploading] = useState(false);
+    const [user, server] = useContext(AuthContext);
+    const [progress, setProgress] = useState(0);
+    const video_ref = useRef({});
+    const thumb_ref = useRef({});
 
-  let pickImage = async () => {
-    try {
-      let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Videos,
-        allowsEditing: true,
-        aspect: [16, 9],
-        quality: 1,
-      });
-      if (!result.cancelled) {
-        setFilename(result.uri);
-      }
-      console.log(result);
-    } catch (E) {
-      console.log(E);
+    function checkVideo(){
+        return (file && (title.length > 0) && (desc.length > 0))
     }
-  };
-  return (
-      <View style={{...styles.container, ...{backgroundColor: colors.background}}}>
-        <View style={styles.block}>
-          <Icon name='attach-file' containerStyle={styles.icon} color={colors.primary} size={40} onPress={pickImage} reverse />
-          <Text style={{...styles.filename, ...{color: colors.text}}}>{filename}</Text>
-        </View>
-        <View style={{...styles.block, ...{backgroundColor: colors.lighterbackground}}}>
-          <Text style={{...styles.title, ...{color: colors.text}}}>Título</Text>
-          <Input inputStyle={{...styles.titleinput, ...{color: colors.text}}} selectionColor={colors.text}/>
-        </View>
-        <View style={{...styles.block, ...{backgroundColor: colors.lighterbackground}}}>
-          <Text style={{...styles.description, ...{color: colors.text}}}>Descripción</Text>
-          <Input inputStyle={{...styles.descinput, ...{color: colors.text}}} multiline/>
-        </View>
-        <View style={styles.buttonview}>
-          <TouchableOpacity style={{...styles.publishbtn, ...{backgroundColor: colors.primary}}}>
-            <Icon size={30} name='publish' color={colors.text}/>
-            <Text style={{...styles.uploadtext, ...{color: colors.text}}}>Publicar video</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-  );
+
+    function reset(){
+        setFile(null);
+        setTitle('');
+        setDesc('');
+        setProgress(0);
+        setUploading(false);
+    }
+
+    async function pickImage(){
+        try {
+            let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+                allowsEditing: true,
+                aspect: [16, 9],
+                quality: 1,
+            });
+            if (!result.cancelled) {
+                setFile(result);
+            }
+        } catch (E) {
+            console.log(E);
+        }
+    };
+
+    async function uploadVideo(){
+        if (!checkVideo()){
+            return
+        }
+        setUploading(true);
+        try {
+            const {uri} = await Thumbnails.getThumbnailAsync(file.uri);
+
+            /* Upload Thumbnail */
+            const response_thumb = await fetch(uri);
+            const blob_thumb = await response_thumb.blob();
+            thumb_ref.current = firebase.storage().ref().child(`${user.email}/${title}_thumbnail`);
+            thumb_ref.current.put(blob_thumb);
+
+            /* Upload Video */
+            const response_video = await fetch(file.uri);
+            const blob = await response_video.blob();
+            video_ref.current = firebase.storage().ref().child(`${user.email}/${title}`);
+            const uploadTask_video = video_ref.current.put(blob);
+            uploadTask_video.on(firebase.storage.TaskEvent.STATE_CHANGED, next, error, complete);
+
+        } catch (error) {
+            alert(error);
+            reset();
+        }
+    }
+
+    function next(snapshot){
+        setProgress(snapshot.bytesTransferred/snapshot.totalBytes * 100);
+    }
+    function error(error){
+        alert("Hubo un error al subir el video, intenta nuevamente");
+        reset();
+    }
+    async function complete(){
+        await server.publishVideo({
+            title: title,
+            description: desc,
+            thumbnail_uri: await thumb_ref.current.getDownloadURL(),
+            video_uri: await video_ref.current.getDownloadURL()
+        });
+        reset();
+    }
+
+    return (uploading
+            ?
+            <View style={{flex:1, alignItems:'center', justifyContent: 'center'}}>
+                <Text h4 style={{color: colors.text}}>{'Tu video se está subiendo\n'}</Text>
+                <ProgressCircle
+                    percent={progress}
+                    radius={60}
+                    borderWidth={5}
+                    color={colors.text}
+                    bgColor={colors.background}
+                >
+                    <Text style={{...styles.percentText, color:colors.text}}>
+                        {`${Math.trunc(progress)}%`}
+                    </Text>
+                </ProgressCircle>
+            </View>
+            :
+                <ScrollView contentContainerStyle={{...styles.container, ...{backgroundColor: colors.background}}}>
+                    <View style={styles.block}>
+                        <Icon name='attach-file' containerStyle={styles.icon} color={colors.primary} size={40} onPress={pickImage} reverse />
+                        <Text style={{...styles.filename, ...{color: colors.text}}}>
+                            {file? file.uri : 'Ningún archivo seleccionado'}
+                        </Text>
+                    </View>
+                    <View style={{...styles.videoview}} >
+                        {file &&
+                        <Video
+                            style={{width: '90%', aspectRatio: file.width/file.height}}
+                            resizeMode={Video.RESIZE_MODE_CONTAIN}
+                            source={{uri: file.uri}}
+                            shouldPlay
+                            useNativeControls
+                        />
+                        }
+                    </View>
+                    <View style={{...styles.block, ...{backgroundColor: colors.lighterbackground}}}>
+                        <Field label={'Título'} set={setTitle} />
+                        <Field label={'Descripción'} set={setDesc} multiline/>
+                    </View>
+                    <View style={styles.buttonview}>
+                        <Button
+                            title='Publicar video'
+                            buttonStyle={{...styles.button, backgroundColor: colors.primary}}
+                            icon={{name:'file-upload', color: colors.text}}
+                            disabled={uploading || !checkVideo()}
+                            onPress={uploadVideo}
+                        />
+                    </View>
+                </ScrollView>
+    );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#242424',
-    alignItems: 'stretch',
-    justifyContent: 'center',
-    padding: 10
-  },
-  block: {
-    margin: 10,
-    padding: 20,
-  },
-  buttonview: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  button: {
-    backgroundColor: '#ffffff'
-  },
-  filename: {
-    alignSelf: 'center'
-  },
-  title: {
-    fontWeight: 'bold',
-    fontSize: 20
-  },
-  description: {
-    fontWeight: 'bold',
-    fontSize: 20
-  },
-  icon: {
-    alignSelf: 'center'
-  },
-  uploadtext: {
-    fontSize: 22,
-    fontWeight: 'bold'
-  },
-  publishbtn: {
-    margin: 30,
-    padding: 15,
-    borderRadius: 20,
-    flexDirection: 'row',
-    alignItems: 'center'
-  }
+    container: {
+        backgroundColor: '#242424',
+        alignItems: 'stretch',
+        justifyContent: 'center',
+        padding: 10
+    },
+    block: {
+        margin: 10,
+        padding: 20,
+        alignItems: 'center'
+    },
+    buttonview: {
+        alignItems: 'stretch',
+        justifyContent: 'center',
+    },
+    button: {
+        borderRadius: 20,
+        margin: 10
+    },
+    filename: {
+        alignSelf: 'center'
+    },
+    title: {
+        fontWeight: 'bold',
+        fontSize: 20
+    },
+    description: {
+        fontWeight: 'bold',
+        fontSize: 20
+    },
+    uploadtext: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        alignSelf: 'center'
+    },
+    videoview: {
+        alignItems: 'center'
+    },
+    percentText: {
+        fontSize: 18
+    }
 });
