@@ -49,6 +49,11 @@ export class ServerProxy{
         alert(reason);
     }
 
+    //log out from account
+    logOut(){
+        this.updateUserData(null);
+    }
+
     //get auth token from username and password
     async tryLogin(user, pass){
         if (user && pass) {
