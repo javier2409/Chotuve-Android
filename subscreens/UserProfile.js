@@ -43,6 +43,14 @@ export default function UserProfile({route, navigation}){
         });
     }
 
+    function goToPreferences(){
+
+    }
+
+    function logOut(){
+        server.logOut();
+    }
+
     return (
         <ScrollView style={styles.general}>
             <Overlay isVisible={overlayVisible} onBackdropPress={toggleOverlay} overlayStyle={{height: 'auto'}}>
@@ -51,7 +59,8 @@ export default function UserProfile({route, navigation}){
                         (email === localUserData.email)
                             ?
                             <View>
-                                <ListItem title='Preferencias' leftIcon={{name:'settings'}} chevron />
+                                <ListItem title='Preferencias' leftIcon={{name:'settings'}} chevron onPress={goToPreferences} />
+                                <ListItem title='Salir' leftIcon={{name:'exit-to-app'}} onPress={logOut}/>
                             </View>
                             :
                             <View>
