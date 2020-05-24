@@ -4,6 +4,7 @@ import { useTheme } from '@react-navigation/native';
 import { Video } from 'expo-av';
 import {Divider, Icon, Input, Text} from 'react-native-elements';
 import {AuthContext} from "../login/AuthContext";
+import * as Orientation from "expo-screen-orientation";
 
 export default function VideoScreen({route, navigation}){
     const {colors} = useTheme();
@@ -38,6 +39,17 @@ export default function VideoScreen({route, navigation}){
         })
     }, [navigation])
 
+	async function setOrientation(event){
+		switch (event.fullscreenUpdate){
+			case Video.FULLSCREEN_UPDATE_PLAYER_DID_PRESENT:
+				await Orientation.lockAsync(Orientation.OrientationLock.ALL);
+				break;
+			case Video.FULLSCREEN_UPDATE_PLAYER_DID_DISMISS:
+				await Orientation.lockAsync(Orientation.OrientationLock.PORTRAIT);
+				break;
+		}
+	}
+
     return (
         <View style={{...styles.container, ...{backgroundColor: colors.background}}}>
 			<Video
@@ -47,6 +59,7 @@ export default function VideoScreen({route, navigation}){
 				shouldPlay
 				resizeMode={Video.RESIZE_MODE_CONTAIN}
 				ref={videoRef}
+				onFullscreenUpdate={setOrientation}
 			/>
 			<Divider/>
 			<View style={{...styles.videoInfo,...{backgroundColor: colors.lighterbackground}}}>
