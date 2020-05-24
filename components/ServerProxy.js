@@ -78,6 +78,8 @@ export class ServerProxy{
                 const credential = firebase.auth.FacebookAuthProvider.credential(facebookLoginResult.token);
                 const loginResult = await firebase.auth().signInWithCredential(credential);
                 await this.manageCredential(loginResult);
+            } else {
+                return Promise.reject('No se ha podido iniciar sesión');
             }
         } catch(error){
             this.manageFailure(error);
@@ -97,6 +99,8 @@ export class ServerProxy{
                 const credential = firebase.auth.GoogleAuthProvider.credential(googleLoginResult.idToken);
                 const loginResult = await firebase.auth().signInWithCredential(credential);
                 await this.manageCredential(loginResult);
+            } else {
+                return Promise.reject('No se ha podido iniciar sesión');
             }
         } catch (error){
             this.manageFailure(error);
