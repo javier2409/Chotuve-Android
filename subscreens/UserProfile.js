@@ -28,6 +28,9 @@ export default function UserProfile({route, navigation}){
     function fetchUserData(){
         server.getUserInfo(email).then(result => {
             setUserData(result);
+            navigation.setOptions({
+                headerTitle: 'Perfil de ' + result.full_name
+            });
         }, () => {
             navigation.goBack();
         })
