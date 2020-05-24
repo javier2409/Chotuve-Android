@@ -12,6 +12,7 @@ export default function VideoScreen({route, navigation}){
 	const [comments, setComments] = useState([]);
 	const [myComment, setMyComment] = useState('');
 	const [sending, setSending] = useState(false);
+	const videoRef = useRef();
 
 	function sendComment(){
 		if (myComment.length < 1){
@@ -45,6 +46,7 @@ export default function VideoScreen({route, navigation}){
 				useNativeControls
 				shouldPlay
 				resizeMode={Video.RESIZE_MODE_CONTAIN}
+				ref={videoRef}
 			/>
 			<Divider/>
 			<View style={{...styles.videoInfo,...{backgroundColor: colors.lighterbackground}}}>
