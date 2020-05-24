@@ -39,6 +39,15 @@ export default function LoginScreen({navigation}){
         });
     }
 
+    if (loading) {
+        return (
+            <View style={{...styles.loadingview}}>
+                <Text style={{fontSize: 22, color: colors.text}}>{'Iniciando sesión...\n'}</Text>
+                <ActivityIndicator size={60} color={colors.text} />
+            </View>
+        )
+    }
+
     return (
         <View style={{...styles.container, ...{backgroundColor: colors.lighterbackground}}}>
             <View style={styles.block}>
@@ -143,5 +152,10 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         margin: 10,
         fontWeight: 'bold'
+    },
+    loadingview: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center'
     }
 });  

@@ -39,6 +39,15 @@ export default function RegisterScreen({navigation}){
         )
     }
 
+    if (loading) {
+        return (
+            <View style={{...styles.loadingview}}>
+                <Text style={{fontSize: 22, color: colors.text}}>{'Espera...\n'}</Text>
+                <ActivityIndicator size={60} color={colors.text} />
+            </View>
+        )
+    }
+
     return(
         <ScrollView contentContainerStyle={{...styles.container, backgroundColor: colors.lighterbackground}}>
             <View style={styles.block}>
@@ -92,5 +101,10 @@ const styles = StyleSheet.create({
     },
     field: {
         margin: 8
+    },
+    loadingview: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center'
     }
 });  
