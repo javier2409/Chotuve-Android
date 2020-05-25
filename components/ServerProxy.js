@@ -310,4 +310,8 @@ export class ServerProxy{
     async sendCodeAndNewPassword(code, newPassword){
 
     }
+
+    async changeProfilePicture(){
+
+    }
 }

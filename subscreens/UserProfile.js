@@ -1,9 +1,11 @@
-import React, {useCallback, useContext, useState} from 'react';
-import { View, StyleSheet, FlatList, Image, ScrollView, TouchableOpacity } from "react-native";
+import React, {useCallback, useContext, useRef, useState} from 'react';
+import { View, StyleSheet, FlatList, Image, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
 import {Avatar, Divider, ListItem, colors, Text, Icon, Overlay} from 'react-native-elements';
 import { useTheme } from '@react-navigation/native';
 import { useFocusEffect } from "@react-navigation/native";
 import {AuthContext} from "../login/AuthContext";
+import {launchImageLibraryAsync, MediaTypeOptions} from "expo-image-picker";
+import * as firebase from "firebase";
 
 export default function UserProfile({route, navigation}){
 
@@ -12,6 +14,8 @@ export default function UserProfile({route, navigation}){
     const [userData, setUserData] = useState({});
     const [localUserData, server] = useContext(AuthContext);
     const [overlayVisible, setOverlayVisible] = useState(false);
+    const profilePicture = useRef({});
+    const [uploading, setUploading] = useState(false);
 
     navigation.setOptions({
         headerTitle: 'Perfil de ' + email
@@ -54,6 +58,38 @@ export default function UserProfile({route, navigation}){
         server.logOut();
     }
 
+    async function changeProfilePicture(){
+        try {
+            const {cancelled, uri} = await launchImageLibraryAsync({
+                mediaTypes: MediaTypeOptions.Images,
+                allowsEditing: true,
+                quality: 1
+            })
+            if (!cancelled) {
+                setUploading(true);
+                const image = await fetch(uri);
+                const blob = await image.blob();
+                profilePicture.current = firebase.storage().ref().child(`${localUserData.email}/profile/profile_picture.jpeg`);
+                const uploadTask = profilePicture.current.put(blob);
+                uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, null, null, complete);
+            }
+        } catch (error){
+            alert("Hubo un error");
+            setUploading(false);
+        }
+    }
+
+    async function complete(){
+        try {
+            const uri = await profilePicture.current.getDownloadURL();
+            await server.changeProfilePicture(uri);
+            setUserData(Object.assign(userData, {avatar_uri: uri}));
+        } catch(error){
+            alert('Hubo un error al cambiar la foto');
+        }
+        setUploading(false);
+    }
+
     return (
         <ScrollView style={styles.general}>
             <Overlay isVisible={overlayVisible} onBackdropPress={toggleOverlay} overlayStyle={{height: 'auto'}}>
@@ -85,7 +121,19 @@ export default function UserProfile({route, navigation}){
                     containerStyle={{alignSelf: 'flex-end'}}
                     onPress={toggleOverlay}
                 />
-                <Avatar rounded size={150} source={{uri: userData.avatar_uri}}/>
+                {uploading? <ActivityIndicator/> :
+                    <Avatar
+                        rounded
+                        size={150}
+                        source={{uri: userData.avatar_uri}}
+                        onPress={
+                            (email === localUserData.email)?
+                                changeProfilePicture
+                                :
+                                null
+                        }
+                    />
+                }
             </View>
             <Divider/>
             <View style={styles.nameview}>
