@@ -33,7 +33,8 @@
     "react-native-screens": "^2.2.0",
     "react-native-vector-icons": "^6.6.0",
     "react-native-web": "~0.11.7",
-    "expo-screen-orientation": "~1.0.0"
+    "expo-screen-orientation": "~1.0.0",
+    "expo-constants": "~9.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.8.6",

@@ -1,16 +1,34 @@
 ---
 language: node_js
-if: branch = master
-services:
-    - docker
-before_install:
-    - docker build --tag expo_image .
-    - docker run -itd -v $(pwd):/usr/src/app --env EXPO_CLI_PASSWORD --name expo_container expo_image bash
-install:
-    - docker exec expo_container npm install
-before_script:
-    - docker exec expo_container expo login -u $EXPO_CLI_USERNAME -p $EXPO_CLI_PASSWORD
-script:
-    - docker exec expo_container expo publish --non-interactive --max-workers 1
-after_script:
-    - docker stop expo_container
+stages:
+    - name: deploy
+    if: branch = master
+    services:
+        - docker
+    before_install:
+        - docker build --tag expo_image .
+        - docker run -itd -v $(pwd):/usr/src/app --env EXPO_CLI_PASSWORD --name expo_container expo_image bash
+    install:
+        - docker exec expo_container npm install
+    before_script:
+        - docker exec expo_container expo login -u $EXPO_CLI_USERNAME -p $EXPO_CLI_PASSWORD
+    script:
+        - docker exec expo_container expo publish --non-interactive --max-workers 1 --release-channel prod
+    after_script:
+        - docker stop expo_container
+
+    - name: staging
+    if: branch = development
+    services:
+        - docker
+    before_install:
+        - docker build --tag expo_image .
+        - docker run -itd -v $(pwd):/usr/src/app --env EXPO_CLI_PASSWORD --name expo_container expo_image bash
+    install:
+        - docker exec expo_container npm install
+    before_script:
+        - docker exec expo_container expo login -u $EXPO_CLI_USERNAME -p $EXPO_CLI_PASSWORD
+    script:
+        - docker exec expo_container expo publish --non-interactive --max-workers 1 --release-channel staging
+    after_script:
+        - docker stop expo_container

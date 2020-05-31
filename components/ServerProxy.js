@@ -1,6 +1,7 @@
 import * as firebase from 'firebase';
 import * as facebook from 'expo-facebook';
 import * as google from 'expo-google-app-auth';
+import getEnv from "../environment";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDlBeowWP8UPWsvk9kXj9JDaN5_xsuNu4I",
@@ -13,6 +14,8 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
+
+const apiUrl = getEnv().apiUrl;
 
 export class ServerProxy{
 
