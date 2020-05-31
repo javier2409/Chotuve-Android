@@ -1,5 +1,5 @@
 ---
-language: minmal
+language: minimal
 branches:
     only:
         - master
