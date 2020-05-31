@@ -1,5 +1,5 @@
 ---
-language: node_js
+language: minmal
 branches:
     only:
         - master
@@ -8,19 +8,12 @@ services:
     - docker
 before_install:
     - docker build --tag expo_image .
-    - docker run -itd -v $(pwd):/usr/src/app --env EXPO_CLI_PASSWORD --env EXPO_CLI_USERNAME --name expo_container expo_image bash
+    - docker run -itd -v $(pwd):/usr/src/app --name expo_container expo_image bash
 install:
     - docker exec expo_container npm install
-script:
+before_script:
     - docker exec expo_container expo login -u $EXPO_CLI_USERNAME -p $EXPO_CLI_PASSWORD
-deploy:
-    - provider: script
-      script:
-          docker exec expo_container expo publish --non-interactive --max-workers 1 --release-channel prod
-      on:
-          branch: master
-    - provider: script
-      script:
-          docker exec expo_container expo publish --non-interactive --max-workers 1 --release-channel staging
-      on:
-          branch: development
+script:
+    - docker exec expo_container expo publish --non-interactive --max-workers 1 --release-channel $CHANNEL
+after_script:
+    - docker stop expo_container
