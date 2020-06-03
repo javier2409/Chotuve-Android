@@ -12,6 +12,7 @@ import LoginScreen from './login/LoginScreen';
 import { AuthContext, AuthContextProvider } from './login/AuthContext';
 import RegisterScreen from './login/RegisterScreen';
 import RecoverPasswordScreen from './login/RecoverPasswordScreen';
+import Preferences from "./subscreens/Preferences";
 
 const Stack = createStackNavigator();
 
@@ -41,6 +42,7 @@ function MainApp(){
             <Stack.Screen name="Chat" component={ChatScreen} />
             <Stack.Screen name="Friend Search" component={FriendSearch} />
             <Stack.Screen name="UserProfile" component={UserProfile} />
+            <Stack.Screen name="Preferencias" component={Preferences} />
         </Stack.Navigator>
     )
 }
