@@ -100,7 +100,7 @@ export default function Preferences(){
                 <Divider/>
             </View>
             <Button
-                title='Guardar'
+                title='Guardar cambios'
                 buttonStyle={{...styles.button, backgroundColor:colors.primary}}
                 icon={{name:'check-circle', color: colors.text}}
                 onPress={sendUserData}
