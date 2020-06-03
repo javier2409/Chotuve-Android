@@ -1,6 +1,6 @@
 import React, {useCallback, useContext, useState} from "react";
 import {View, StyleSheet, ScrollView} from "react-native";
-import {Divider, ListItem, Text} from "react-native-elements";
+import {Button, Divider, Input, ListItem, Overlay, Text} from "react-native-elements";
 import {useFocusEffect, useTheme} from "@react-navigation/native";
 import {AuthContext} from "../login/AuthContext";
 
@@ -19,19 +19,34 @@ function Setting(props){
     )
 }
 
+function SettingOverlay(props){
+    return (
+        <Overlay isVisible={props.visible} onBackdropPress={props.onBackdropPress} overlayStyle={{height: 'auto'}}>
+            <Input onChangeText={props.onChangeText}/>
+        </Overlay>
+    )
+}
+
 export default function Preferences(){
     const {colors} = useTheme();
     const [user, server] = useContext(AuthContext);
-    const [myInfo, setMyInfo] = useState({});
+    const [nameOverlayVisible, setNameOverlayVisible] = useState(false);
+    const [numberOverlayVisible, setNumberOverlayVisible] = useState(false);
+    const [addressOverlayVisible, setAddressOverlayVisible] = useState(false);
+    const [name, setName] = useState(null);
+    const [number, setNumber] = useState(null);
+    const [address, setAddress] = useState(null);
+    const [sending, setSending] = useState(false);
 
     function fetchUserData(){
         server.getMyInfo().then(
             info => {
-                setMyInfo(info);
+                setName(info.full_name);
+                setNumber(info.phone_number);
+                setAddress(info.address);
             },
             error => {
                 console.log(error);
-                setMyInfo({});
             }
         )
     }
@@ -42,22 +57,50 @@ export default function Preferences(){
         }, [])
     );
 
-    function changeName(new_name){
-        server.changeDisplayName(new_name).then()
+    async function sendUserData(){
+        setSending(true);
+        try{
+
+        } catch(error) {
+
+        }
+        setSending(false);
+    }
+
+    function toggleNameEdit(){
+        setNameOverlayVisible(!nameOverlayVisible);
+    }
+
+    function toggleNumberEdit(){
+        setNumberOverlayVisible(!numberOverlayVisible);
+    }
+
+    function toggleAddressEdit(){
+        setAddressOverlayVisible(!addressOverlayVisible);
     }
 
     return (
         <ScrollView>
             <Text style={{...styles.title, color: colors.text}}>Perfil</Text>
+            <SettingOverlay visible={nameOverlayVisible} onBackdropPress={toggleNameEdit} onChangeText={setName} />
+            <SettingOverlay visible={numberOverlayVisible} onBackdropPress={toggleNumberEdit} onChangeText={setNumber} />
+            <SettingOverlay visible={addressOverlayVisible} onBackdropPress={toggleAddressEdit} onChangeText={setAddress} />
             <View>
                 <Divider/>
-                <Setting title={"Nombre"} subtitle={myInfo.full_name}/>
+                <Setting title={"Nombre"} subtitle={name} onPress={toggleNameEdit}/>
                 <Divider/>
-                <Setting title={"Número Telefónico"} subtitle={myInfo.phone_number}/>
+                <Setting title={"Número Telefónico"} subtitle={number} onPress={toggleNumberEdit}/>
                 <Divider/>
-                <Setting title={"Dirección"} subtitle={myInfo.address}/>
+                <Setting title={"Dirección"} subtitle={address} onPress={toggleAddressEdit}/>
                 <Divider/>
             </View>
+            <Button
+                title='Guardar'
+                buttonStyle={{...styles.button, backgroundColor:colors.primary}}
+                icon={{name:'check-circle', color: colors.text}}
+                onPress={sendUserData}
+                disabled={sending}
+            />
         </ScrollView>
     )
 };
