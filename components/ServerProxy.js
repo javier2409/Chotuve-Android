@@ -320,15 +320,7 @@ export class ServerProxy{
 
     }
 
-    async changeDisplayName(new_name){
-
-    }
-
-    async changePhoneNumber(new_number){
-
-    }
-
-    async changeAddress(new_address){
-
+    async changeMyUserData(user_data){
+        
     }
 }
