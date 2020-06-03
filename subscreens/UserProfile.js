@@ -51,7 +51,8 @@ export default function UserProfile({route, navigation}){
     }
 
     function goToPreferences(){
-        navigation.navigate("Preferences");
+        toggleOverlay();
+        navigation.navigate("Preferencias");
     }
 
     function logOut(){
