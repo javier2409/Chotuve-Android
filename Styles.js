@@ -27,9 +27,9 @@ export function ThemeContextProvider(props){
         card: 'rgb(255, 255, 255)',
         text: 'rgb(0,0,0)',
         border: 'rgb(0,100,0)',
-        lighterbackground: 'rgb(212,212,212)',
+        lighterbackground: 'rgb(243,243,243)',
         highlight: 'rgb(200,255,200)',
-        grey: 'rgb(56,56,56)'
+        grey: 'rgb(61,61,61)'
     };
 
     const [colors, setColors] = useState(darkColors);
@@ -230,6 +230,10 @@ export function ThemeContextProvider(props){
         },
         friendItem: {
             margin: 3
+        },
+        settingItemStyle: {
+            marginVertical: 2,
+            backgroundColor: colors.lighterbackground
         }
     });
 

@@ -15,6 +15,7 @@ export default function Field(props){
                 marginLeft: 0
             }}
             label={props.label}
+            labelStyle={{color: colors.grey}}
             inputStyle={{color: colors.grey}}
             containerStyle={styles.videoComment}
             secureTextEntry={props.secure}
