@@ -110,18 +110,16 @@ export default function Preferences(){
     )
 };
 
-const styles = StyleSheet.create(
-    {
-        title: {
-            margin: 20,
-            fontSize: 20,
-            fontWeight: 'bold',
-            alignSelf: 'center'
-        },
-        button: {
-            alignSelf: 'stretch',
-            borderRadius: 20,
-            margin: 20
-        }
+const styles = StyleSheet.create({
+    title: {
+        margin: 20,
+        fontSize: 20,
+        fontWeight: 'bold',
+        alignSelf: 'center'
+    },
+    button: {
+        alignSelf: 'stretch',
+        borderRadius: 20,
+        margin: 20
     }
-)
+});
