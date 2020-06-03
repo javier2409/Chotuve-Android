@@ -7,6 +7,7 @@ export const ThemeContext = createContext({});
 export function ThemeContextProvider(props){
 
     const darkColors = {
+        themeName: 'Dark',
         title: 'rgb(255,255,255)',
         primary: 'rgb(71,196,71)',
         background: 'rgb(0,0,0)',
@@ -19,6 +20,7 @@ export function ThemeContextProvider(props){
     };
 
     const lightColors = {
+        themeName: 'Light',
         title: 'rgb(0,0,0)',
         primary: 'rgb(71,196,71)',
         background: 'rgb(255,255,255)',
@@ -47,7 +49,8 @@ export function ThemeContextProvider(props){
             padding: 10
         },
         flexContainer: {
-            flex: 1
+            flex: 1,
+            backgroundColor: colors.background
         },
         homeVideoItem: {
             marginVertical: 5,
@@ -75,7 +78,7 @@ export function ThemeContextProvider(props){
         },
         uploadForm: {
             margin: 10,
-            padding: 20,
+            padding: 10,
             alignItems: 'center',
             backgroundColor: colors.lighterbackground
         },
@@ -179,6 +182,7 @@ export function ThemeContextProvider(props){
         chatView: {
             justifyContent: 'flex-end',
             flex: 1,
+            backgroundColor: colors.background
         },
         chatInputView: {
             flex: 1,
@@ -223,6 +227,9 @@ export function ThemeContextProvider(props){
         },
         noMarginContainer: {
             margin: 0
+        },
+        friendItem: {
+            margin: 3
         }
     });
 

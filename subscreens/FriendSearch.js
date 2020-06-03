@@ -4,11 +4,13 @@ import { FlatList, StyleSheet, View } from 'react-native';
 import { SearchBar } from 'react-native-elements';
 import FriendItem from './../components/FriendItem';
 import {AuthContext} from "../login/AuthContext";
+import {ThemeContext} from "../Styles";
 
 export default function FriendSearch ({navigation}){
     const [search, setSearch] = useState('');
     const [searchResult, setSearchResult] = useState([]);
     const [userData, server] = useContext(AuthContext);
+    const {styles} = useContext(ThemeContext);
 
     navigation.setOptions({
         headerTitle: 'Añadir amigo'
@@ -22,7 +24,7 @@ export default function FriendSearch ({navigation}){
     }
 
     return (
-        <View>
+        <View style={styles.flexContainer}>
             <SearchBar placeholder='Buscar...' onChangeText={updateSearch} value={search} />
             <FlatList
                 data={searchResult}

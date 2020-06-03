@@ -65,7 +65,7 @@ export default function RegisterScreen({navigation}){
                 <Button
                     title='Registrar'
                     buttonStyle={styles.formButton}
-                    icon={{name:'check-circle', color: colors.text}}
+                    icon={{name:'check-circle', color: colors.highlight}}
                     onPress={tryRegisterUser}
                     disabled={loading}
                 />

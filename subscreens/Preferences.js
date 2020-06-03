@@ -6,7 +6,7 @@ import {AuthContext} from "../login/AuthContext";
 import {ThemeContext} from "../Styles";
 
 function Setting(props){
-    const {colors} = useTheme();
+    const {styles, colors} = useContext(ThemeContext);
     return(
         <ListItem
             containerStyle={{backgroundColor: colors.lighterbackground}}
@@ -29,8 +29,9 @@ function SettingOverlay(props){
 }
 
 export default function Preferences(){
-    const {styles, colors} = useContext(ThemeContext);
+    const {styles, colors, setLightMode, setDarkMode} = useContext(ThemeContext);
     const [user, server] = useContext(AuthContext);
+    const [themeOverlayVisible, setThemeOverlayVisible] = useState(false);
     const [nameOverlayVisible, setNameOverlayVisible] = useState(false);
     const [numberOverlayVisible, setNumberOverlayVisible] = useState(false);
     const [addressOverlayVisible, setAddressOverlayVisible] = useState(false);
@@ -85,30 +86,42 @@ export default function Preferences(){
         setAddressOverlayVisible(!addressOverlayVisible);
     }
 
+    function toggleThemeOverlay(){
+        setThemeOverlayVisible(!themeOverlayVisible);
+    }
+
     return (
-        <ScrollView>
-            <Text style={styles.preferencesTitleView}>Perfil</Text>
-            <SettingOverlay visible={nameOverlayVisible} onBackdropPress={toggleNameEdit} onChangeText={setName} value={name} />
-            <SettingOverlay visible={numberOverlayVisible} onBackdropPress={toggleNumberEdit} onChangeText={setNumber} value={number} />
-            <SettingOverlay visible={addressOverlayVisible} onBackdropPress={toggleAddressEdit} onChangeText={setAddress} value={address} />
-            <View>
-                <Divider/>
-                <Setting title={"Nombre"} subtitle={name} onPress={toggleNameEdit}/>
-                <Divider/>
-                <Setting title={"Número Telefónico"} subtitle={number} onPress={toggleNumberEdit}/>
-                <Divider/>
-                <Setting title={"Dirección"} subtitle={address} onPress={toggleAddressEdit}/>
-                <Divider/>
-            </View>
-            <View style={styles.formButtonView}>
-                <Button
-                    title='Guardar cambios'
-                    buttonStyle={styles.formButton}
-                    icon={{name:'check-circle', color: colors.text}}
-                    onPress={sendUserData}
-                    disabled={sending}
-                />
-            </View>
-        </ScrollView>
+        <View style={styles.flexContainer}>
+            <ScrollView>
+                <Text style={styles.preferencesTitleView}>Perfil</Text>
+                <SettingOverlay visible={nameOverlayVisible} onBackdropPress={toggleNameEdit} onChangeText={setName} value={name} />
+                <SettingOverlay visible={numberOverlayVisible} onBackdropPress={toggleNumberEdit} onChangeText={setNumber} value={number} />
+                <SettingOverlay visible={addressOverlayVisible} onBackdropPress={toggleAddressEdit} onChangeText={setAddress} value={address} />
+                <Overlay isVisible={themeOverlayVisible} onBackdropPress={toggleThemeOverlay} height={'auto'}>
+                    <ListItem title={'Light'} onPress={setLightMode}/>
+                    <ListItem title={'Dark'} onPress={setDarkMode} />
+                </Overlay>
+                <View>
+                    <Divider/>
+                    <Setting title={"Nombre"} subtitle={name} onPress={toggleNameEdit}/>
+                    <Divider/>
+                    <Setting title={"Número Telefónico"} subtitle={number} onPress={toggleNumberEdit}/>
+                    <Divider/>
+                    <Setting title={"Dirección"} subtitle={address} onPress={toggleAddressEdit}/>
+                    <Divider/>
+                </View>
+                <View style={styles.formButtonView}>
+                    <Button
+                        title='Guardar cambios'
+                        buttonStyle={styles.formButton}
+                        icon={{name:'check-circle', color: colors.highlight}}
+                        onPress={sendUserData}
+                        disabled={sending}
+                    />
+                </View>
+                <Text style={styles.preferencesTitleView}>Aplicación</Text>
+                <Setting title={'Tema'} subtitle={colors.themeName} onPress={toggleThemeOverlay}/>
+            </ScrollView>
+        </View>
     )
 };

@@ -111,6 +111,7 @@ export default function Upload() {
                 </ProgressCircle>
             </View>
             :
+            <View style={styles.flexContainer}>
                 <ScrollView contentContainerStyle={styles.container}>
                     <View style={styles.uploadBlock}>
                         <Icon name='attach-file' containerStyle={styles.icon} color={colors.primary} size={40} onPress={pickImage} reverse />
@@ -137,12 +138,13 @@ export default function Upload() {
                         <Button
                             title='Publicar video'
                             buttonStyle={styles.formButton}
-                            icon={{name:'file-upload', color: colors.text}}
+                            icon={{name:'file-upload', color: colors.highlight}}
                             disabled={uploading || !checkVideo()}
                             onPress={uploadVideo}
                         />
                     </View>
                 </ScrollView>
+            </View>
     );
 }
 

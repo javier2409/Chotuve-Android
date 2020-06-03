@@ -13,7 +13,7 @@ import { AuthContext, AuthContextProvider } from './login/AuthContext';
 import RegisterScreen from './login/RegisterScreen';
 import RecoverPasswordScreen from './login/RecoverPasswordScreen';
 import Preferences from "./subscreens/Preferences";
-import {ThemeContextProvider} from "./Styles";
+import {ThemeContext, ThemeContextProvider} from "./Styles";
 
 const Stack = createStackNavigator();
 
@@ -33,11 +33,17 @@ const Theme = {
 };
 
 function MainApp(){
+    const {colors} = useContext(ThemeContext);
     return (
-        <Stack.Navigator screenOptions={{
-            headerTintColor: Theme.colors.title,
-            headerStyle: {backgroundColor: Theme.colors.primary},
-        }}>
+        <Stack.Navigator
+            screenOptions={{
+                headerTintColor: Theme.colors.title,
+                headerStyle: {backgroundColor: Theme.colors.primary},
+            }}
+            style={{
+                backgroundColor: colors.background
+            }}
+        >
             <Stack.Screen name="Chotuve" component={Tabs} />
             <Stack.Screen name="Video" component={VideoScreen} />
             <Stack.Screen name="Chat" component={ChatScreen} />

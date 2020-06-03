@@ -71,7 +71,7 @@ export default function RecoverPasswordScreen({navigation}){
                         loading?
                             <ActivityIndicator color={colors.text}/>
                             :
-                            {name:'check-circle', color: colors.text}
+                            {name:'check-circle', color: colors.highlight}
                     }
                     onPress={requestReset}
                     disabled={loading}
@@ -86,7 +86,7 @@ export default function RecoverPasswordScreen({navigation}){
                 <Button
                     title='Restablecer contraseña'
                     buttonStyle={styles.formButton}
-                    icon={{name:'check-circle', color: colors.text}}
+                    icon={{name:'check-circle', color: colors.highlight}}
                     onPress={sendCodeAndPassword}
                     disabled={loading}
                 />
