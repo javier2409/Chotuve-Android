@@ -157,6 +157,8 @@ export class ServerProxy{
             avatar_uri: 'xd',
             full_name: 'Javier Ferreyra',
             friends: false,
+            address: 'Calle Falsa 123',
+            phone_number: '1112345678',
             videos: [
                 {
                     id: '1',
