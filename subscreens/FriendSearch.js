@@ -22,7 +22,7 @@ export default function FriendSearch ({navigation}){
     }
 
     return (
-        <View style={styles.container}>
+        <View>
             <SearchBar placeholder='Buscar...' onChangeText={updateSearch} value={search} />
             <FlatList
                 data={searchResult}
@@ -39,9 +39,3 @@ export default function FriendSearch ({navigation}){
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        margin: 0
-    },
-});

@@ -9,9 +9,10 @@ import Field from "../login/Field";
 import {AuthContext} from "../login/AuthContext";
 import * as firebase from "firebase";
 import ProgressCircle from 'react-native-progress-circle';
+import {ThemeContext} from "../Styles";
 
 export default function Upload() {
-    const {colors} = useTheme();
+    const {styles, colors} = useContext(ThemeContext);
     const [file, setFile] = useState(null);
     const [title, setTitle] = useState('');
     const [desc, setDesc] = useState('');
@@ -95,7 +96,7 @@ export default function Upload() {
 
     return (uploading
             ?
-            <View style={{flex:1, alignItems:'center', justifyContent: 'center'}}>
+            <View style={styles.uploadContainer}>
                 <Text h4 style={{color: colors.text}}>{'Tu video se está subiendo\n'}</Text>
                 <ProgressCircle
                     percent={progress}
@@ -104,20 +105,20 @@ export default function Upload() {
                     color={colors.text}
                     bgColor={colors.background}
                 >
-                    <Text style={{...styles.percentText, color:colors.text}}>
+                    <Text style={styles.percentText}>
                         {`${Math.trunc(progress)}%`}
                     </Text>
                 </ProgressCircle>
             </View>
             :
-                <ScrollView contentContainerStyle={{...styles.container, ...{backgroundColor: colors.background}}}>
-                    <View style={styles.block}>
+                <ScrollView contentContainerStyle={styles.container}>
+                    <View style={styles.uploadBlock}>
                         <Icon name='attach-file' containerStyle={styles.icon} color={colors.primary} size={40} onPress={pickImage} reverse />
                         <Text style={{...styles.filename, ...{color: colors.text}}}>
                             {file? file.uri : 'Ningún archivo seleccionado'}
                         </Text>
                     </View>
-                    <View style={{...styles.videoview}} >
+                    <View style={styles.uploadVideoPreview} >
                         {file &&
                         <Video
                             style={{width: '90%', aspectRatio: file.width/file.height}}
@@ -128,14 +129,14 @@ export default function Upload() {
                         />
                         }
                     </View>
-                    <View style={{...styles.block, ...{backgroundColor: colors.lighterbackground}}}>
+                    <View style={styles.uploadForm}>
                         <Field label={'Título'} set={setTitle} />
                         <Field label={'Descripción'} set={setDesc} multiline/>
                     </View>
-                    <View style={styles.buttonview}>
+                    <View style={styles.formButtonView}>
                         <Button
                             title='Publicar video'
-                            buttonStyle={{...styles.button, backgroundColor: colors.primary}}
+                            buttonStyle={styles.formButton}
                             icon={{name:'file-upload', color: colors.text}}
                             disabled={uploading || !checkVideo()}
                             onPress={uploadVideo}
@@ -145,7 +146,7 @@ export default function Upload() {
     );
 }
 
-const styles = StyleSheet.create({
+const sstyles = StyleSheet.create({
     container: {
         backgroundColor: '#242424',
         alignItems: 'stretch',
@@ -180,9 +181,6 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         alignSelf: 'center'
-    },
-    videoview: {
-        alignItems: 'center'
     },
     percentText: {
         fontSize: 18

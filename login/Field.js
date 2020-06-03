@@ -2,9 +2,11 @@ import {useTheme} from "@react-navigation/native";
 import {Input} from "react-native-elements";
 import * as React from "react";
 import {StyleSheet} from "react-native";
+import {useContext} from "react";
+import {ThemeContext} from "../Styles";
 
 export default function Field(props){
-    const {colors} = useTheme();
+    const {styles, colors} = useContext(ThemeContext);
     return(
         <Input
             leftIcon={{name:props.icon, color:colors.grey}}
@@ -13,8 +15,8 @@ export default function Field(props){
                 marginLeft: 0
             }}
             label={props.label}
-            inputStyle={{...styles.input, ...{color: colors.grey}}}
-            containerStyle={{...styles.field}}
+            inputStyle={{color: colors.grey}}
+            containerStyle={styles.videoComment}
             secureTextEntry={props.secure}
             ref={props.ref}
             onChangeText={text => props.set(text)}
@@ -24,34 +26,3 @@ export default function Field(props){
         />
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#242424',
-        alignItems: 'stretch',
-        justifyContent: 'center',
-        padding: 10
-    },
-    block: {
-        margin: 10,
-        padding: 20,
-        alignItems: 'center',
-        justifyContent: 'space-evenly',
-        borderRadius: 20
-    },
-    buttonview: {
-        alignItems: 'stretch',
-        justifyContent: 'center',
-        margin: 15
-    },
-    button: {
-        borderRadius: 20
-    },
-    title: {
-        fontWeight: 'bold',
-    },
-    field: {
-        margin: 8
-    }
-});

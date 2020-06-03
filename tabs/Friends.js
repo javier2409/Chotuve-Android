@@ -4,9 +4,10 @@ import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'react-native-elements';
 import FriendItem from './../components/FriendItem';
 import {AuthContext} from "../login/AuthContext";
+import {ThemeContext} from "../Styles";
 
 export default function Friends({navigation}) {
-    const {colors} = useTheme();
+    const {styles, colors} = useContext(ThemeContext);
     const [friends, setFriends] = useState([]);
     const [userData, server] = useContext(AuthContext);
 
@@ -19,7 +20,7 @@ export default function Friends({navigation}) {
     }, [navigation])
 
     return (
-        <View style={styles.view}>
+        <View style={styles.flexContainer}>
             <FlatList
                 data={friends}
                 renderItem={({item}) => {
@@ -52,12 +53,3 @@ export default function Friends({navigation}) {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        margin: 3
-    },
-    view: {
-        flex: 1
-    }
-});

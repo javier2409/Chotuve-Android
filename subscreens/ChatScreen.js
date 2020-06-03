@@ -4,9 +4,10 @@ import { FlatList, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Avatar, Icon, Input, Text } from 'react-native-elements';
 import {AuthContext} from "../login/AuthContext";
 import hash from "react-native-web/dist/vendor/hash";
+import {ThemeContext} from "../Styles";
 
 export default function ChatScreen({route, navigation}){
-    const {colors} = useTheme();
+    const {styles, colors} = useContext(ThemeContext);
     const {email, full_name, avatar_url} = route.params;
     const [userData, server] = useContext(AuthContext);
     const [messages, setMessages] = useState([]);
@@ -37,21 +38,21 @@ export default function ChatScreen({route, navigation}){
         headerTitle: () => {
             return (
                 <TouchableOpacity 
-                    style={styles.headerview}
+                    style={styles.chatHeaderView}
                     onPress={() => {
                         navigation.navigate("UserProfile", {email});
                     }}
                 >
                     <Avatar source={{uri: avatar_url}} rounded/>
-                    <Text style={{...styles.headertitle, ...{color: colors.highlight}}}>{full_name}</Text>
+                    <Text style={styles.chatHeaderTitle}>{full_name}</Text>
                 </TouchableOpacity>
             );
         }
     });
 
     return (
-        <View style={styles.screenview}>
-            <View style={styles.list}>
+        <View style={styles.chatView}>
+            <View style={styles.chatMessageList}>
                 <FlatList
                     data={messages}
                     renderItem={({item}) => {
@@ -66,7 +67,7 @@ export default function ChatScreen({route, navigation}){
                                 backgroundColor: colors.lighterbackground,
                                 maxWidth: '70%'
                             }}>
-                                <Text style={{...styles.message, color: colors.text}}>
+                                <Text style={styles.chatMessage}>
                                     {item.msg}
                                 </Text>
                             </View>
@@ -79,8 +80,8 @@ export default function ChatScreen({route, navigation}){
                     }}
                 />
             </View>
-            <View style={{...styles.messagebar}}>
-                <View style={{...styles.inputview, ...{backgroundColor: colors.lighterbackground}}}>
+            <View style={styles.chatMessageBar}>
+                <View style={styles.chatInputView}>
                     <Input
                         placeholder= 'Escribe un mensaje...'
                         placeholderTextColor={colors.grey}
@@ -101,38 +102,3 @@ export default function ChatScreen({route, navigation}){
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    headerview: {
-        flexDirection: 'row',
-        alignItems: 'center'
-    },
-    headertitle: {
-        color: 'white', 
-        fontSize: 20, 
-        fontWeight: 'bold',
-        marginLeft: 10
-    },
-    messagebar: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingLeft: 10,
-        backgroundColor: '#00000000'
-    },
-    screenview: {
-        justifyContent: 'flex-end',
-        flex: 1,
-    },
-    inputview: {
-        flex: 1,
-        borderRadius: 30,
-        padding: 12,
-        paddingLeft: 17
-    },
-    list: {
-        flex: 1
-    },
-    message: {
-        fontSize: 17
-    }
-});

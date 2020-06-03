@@ -3,12 +3,13 @@ import {View, StyleSheet, ScrollView} from "react-native";
 import {Button, Divider, Input, ListItem, Overlay, Text} from "react-native-elements";
 import {useFocusEffect, useTheme} from "@react-navigation/native";
 import {AuthContext} from "../login/AuthContext";
+import {ThemeContext} from "../Styles";
 
 function Setting(props){
     const {colors} = useTheme();
     return(
         <ListItem
-            containerStyle={{...styles.item, backgroundColor: colors.lighterbackground}}
+            containerStyle={{backgroundColor: colors.lighterbackground}}
             title={props.title}
             subtitle={props.subtitle}
             chevron
@@ -28,7 +29,7 @@ function SettingOverlay(props){
 }
 
 export default function Preferences(){
-    const {colors} = useTheme();
+    const {styles, colors} = useContext(ThemeContext);
     const [user, server] = useContext(AuthContext);
     const [nameOverlayVisible, setNameOverlayVisible] = useState(false);
     const [numberOverlayVisible, setNumberOverlayVisible] = useState(false);
@@ -86,7 +87,7 @@ export default function Preferences(){
 
     return (
         <ScrollView>
-            <Text style={{...styles.title, color: colors.text}}>Perfil</Text>
+            <Text style={styles.preferencesTitleView}>Perfil</Text>
             <SettingOverlay visible={nameOverlayVisible} onBackdropPress={toggleNameEdit} onChangeText={setName} value={name} />
             <SettingOverlay visible={numberOverlayVisible} onBackdropPress={toggleNumberEdit} onChangeText={setNumber} value={number} />
             <SettingOverlay visible={addressOverlayVisible} onBackdropPress={toggleAddressEdit} onChangeText={setAddress} value={address} />
@@ -99,27 +100,15 @@ export default function Preferences(){
                 <Setting title={"Dirección"} subtitle={address} onPress={toggleAddressEdit}/>
                 <Divider/>
             </View>
-            <Button
-                title='Guardar cambios'
-                buttonStyle={{...styles.button, backgroundColor:colors.primary}}
-                icon={{name:'check-circle', color: colors.text}}
-                onPress={sendUserData}
-                disabled={sending}
-            />
+            <View style={styles.formButtonView}>
+                <Button
+                    title='Guardar cambios'
+                    buttonStyle={styles.formButton}
+                    icon={{name:'check-circle', color: colors.text}}
+                    onPress={sendUserData}
+                    disabled={sending}
+                />
+            </View>
         </ScrollView>
     )
 };
-
-const styles = StyleSheet.create({
-    title: {
-        margin: 20,
-        fontSize: 20,
-        fontWeight: 'bold',
-        alignSelf: 'center'
-    },
-    button: {
-        alignSelf: 'stretch',
-        borderRadius: 20,
-        margin: 20
-    }
-});

@@ -4,13 +4,15 @@ import { useContext, useRef, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import { Image, Input, SocialIcon, Text } from 'react-native-elements';
 import { AuthContext } from './AuthContext';
+import {ThemeContext} from "../Styles";
+import Field from "./Field";
 
 export default function LoginScreen({navigation}){
     navigation.setOptions({
         header: () => {return null}
     });
 
-    const {colors} = useTheme();
+    const {styles, colors} = useContext(ThemeContext);
     const [loading, setLoading] = useState(false);
     const [userData, server] = useContext(AuthContext);
     const [user, setUser] = useState(null);
@@ -41,7 +43,7 @@ export default function LoginScreen({navigation}){
 
     if (loading) {
         return (
-            <View style={{...styles.loadingview}}>
+            <View style={{...styles.uploadContainer, ...styles.flexContainer}}>
                 <Text style={{fontSize: 22, color: colors.text}}>{'Iniciando sesión...\n'}</Text>
                 <ActivityIndicator size={60} color={colors.text} />
             </View>
@@ -49,8 +51,8 @@ export default function LoginScreen({navigation}){
     }
 
     return (
-        <View style={{...styles.container, ...{backgroundColor: colors.lighterbackground}}}>
-            <View style={styles.block}>
+        <View style={{...styles.container, ...styles.flexContainer}}>
+            <View style={styles.registerBlock}>
                 <Image
                     source={require('../assets/icon.png')}
                     style={{width:150, aspectRatio:1}}
@@ -58,104 +60,20 @@ export default function LoginScreen({navigation}){
                 />
             </View>
             <ActivityIndicator color={loading? colors.text : '#00000000'}/>
-            <View style={{...styles.block, ...{backgroundColor: colors.background}}}>
-                <Input
-                    leftIcon={{name:'person', color:colors.grey}}
-                    leftIconContainerStyle={{
-                        marginRight: 10,
-                        marginLeft: 0
-                    }}
-                    label='Nombre de Usuario'
-                    inputStyle={{...styles.titleinput, ...{color: colors.grey}}}
-                    selectionColor={colors.text}
-                    ref={user_input}
-                    onSubmitEditing={() => {pwd_input.current.focus()}}
-                    onChangeText={text => setUser(text)}
-                />
-                <Text> </Text>
-                <Input
-                    leftIcon={{name:'vpn-key', color:colors.grey}}
-                    leftIconContainerStyle={{
-                        marginRight: 10,
-                        marginLeft: 0
-                    }}
-                    label='Contraseña'
-                    inputStyle={{...styles.descinput, ...{color: colors.grey}}}
-                    secureTextEntry
-                    ref={pwd_input}
-                    onSubmitEditing={tryLoginWithUserAndPass}
-                    onChangeText={text => setPass(text)}
-                />
+            <View style={styles.registerBlock}>
+                <Field icon={'person'} label={'Email'} set={setUser} type={'email'} />
+                <Field icon={'vpn-key'} label={'Contraseña'} set={setPass} type={'password'}/>
             </View>
-            <View style={styles.buttonview}>
+            <View style={styles.formButtonView}>
                 <SocialIcon button type='facebook' title='Ingresar con Facebook' onPress={tryFacebookLogin}/>
                 <SocialIcon button type='google' title='Ingresar con Google' onPress={tryGoogleLogin}/>
                 <TouchableOpacity onPress={() => {navigation.navigate("Registro")}}>
-                    <Text style={{...styles.register, ...{color: colors.grey}}}>¿No tienes una cuenta? Regístrate aquí</Text>
+                    <Text style={styles.loginRegisterButton}>¿No tienes una cuenta? Regístrate aquí</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => {navigation.navigate("Restablecer contraseña")}}>
-                    <Text style={{...styles.register, ...{color: colors.grey}}}>¿Olvidaste tu contraseña?</Text>
+                    <Text style={styles.loginRegisterButton}>¿Olvidaste tu contraseña?</Text>
                 </TouchableOpacity>
             </View>
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#242424',
-      alignItems: 'stretch',
-      justifyContent: 'center',
-      padding: 10
-    },
-    block: {
-      margin: 10,
-      padding: 20,
-      alignItems: 'center',
-      justifyContent: 'space-evenly',
-      borderRadius: 20
-    },
-    buttonview: {
-      alignItems: 'stretch',
-      justifyContent: 'center',
-    },
-    button: {
-      backgroundColor: '#ffffff'
-    },
-    filename: {
-      alignSelf: 'center'
-    },
-    title: {
-      fontWeight: 'bold',
-      fontSize: 20
-    },
-    description: {
-      fontWeight: 'bold',
-      fontSize: 20
-    },
-    icon: {
-      alignSelf: 'center'
-    },
-    uploadtext: {
-      fontSize: 22,
-      fontWeight: 'bold'
-    },
-    publishbtn: {
-      margin: 30,
-      padding: 15,
-      borderRadius: 20,
-      flexDirection: 'row',
-      alignItems: 'center'
-    },
-    register: {
-        alignSelf: 'center',
-        margin: 10,
-        fontWeight: 'bold'
-    },
-    loadingview: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center'
-    }
-});  

@@ -1,7 +1,7 @@
 import React, { useState, createContext, useRef } from 'react';
 import { ServerProxy } from '../components/ServerProxy';
 
-export const AuthContext = createContext([{}, () => {}, {}]);
+export const AuthContext = createContext([{}, {}]);
 
 export function AuthContextProvider(props){
     const [userData, setUserData] = useState({

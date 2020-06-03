@@ -1,6 +1,6 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useState, useContext } from 'react';
-import Tabs from './Tabs';
+import Tabs from './tabs/Tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import {StyleSheet, StatusBar, AsyncStorage} from 'react-native';
 import VideoScreen from './subscreens/VideoScreen';
@@ -13,6 +13,7 @@ import { AuthContext, AuthContextProvider } from './login/AuthContext';
 import RegisterScreen from './login/RegisterScreen';
 import RecoverPasswordScreen from './login/RecoverPasswordScreen';
 import Preferences from "./subscreens/Preferences";
+import {ThemeContextProvider} from "./Styles";
 
 const Stack = createStackNavigator();
 
@@ -100,21 +101,9 @@ function Main() {
 export default function App(){
     return(
         <AuthContextProvider>
-            <Main/>
+            <ThemeContextProvider>
+                <Main/>
+            </ThemeContextProvider>
         </AuthContextProvider>
     )
 }
-
-const styles = StyleSheet.create({
-    header: {
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    title: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        color: Theme.colors.highlight,
-        marginLeft: 10
-    }
-})

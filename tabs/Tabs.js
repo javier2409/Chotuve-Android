@@ -1,10 +1,10 @@
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import React from 'react';
 import { Icon } from 'react-native-elements';
-import Friends from './tabs/Friends';
-import Home from './tabs/Home';
-import MyProfile from './tabs/MyProfile';
-import Upload from './tabs/Upload';
+import Friends from './Friends';
+import Home from './Home';
+import MyProfile from './MyProfile';
+import Upload from './Upload';
 import { useTheme } from '@react-navigation/native';
 
 const BottomTab = createMaterialBottomTabNavigator();

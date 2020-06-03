@@ -6,10 +6,11 @@ import { useFocusEffect } from "@react-navigation/native";
 import {AuthContext} from "../login/AuthContext";
 import {launchImageLibraryAsync, MediaTypeOptions} from "expo-image-picker";
 import * as firebase from "firebase";
+import {ThemeContext} from "../Styles";
 
 export default function UserProfile({route, navigation}){
 
-    const {colors} = useTheme();
+    const {styles, colors} = useContext(ThemeContext);
     const {email} = route.params;
     const [userData, setUserData] = useState({});
     const [localUserData, server] = useContext(AuthContext);
@@ -92,7 +93,7 @@ export default function UserProfile({route, navigation}){
     }
 
     return (
-        <ScrollView style={styles.general}>
+        <ScrollView style={styles.flexContainer}>
             <Overlay isVisible={overlayVisible} onBackdropPress={toggleOverlay} overlayStyle={{height: 'auto'}}>
                 <View>
                     {
@@ -115,7 +116,7 @@ export default function UserProfile({route, navigation}){
                     }
                 </View>
             </Overlay>
-            <View style={styles.avatarview}>
+            <View style={styles.profileAvatarView}>
                 <Icon
                     name='more-vert'
                     color={colors.text}
@@ -137,7 +138,7 @@ export default function UserProfile({route, navigation}){
                 }
             </View>
             <Divider/>
-            <View style={styles.nameview}>
+            <View>
                 <ListItem
                     containerStyle={{backgroundColor: colors.lighterbackground}}
                     titleStyle={{color: colors.title}}
@@ -154,20 +155,20 @@ export default function UserProfile({route, navigation}){
                 />
             </View>
             <Divider/>
-            <View style={styles.videolist}>
-                <Text style={{...styles.videolisttitle,...{color: colors.title}}}>Videos subidos</Text>
+            <View style={styles.profileVideoList}>
+                <Text style={{...styles.profileVideoListTitle}}>Videos subidos</Text>
                 <FlatList
                     horizontal
                     data={userData.videos}
                     renderItem={({item}) => {
                         return (
-                            <TouchableOpacity 
-                                style={{...styles.videoview, ...{backgroundColor: colors.lighterbackground}}}
+                            <TouchableOpacity
+                                style={styles.profileVideoView}
                                 onPress={() => {
                                     navigation.navigate("Video", item)
                                 }}>
                                 <Image source={{uri: item.thumbnail_uri}} style={{height: 150, aspectRatio: 16/9}}/>
-                                <Text style={{...styles.videotitle, ...{color: colors.title}}}>{item.title}</Text>
+                                <Text style={styles.profileVideoTitle}>{item.title}</Text>
                             </TouchableOpacity>
                         );
                     }}
@@ -183,29 +184,5 @@ const styles = StyleSheet.create({
     general: {
         flex:1,
     },
-    avatarview: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 20
-    },
-    nameview: {
-    },
-    videolist: {
-        alignItems: 'flex-start',
-        justifyContent: 'flex-start'
-    },
-    videoview: {
-        margin :20,
-        marginTop: 0,
-    },
-    videolisttitle:{
-        fontSize: 18,
-        fontWeight: 'bold',
-        margin: 20
-    },
-    videotitle: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        margin: 10
-    }
+
 })
