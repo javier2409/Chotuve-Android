@@ -69,10 +69,11 @@ function LoginScreens(){
 
 function Main() {
 
+    const {setLightMode} = useContext(ThemeContext);
     const [userData, serverProxy] = useContext(AuthContext);
     const [ready, setReady] = useState(false);
 
-    async function fetchToken(){
+    async function fetchStorage(){
         try {
             const username = await AsyncStorage.getItem('USERNAME');
             const password = await AsyncStorage.getItem('PASSWORD');
@@ -81,12 +82,16 @@ function Main() {
         } catch(e) {
             serverProxy.updateUserData(null);
         }
+        const saved_theme = await AsyncStorage.getItem('THEME');
+        if (saved_theme === 'light'){
+            setLightMode();
+        }
     }
 
     if (!ready){
         return (
             <AppLoading
-                startAsync={fetchToken}
+                startAsync={fetchStorage}
                 onFinish={() => {setReady(true)}}
             />
         )

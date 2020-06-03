@@ -1,4 +1,4 @@
-import {StyleSheet} from "react-native";
+import {AsyncStorage, StyleSheet} from "react-native";
 import React, {createContext, useState} from "react";
 import {colors} from "react-native-elements";
 
@@ -233,13 +233,14 @@ export function ThemeContextProvider(props){
         }
     });
 
-    function setLightMode(){
+    async function setLightMode(){
         setColors(lightColors);
-
+        await AsyncStorage.setItem('THEME', 'light');
     }
-    function setDarkMode(){
-        setColors(darkColors);
 
+    async function setDarkMode(){
+        setColors(darkColors);
+        await AsyncStorage.setItem('THEME', 'dark');
     }
     return(
         <ThemeContext.Provider value={{styles, colors, setLightMode, setDarkMode}}>
