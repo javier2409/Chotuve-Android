@@ -319,4 +319,16 @@ export class ServerProxy{
     async changeProfilePicture(){
 
     }
+
+    async changeDisplayName(new_name){
+
+    }
+
+    async changePhoneNumber(new_number){
+
+    }
+
+    async changeAddress(new_address){
+
+    }
 }
