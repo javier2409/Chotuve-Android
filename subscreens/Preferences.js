@@ -22,7 +22,7 @@ function Setting(props){
 function SettingOverlay(props){
     return (
         <Overlay isVisible={props.visible} onBackdropPress={props.onBackdropPress} overlayStyle={{height: 'auto'}}>
-            <Input onChangeText={props.onChangeText}/>
+            <Input onChangeText={props.onChangeText} value={props.value}/>
         </Overlay>
     )
 }
@@ -60,9 +60,14 @@ export default function Preferences(){
     async function sendUserData(){
         setSending(true);
         try{
-
+            await server.changeMyUserData({
+                full_name: name,
+                phone_number: number,
+                address: address
+            })
         } catch(error) {
-
+            console.log(error);
+            alert("Hubo un error al actualizar la información.")
         }
         setSending(false);
     }
@@ -82,9 +87,9 @@ export default function Preferences(){
     return (
         <ScrollView>
             <Text style={{...styles.title, color: colors.text}}>Perfil</Text>
-            <SettingOverlay visible={nameOverlayVisible} onBackdropPress={toggleNameEdit} onChangeText={setName} />
-            <SettingOverlay visible={numberOverlayVisible} onBackdropPress={toggleNumberEdit} onChangeText={setNumber} />
-            <SettingOverlay visible={addressOverlayVisible} onBackdropPress={toggleAddressEdit} onChangeText={setAddress} />
+            <SettingOverlay visible={nameOverlayVisible} onBackdropPress={toggleNameEdit} onChangeText={setName} value={name} />
+            <SettingOverlay visible={numberOverlayVisible} onBackdropPress={toggleNumberEdit} onChangeText={setNumber} value={number} />
+            <SettingOverlay visible={addressOverlayVisible} onBackdropPress={toggleAddressEdit} onChangeText={setAddress} value={address} />
             <View>
                 <Divider/>
                 <Setting title={"Nombre"} subtitle={name} onPress={toggleNameEdit}/>
@@ -112,6 +117,11 @@ const styles = StyleSheet.create(
             fontSize: 20,
             fontWeight: 'bold',
             alignSelf: 'center'
+        },
+        button: {
+            alignSelf: 'stretch',
+            borderRadius: 20,
+            margin: 20
         }
     }
 )
