@@ -42,7 +42,7 @@ function MainApp(){
             <Stack.Screen name="Chat" component={ChatScreen} />
             <Stack.Screen name="Friend Search" component={FriendSearch} />
             <Stack.Screen name="UserProfile" component={UserProfile} />
-            <Stack.Screen name="Preferences" component={Preferences} />
+            <Stack.Screen name="Preferencias" component={Preferences} />
         </Stack.Navigator>
     )
 }
