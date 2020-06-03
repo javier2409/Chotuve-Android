@@ -26,35 +26,69 @@ export class ServerProxy{
         this.published_comments = [];
     }
 
-    updateUserData(user){
+    //update saved user data globally
+    updateGlobalUserData(user){
+        this.updateLocalUserData(user);
         this.setUserData(user)
+    }
+
+    //update user data for this object
+    updateLocalUserData(user){
         this.user = user;
     }
 
+    //manage login success
     manageCredential = async credential => {
         console.log('Trying to get token ID');
         const token = await credential.user.getIdToken();
-        this.updateUserData(credential.user);
         console.log(`Obtained token ID from firebase: ${token.substring(0, 30)}...`);
-
         console.log(credential.user.displayName);
         console.log(credential.user.email);
-        let provider = 'firebase';
+        let provider = 'email';
         if (credential.credential) {
-            provider = credential.credential.providerId;
+            //delete ".com" from provider
+            provider = credential.credential.providerId.slice(0, -4);
         }
         console.log(provider);
+        this.updateLocalUserData(credential.user);
         if (credential.additionalUserInfo.isNewUser){
+            console.log("The user is new, sending to AppServer");
+            await this._request('/users', 'POST', {
+                "fullname": credential.user.full_name,
+                "email": credential.user.email,
+                "login-method": provider
+            });
         }
+        this.updateGlobalUserData(credential.user);
     }
 
+    //manage login failure
     manageFailure = reason => {
         alert(reason);
     }
 
+    //send a request to appserver
+    async _request(path, method, body){
+        const token = await this.user.getIdToken();
+        console.log("Fetching " + method + " " + apiUrl + path + " with body:");
+        console.log(body);
+        const response = await fetch(apiUrl+path, {
+            method,
+            body: body? JSON.stringify(body) : null,
+            headers: {
+                "x-access-token": token
+            }
+        });
+
+        const response_json = await response.json();
+        console.log("Response:");
+        console.log(response_json);
+        return response_json;
+    }
+
     //log out from account
     logOut(){
-        this.updateUserData(null);
+        this.updateGlobalUserData(null);
     }
 
     //get auth token from username and password
@@ -72,6 +106,7 @@ export class ServerProxy{
         }
     }
 
+    //get auth token using facebook
     async tryFacebookLogin(){
         const appId = "591659228371489";
 
@@ -95,6 +130,7 @@ export class ServerProxy{
         }
     }
 
+    //get auth token using google
     async tryGoogleLogin() {
         try {
             const googleLoginResult = await google.logInAsync({
@@ -116,6 +152,7 @@ export class ServerProxy{
         }
     }
 
+    //send new user and get auth token from firebase
     async registerNewUser(user_data){
         const {email, password, full_name} = user_data;
         try{
@@ -133,22 +170,7 @@ export class ServerProxy{
 
     //get video feed
     async getVideos(){
-        let data = [
-        ];
-        
-        for (let i = 0; i<20; i++) {
-            data.push({
-                id: i.toString(),
-                title: 'Video '+i,
-                author: 'Autor '+i,
-                description: 'A normal video',
-                video_url: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
-                thumbnail_url: 'https://images.wallpaperscraft.com/image/city_vector_panorama_119914_3840x2160.jpg',
-                timestamp: '2020-04-25',
-                reaction: 'none'
-            });
-        }
-        return data.concat(this.published_videos);
+        return await this._request('/videos', 'GET', null);
     }
 
     //get information to show user profile
@@ -302,18 +324,22 @@ export class ServerProxy{
         return friends
     }
 
+    //send a friend request
     async addFriend(username){
         return 'Success'
     }
 
+    //send a request to get a reset password code
     async requestResetPasswordEmail(email){
 
     }
 
+    //send reset password code with new password
     async sendCodeAndNewPassword(code, newPassword){
 
     }
 
+    //send new profile picture
     async changeProfilePicture(){
 
     }

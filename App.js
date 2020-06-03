@@ -70,7 +70,7 @@ function Main() {
             console.log(`Credentials saved in async storage: ${username}, ${password}`);
             await serverProxy.tryLogin(username, password);
         } catch(e) {
-            serverProxy.updateUserData(null);
+            serverProxy.updateGlobalUserData(null);
         }
     }
 
