@@ -9,7 +9,7 @@ function Setting(props){
     const {styles, colors} = useContext(ThemeContext);
     return(
         <ListItem
-            containerStyle={{backgroundColor: colors.lighterbackground}}
+            containerStyle={styles.settingItemStyle}
             title={props.title}
             subtitle={props.subtitle}
             chevron
@@ -98,17 +98,13 @@ export default function Preferences(){
                 <SettingOverlay visible={numberOverlayVisible} onBackdropPress={toggleNumberEdit} onChangeText={setNumber} value={number} />
                 <SettingOverlay visible={addressOverlayVisible} onBackdropPress={toggleAddressEdit} onChangeText={setAddress} value={address} />
                 <Overlay isVisible={themeOverlayVisible} onBackdropPress={toggleThemeOverlay} height={'auto'}>
-                    <ListItem title={'Light'} onPress={setLightMode}/>
-                    <ListItem title={'Dark'} onPress={setDarkMode} />
+                    <ListItem title={'Light'} onPress={setLightMode} checkmark={colors.themeName==='Light'}/>
+                    <ListItem title={'Dark'} onPress={setDarkMode} checkmark={colors.themeName==='Dark'}/>
                 </Overlay>
                 <View>
-                    <Divider/>
                     <Setting title={"Nombre"} subtitle={name} onPress={toggleNameEdit}/>
-                    <Divider/>
                     <Setting title={"Número Telefónico"} subtitle={number} onPress={toggleNumberEdit}/>
-                    <Divider/>
                     <Setting title={"Dirección"} subtitle={address} onPress={toggleAddressEdit}/>
-                    <Divider/>
                 </View>
                 <View style={styles.formButtonView}>
                     <Button
