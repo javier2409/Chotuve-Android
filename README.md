@@ -6,8 +6,8 @@ Probar la App
 1. Ingresar a la aplicación Expo.
 2. Escanear el código QR del proyecto:
 
-[Staging](https://expo.io/@javier2409/Chotuve?release-channel=staging)
-[Producción](https://expo.io/@javier2409/Chotuve?release-channel=prod)
+- [Staging](https://expo.io/@javier2409/Chotuve?release-channel=staging)
+- [Producción](https://expo.io/@javier2409/Chotuve?release-channel=prod)
 
 Trello
 ========
