@@ -321,6 +321,6 @@ export class ServerProxy{
     }
 
     async changeMyUserData(user_data){
-        
+
     }
 }
