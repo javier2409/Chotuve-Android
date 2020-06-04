@@ -48,7 +48,26 @@ export default function Upload() {
         } catch (E) {
             console.log(E);
         }
-    };
+    }
+
+    function next(snapshot){
+        setProgress(snapshot.bytesTransferred/snapshot.totalBytes * 100);
+    }
+
+    function errorHandler(error){
+        alert("Hubo un error al subir el video, intenta nuevamente");
+        reset();
+    }
+
+    async function complete(){
+        await server.publishVideo({
+            title: title,
+            description: desc,
+            thumbnail_uri: await thumb_ref.current.getDownloadURL(),
+            video_uri: await video_ref.current.getDownloadURL()
+        });
+        reset();
+    }
 
     async function uploadVideo(){
         if (!checkVideo()){
@@ -69,29 +88,12 @@ export default function Upload() {
             const blob = await response_video.blob();
             video_ref.current = firebase.storage().ref().child(`${user.email}/${title}`);
             const uploadTask_video = video_ref.current.put(blob);
-            uploadTask_video.on(firebase.storage.TaskEvent.STATE_CHANGED, next, error, complete);
+            uploadTask_video.on(firebase.storage.TaskEvent.STATE_CHANGED, next, errorHandler, complete);
 
         } catch (error) {
             alert(error);
             reset();
         }
-    }
-
-    function next(snapshot){
-        setProgress(snapshot.bytesTransferred/snapshot.totalBytes * 100);
-    }
-    function error(error){
-        alert("Hubo un error al subir el video, intenta nuevamente");
-        reset();
-    }
-    async function complete(){
-        await server.publishVideo({
-            title: title,
-            description: desc,
-            thumbnail_uri: await thumb_ref.current.getDownloadURL(),
-            video_uri: await video_ref.current.getDownloadURL()
-        });
-        reset();
     }
 
     return (uploading
@@ -147,44 +149,3 @@ export default function Upload() {
             </View>
     );
 }
-
-const sstyles = StyleSheet.create({
-    container: {
-        backgroundColor: '#242424',
-        alignItems: 'stretch',
-        justifyContent: 'center',
-        padding: 10
-    },
-    block: {
-        margin: 10,
-        padding: 20,
-        alignItems: 'center'
-    },
-    buttonview: {
-        alignItems: 'stretch',
-        justifyContent: 'center',
-    },
-    button: {
-        borderRadius: 20,
-        margin: 10
-    },
-    filename: {
-        alignSelf: 'center'
-    },
-    title: {
-        fontWeight: 'bold',
-        fontSize: 20
-    },
-    description: {
-        fontWeight: 'bold',
-        fontSize: 20
-    },
-    uploadtext: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        alignSelf: 'center'
-    },
-    percentText: {
-        fontSize: 18
-    }
-});
