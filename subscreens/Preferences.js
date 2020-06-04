@@ -98,8 +98,10 @@ export default function Preferences(){
                 <SettingOverlay visible={numberOverlayVisible} onBackdropPress={toggleNumberEdit} onChangeText={setNumber} value={number} />
                 <SettingOverlay visible={addressOverlayVisible} onBackdropPress={toggleAddressEdit} onChangeText={setAddress} value={address} />
                 <Overlay isVisible={themeOverlayVisible} onBackdropPress={toggleThemeOverlay} height={'auto'}>
-                    <ListItem title={'Light'} onPress={setLightMode} checkmark={colors.themeName==='Light'}/>
-                    <ListItem title={'Dark'} onPress={setDarkMode} checkmark={colors.themeName==='Dark'}/>
+                    <View>
+                        <ListItem title={'Light'} onPress={setLightMode} checkmark={colors.themeName==='Light'}/>
+                        <ListItem title={'Dark'} onPress={setDarkMode} checkmark={colors.themeName==='Dark'}/>
+                    </View>
                 </Overlay>
                 <View>
                     <Setting title={"Nombre"} subtitle={name} onPress={toggleNameEdit}/>
