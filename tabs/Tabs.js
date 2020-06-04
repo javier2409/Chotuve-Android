@@ -1,27 +1,32 @@
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import React from 'react';
+import React, {useContext} from 'react';
 import { Icon } from 'react-native-elements';
-import Friends from './tabs/Friends';
-import Home from './tabs/Home';
-import MyProfile from './tabs/MyProfile';
-import Upload from './tabs/Upload';
-import { useTheme } from '@react-navigation/native';
+import Friends from './Friends';
+import Home from './Home';
+import MyProfile from './MyProfile';
+import Upload from './Upload';
+import {ThemeContext} from "../Styles";
 
 const BottomTab = createMaterialBottomTabNavigator();
 
 export default function Tabs({navigation}) {
-  const {colors} = useTheme();
+  const {colors} = useContext(ThemeContext);
   navigation.setOptions({
     header: () => {return null}
   });
   return (
-    <BottomTab.Navigator initialRouteName="Home" shifting={true} activeColor={colors.highlight} inactiveColor={colors.border} 
-    barStyle={{
-        backgroundColor: colors.primary
-      }} 
-    style={{
-        backgroundColor: colors.background
-    }} >
+    <BottomTab.Navigator
+        initialRouteName="Home"
+        shifting={true}
+        activeColor={colors.highlight}
+        inactiveColor={colors.border}
+        barStyle={{
+            backgroundColor: colors.primary
+        }}
+        style={{
+            backgroundColor: colors.background
+        }}
+    >
       <BottomTab.Screen name="Home" component={Home} options={{
           tabBarIcon: ({color}) => {
               return <Icon name='home' color={color}/>

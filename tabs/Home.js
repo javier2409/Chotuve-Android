@@ -3,19 +3,23 @@ import {ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View} f
 import {useNavigation, useTheme} from '@react-navigation/native';
 import {Image} from 'react-native-elements';
 import {AuthContext} from '../login/AuthContext';
+import {ThemeContext} from "../Styles";
 
 function VideoItem(props) {
-    const {colors} = useTheme();
+    const {styles} = useContext(ThemeContext);
     const navigation = useNavigation();
     return (
-        <TouchableOpacity style={{...styles.videoitem, ...{backgroundColor: colors.lighterbackground}}} onPress={() => {
+        <TouchableOpacity style={styles.homeVideoItem} onPress={() => {
             navigation.navigate('Video', props.videoData);
         }}>
             <View style={{flexDirection: 'column'}}>
-                <Image source={{uri: props.videoData.thumbnail_url}} style={{width: '100%', aspectRatio: 16/9}} PlaceholderContent={<ActivityIndicator/>}/>
+                <Image source={{uri: props.videoData.thumbnail_url}}
+                       style={{width: '100%', aspectRatio: 16/9}}
+                       PlaceholderContent={<ActivityIndicator/>}
+                />
                 <View style={{flex: 1, padding: 10}}>
-                    <Text style={{color: colors.text, fontSize: 16, fontWeight: 'bold'}}>{props.videoData.title}</Text>
-                    <Text style={{color: colors.text, fontSize: 12}}>{props.videoData.author} - {props.videoData.timestamp}</Text>
+                    <Text style={styles.homeVideoTitle}>{props.videoData.title}</Text>
+                    <Text style={styles.homeVideoSubtitle}>{props.videoData.author} - {props.videoData.timestamp}</Text>
                 </View>
             </View>
         </TouchableOpacity>
@@ -23,7 +27,7 @@ function VideoItem(props) {
 }
 
 export default function Home({navigation}) {
-    const {colors} = useTheme();
+    const {styles} = useContext(ThemeContext);
     const [userData, server] = useContext(AuthContext);
     const [videoList, setVideoList] = useState([]);
 
@@ -39,10 +43,10 @@ export default function Home({navigation}) {
     }, [navigation]);
 
     return (
-        <View style={styles.container}>
+        <View style={styles.flexContainer}>
             <FlatList
                 refreshing={false}
-                style={{...styles.flatlist, ...{backgroundColor: colors.background}}}
+                style={styles.homeFlatList}
                 data={videoList}
                 renderItem={({item}) => {
                     return <VideoItem videoData={item}/>;
@@ -54,16 +58,3 @@ export default function Home({navigation}) {
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    videoitem: {
-        marginVertical: 5,
-        padding: 0,
-        // alignItems: 'stretch'
-    },
-    flatlist: {
-        backgroundColor: '#242424',
-    },
-});

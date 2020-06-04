@@ -1,15 +1,16 @@
 import { useTheme } from '@react-navigation/native';
-import React from 'react';
+import React, {useContext} from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ListItem } from 'react-native-elements';
+import {ThemeContext} from "../Styles";
 
 export default function FriendItem(props){
-    const {colors} = useTheme();
+    const {styles, colors} = useContext(ThemeContext);
     const {email, full_name, avatar_url} = props.data;
     return (
         <ListItem 
             Component={TouchableOpacity}
-            containerStyle={{...styles.container, ...{backgroundColor: colors.lighterbackground}}}
+            containerStyle={{...styles.friendItem, ...{backgroundColor: colors.lighterbackground}}}
             title={full_name}
             titleStyle={{...styles.title, ...{color: colors.text}}}
             subtitle={email}

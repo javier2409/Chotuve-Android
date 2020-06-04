@@ -1,6 +1,6 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useState, useContext } from 'react';
-import Tabs from './Tabs';
+import Tabs from './tabs/Tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import {StyleSheet, StatusBar, AsyncStorage} from 'react-native';
 import VideoScreen from './subscreens/VideoScreen';
@@ -12,6 +12,8 @@ import LoginScreen from './login/LoginScreen';
 import { AuthContext, AuthContextProvider } from './login/AuthContext';
 import RegisterScreen from './login/RegisterScreen';
 import RecoverPasswordScreen from './login/RecoverPasswordScreen';
+import Preferences from "./subscreens/Preferences";
+import {ThemeContext, ThemeContextProvider} from "./Styles";
 
 const Stack = createStackNavigator();
 
@@ -31,16 +33,23 @@ const Theme = {
 };
 
 function MainApp(){
+    const {colors} = useContext(ThemeContext);
     return (
-        <Stack.Navigator screenOptions={{
-            headerTintColor: Theme.colors.title,
-            headerStyle: {backgroundColor: Theme.colors.primary},
-        }}>
+        <Stack.Navigator
+            screenOptions={{
+                headerTintColor: Theme.colors.title,
+                headerStyle: {backgroundColor: Theme.colors.primary},
+            }}
+            style={{
+                backgroundColor: colors.background
+            }}
+        >
             <Stack.Screen name="Chotuve" component={Tabs} />
             <Stack.Screen name="Video" component={VideoScreen} />
             <Stack.Screen name="Chat" component={ChatScreen} />
             <Stack.Screen name="Friend Search" component={FriendSearch} />
             <Stack.Screen name="UserProfile" component={UserProfile} />
+            <Stack.Screen name="Preferencias" component={Preferences} />
         </Stack.Navigator>
     )
 }
@@ -60,10 +69,11 @@ function LoginScreens(){
 
 function Main() {
 
+    const {setLightMode} = useContext(ThemeContext);
     const [userData, serverProxy] = useContext(AuthContext);
     const [ready, setReady] = useState(false);
 
-    async function fetchToken(){
+    async function fetchStorage(){
         try {
             const username = await AsyncStorage.getItem('USERNAME');
             const password = await AsyncStorage.getItem('PASSWORD');
@@ -72,12 +82,16 @@ function Main() {
         } catch(e) {
             serverProxy.updateUserData(null);
         }
+        const saved_theme = await AsyncStorage.getItem('THEME');
+        if (saved_theme === 'light'){
+            setLightMode();
+        }
     }
 
     if (!ready){
         return (
             <AppLoading
-                startAsync={fetchToken}
+                startAsync={fetchStorage}
                 onFinish={() => {setReady(true)}}
             />
         )
@@ -98,21 +112,9 @@ function Main() {
 export default function App(){
     return(
         <AuthContextProvider>
-            <Main/>
+            <ThemeContextProvider>
+                <Main/>
+            </ThemeContextProvider>
         </AuthContextProvider>
     )
 }
-
-const styles = StyleSheet.create({
-    header: {
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    title: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        color: Theme.colors.highlight,
-        marginLeft: 10
-    }
-})

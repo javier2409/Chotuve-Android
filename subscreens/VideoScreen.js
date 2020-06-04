@@ -5,9 +5,10 @@ import { Video } from 'expo-av';
 import {Divider, Icon, Input, Text} from 'react-native-elements';
 import {AuthContext} from "../login/AuthContext";
 import * as Orientation from "expo-screen-orientation";
+import {ThemeContext} from "../Styles";
 
 export default function VideoScreen({route, navigation}){
-    const {colors} = useTheme();
+    const {styles, colors} = useContext(ThemeContext);
     const {id, video_url, title, author, description} = route.params;
 	const [userData, server] = useContext(AuthContext);
 	const [comments, setComments] = useState([]);
@@ -50,7 +51,7 @@ export default function VideoScreen({route, navigation}){
 	}
 
     return (
-        <View style={{...styles.container, ...{backgroundColor: colors.background}}}>
+        <View style={styles.videoContainer}>
 			<Video
 				style={styles.video}
 				source={{uri: video_url}}
@@ -60,7 +61,7 @@ export default function VideoScreen({route, navigation}){
 				onFullscreenUpdate={setOrientation}
 			/>
 			<Divider/>
-			<View style={{...styles.videoInfo,...{backgroundColor: colors.lighterbackground}}}>
+			<View style={styles.videoInfo}>
 				<Text style={{color:colors.title}}>
 					<Text style={{fontSize: 20, fontWeight: 'bold'}}>{title}</Text>
 					<Text> - {author}</Text>
@@ -68,7 +69,7 @@ export default function VideoScreen({route, navigation}){
 				<Text style={{color:colors.title}}>{description}</Text>
 			</View>
 			<Divider/>
-			<View style={{...styles.commentView}}>
+			<View style={styles.commentView}>
 				<View style={{flex:1}}>
 					{
 						sending
@@ -76,10 +77,10 @@ export default function VideoScreen({route, navigation}){
 							<ActivityIndicator/>
 							:
 							<Input
-								inputStyle={{...styles.input, color: colors.text}}
+								inputStyle={styles.videoCommentInput}
 								leftIcon={{name:'comment', color:colors.grey}}
 								leftIconContainerStyle={{marginLeft:0, marginRight: 5}}
-								containerStyle={{...styles.inputContainer}}
+								containerStyle={styles.inputContainer}
 								placeholder={'Escribe un comentario...'}
 								placeholderTextColor={colors.grey}
 								underlineColorAndroid={colors.background}
@@ -99,7 +100,7 @@ export default function VideoScreen({route, navigation}){
 					data={comments}
 					renderItem={({item}) => {
 						return (
-							<View style={styles.comment}>
+							<View style={styles.videoComment}>
 								<Text style={{color:colors.title, fontWeight: 'bold'}}>{item.author}</Text>
 								<Text style={{color:colors.title}}>{item.text}</Text>
 							</View>
@@ -113,37 +114,3 @@ export default function VideoScreen({route, navigation}){
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-		flex: 1,
-	    alignItems: 'stretch'
-    },
-    videoInfo: {
-		padding: 10,
-		justifyContent: 'space-between',
-    },
-    video: {
-		width: '100%',
-		aspectRatio: 16/9
-	},
-	comment: {
-		margin:10
-	},
-	input: {
-    	marginRight: 10
-	},
-	inputContainer: {
-    	margin: 10,
-		marginRight: 20
-	},
-	commentView: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignItems: 'center'
-	},
-	commentList: {
-    	flex: 1,
-		padding: 10
-	}
-});

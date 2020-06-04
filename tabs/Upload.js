@@ -9,9 +9,10 @@ import Field from "../login/Field";
 import {AuthContext} from "../login/AuthContext";
 import * as firebase from "firebase";
 import ProgressCircle from 'react-native-progress-circle';
+import {ThemeContext} from "../Styles";
 
 export default function Upload() {
-    const {colors} = useTheme();
+    const {styles, colors} = useContext(ThemeContext);
     const [file, setFile] = useState(null);
     const [title, setTitle] = useState('');
     const [desc, setDesc] = useState('');
@@ -47,7 +48,26 @@ export default function Upload() {
         } catch (E) {
             console.log(E);
         }
-    };
+    }
+
+    function next(snapshot){
+        setProgress(snapshot.bytesTransferred/snapshot.totalBytes * 100);
+    }
+
+    function errorHandler(error){
+        alert("Hubo un error al subir el video, intenta nuevamente");
+        reset();
+    }
+
+    async function complete(){
+        await server.publishVideo({
+            title: title,
+            description: desc,
+            thumbnail_uri: await thumb_ref.current.getDownloadURL(),
+            video_uri: await video_ref.current.getDownloadURL()
+        });
+        reset();
+    }
 
     async function uploadVideo(){
         if (!checkVideo()){
@@ -68,7 +88,7 @@ export default function Upload() {
             const blob = await response_video.blob();
             video_ref.current = firebase.storage().ref().child(`${user.email}/${title}`);
             const uploadTask_video = video_ref.current.put(blob);
-            uploadTask_video.on(firebase.storage.TaskEvent.STATE_CHANGED, next, error, complete);
+            uploadTask_video.on(firebase.storage.TaskEvent.STATE_CHANGED, next, errorHandler, complete);
 
         } catch (error) {
             alert(error);
@@ -76,26 +96,9 @@ export default function Upload() {
         }
     }
 
-    function next(snapshot){
-        setProgress(snapshot.bytesTransferred/snapshot.totalBytes * 100);
-    }
-    function error(error){
-        alert("Hubo un error al subir el video, intenta nuevamente");
-        reset();
-    }
-    async function complete(){
-        await server.publishVideo({
-            title: title,
-            description: desc,
-            thumbnail_uri: await thumb_ref.current.getDownloadURL(),
-            video_uri: await video_ref.current.getDownloadURL()
-        });
-        reset();
-    }
-
     return (uploading
             ?
-            <View style={{flex:1, alignItems:'center', justifyContent: 'center'}}>
+            <View style={styles.uploadContainer}>
                 <Text h4 style={{color: colors.text}}>{'Tu video se está subiendo\n'}</Text>
                 <ProgressCircle
                     percent={progress}
@@ -104,20 +107,21 @@ export default function Upload() {
                     color={colors.text}
                     bgColor={colors.background}
                 >
-                    <Text style={{...styles.percentText, color:colors.text}}>
+                    <Text style={styles.percentText}>
                         {`${Math.trunc(progress)}%`}
                     </Text>
                 </ProgressCircle>
             </View>
             :
-                <ScrollView contentContainerStyle={{...styles.container, ...{backgroundColor: colors.background}}}>
-                    <View style={styles.block}>
+            <View style={styles.flexContainer}>
+                <ScrollView contentContainerStyle={styles.container}>
+                    <View style={styles.uploadBlock}>
                         <Icon name='attach-file' containerStyle={styles.icon} color={colors.primary} size={40} onPress={pickImage} reverse />
                         <Text style={{...styles.filename, ...{color: colors.text}}}>
                             {file? file.uri : 'Ningún archivo seleccionado'}
                         </Text>
                     </View>
-                    <View style={{...styles.videoview}} >
+                    <View style={styles.uploadVideoPreview} >
                         {file &&
                         <Video
                             style={{width: '90%', aspectRatio: file.width/file.height}}
@@ -128,63 +132,20 @@ export default function Upload() {
                         />
                         }
                     </View>
-                    <View style={{...styles.block, ...{backgroundColor: colors.lighterbackground}}}>
+                    <View style={styles.uploadForm}>
                         <Field label={'Título'} set={setTitle} />
                         <Field label={'Descripción'} set={setDesc} multiline/>
                     </View>
-                    <View style={styles.buttonview}>
+                    <View style={styles.formButtonView}>
                         <Button
                             title='Publicar video'
-                            buttonStyle={{...styles.button, backgroundColor: colors.primary}}
-                            icon={{name:'file-upload', color: colors.text}}
+                            buttonStyle={styles.formButton}
+                            icon={{name:'file-upload', color: colors.highlight}}
                             disabled={uploading || !checkVideo()}
                             onPress={uploadVideo}
                         />
                     </View>
                 </ScrollView>
+            </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        backgroundColor: '#242424',
-        alignItems: 'stretch',
-        justifyContent: 'center',
-        padding: 10
-    },
-    block: {
-        margin: 10,
-        padding: 20,
-        alignItems: 'center'
-    },
-    buttonview: {
-        alignItems: 'stretch',
-        justifyContent: 'center',
-    },
-    button: {
-        borderRadius: 20,
-        margin: 10
-    },
-    filename: {
-        alignSelf: 'center'
-    },
-    title: {
-        fontWeight: 'bold',
-        fontSize: 20
-    },
-    description: {
-        fontWeight: 'bold',
-        fontSize: 20
-    },
-    uploadtext: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        alignSelf: 'center'
-    },
-    videoview: {
-        alignItems: 'center'
-    },
-    percentText: {
-        fontSize: 18
-    }
-});

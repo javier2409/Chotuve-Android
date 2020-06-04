@@ -6,9 +6,10 @@ import { AuthContext } from './AuthContext';
 import {useContext, useState} from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import Field from './Field';
+import {ThemeContext} from "../Styles";
 
 export default function RegisterScreen({navigation}){
-    const {colors} = useTheme();
+    const {styles, colors} = useContext(ThemeContext);
     const [email, setEmail] = React.useState(null);
     const [pwd1, setPwd1] = React.useState(null);
     const [pwd2, setPwd2] = React.useState(null);
@@ -41,7 +42,7 @@ export default function RegisterScreen({navigation}){
 
     if (loading) {
         return (
-            <View style={{...styles.loadingview}}>
+            <View style={styles.registerLoadingView}>
                 <Text style={{fontSize: 22, color: colors.text}}>{'Espera...\n'}</Text>
                 <ActivityIndicator size={60} color={colors.text} />
             </View>
@@ -49,22 +50,22 @@ export default function RegisterScreen({navigation}){
     }
 
     return(
-        <ScrollView contentContainerStyle={{...styles.container, backgroundColor: colors.lighterbackground}}>
-            <View style={styles.block}>
-                <Text h4 style={{...styles.title, color: colors.title}}>Crear una nueva cuenta</Text>
+        <ScrollView contentContainerStyle={{...styles.container, ...styles.flexContainer}}>
+            <View style={styles.registerBlock}>
+                <Text h4 style={styles.registerTitle}>Crear una nueva cuenta</Text>
                 <ActivityIndicator color={colors.text} animating={loading}/>
             </View>
-            <View style={{...styles.block, ...{backgroundColor: colors.background}}}>
+            <View style={styles.registerBlock}>
                 <Field label='Nombre y Apellido' icon='account-box' set={setFullname} type={'name'} capitalize />
                 <Field label='Correo Electrónico' icon='mail' set={setEmail} type={'email'} />
                 <Field label='Contraseña' icon='vpn-key' secure set={setPwd1} type={'password'} />
                 <Field label='Repetir contraseña' icon='vpn-key' secure set={setPwd2} type={'password'} />
             </View>
-            <View style={{...styles.buttonview}}>
+            <View style={styles.formButtonView}>
                 <Button
                     title='Registrar'
-                    buttonStyle={{...styles.button, backgroundColor:colors.primary}}
-                    icon={{name:'check-circle', color: colors.text}}
+                    buttonStyle={styles.formButton}
+                    icon={{name:'check-circle', color: colors.highlight}}
                     onPress={tryRegisterUser}
                     disabled={loading}
                 />
@@ -72,39 +73,3 @@ export default function RegisterScreen({navigation}){
         </ScrollView>
     )
 }
-
-const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#242424',
-      alignItems: 'stretch',
-      justifyContent: 'center',
-      padding: 10
-    },
-    block: {
-      margin: 10,
-      padding: 20,
-      alignItems: 'center',
-      justifyContent: 'space-evenly',
-      borderRadius: 20
-    },
-    buttonview: {
-      alignItems: 'stretch',
-      justifyContent: 'center',
-      margin: 15
-    },
-    button: {
-      borderRadius: 20
-    },
-    title: {
-      fontWeight: 'bold',
-    },
-    field: {
-        margin: 8
-    },
-    loadingview: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center'
-    }
-});  
