@@ -17,8 +17,6 @@ export default function LoginScreen({navigation}){
     const [userData, server] = useContext(AuthContext);
     const [user, setUser] = useState(null);
     const [pass, setPass] = useState(null);
-    const user_input = useRef();
-    const pwd_input = useRef();
 
     function tryLoginWithUserAndPass(){
         setLoading(true);
@@ -61,8 +59,20 @@ export default function LoginScreen({navigation}){
             </View>
             <ActivityIndicator color={loading? colors.text : '#00000000'}/>
             <View style={styles.registerBlock}>
-                <Field icon={'person'} label={'Email'} set={setUser} type={'email'} />
-                <Field icon={'vpn-key'} label={'Contraseña'} set={setPass} type={'password'}/>
+                <Field
+                    icon={'person'}
+                    label={'Email'}
+                    set={setUser}
+                    type={'email'}
+                />
+                <Field
+                    icon={'vpn-key'}
+                    label={'Contraseña'}
+                    set={setPass}
+                    type={'password'}
+                    secure
+                    onSubmit={tryLoginWithUserAndPass}
+                />
             </View>
             <View style={styles.formButtonView}>
                 <SocialIcon button type='facebook' title='Ingresar con Facebook' onPress={tryFacebookLogin}/>

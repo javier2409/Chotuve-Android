@@ -8,7 +8,7 @@ import {ThemeContext} from "../Styles";
 
 export default function ChatScreen({route, navigation}){
     const {styles, colors} = useContext(ThemeContext);
-    const {email, full_name, avatar_url} = route.params;
+    const {uid, email, full_name, avatar_url} = route.params;
     const [userData, server] = useContext(AuthContext);
     const [messages, setMessages] = useState([]);
     const [myMessage, setMyMessage] = useState('');
@@ -40,7 +40,7 @@ export default function ChatScreen({route, navigation}){
                 <TouchableOpacity 
                     style={styles.chatHeaderView}
                     onPress={() => {
-                        navigation.navigate("UserProfile", {email});
+                        navigation.navigate("UserProfile", {uid});
                     }}
                 >
                     <Avatar source={{uri: avatar_url}} rounded/>

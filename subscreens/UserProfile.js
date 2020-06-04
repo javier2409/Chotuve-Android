@@ -11,27 +11,23 @@ import {ThemeContext} from "../Styles";
 export default function UserProfile({route, navigation}){
 
     const {styles, colors} = useContext(ThemeContext);
-    const {email} = route.params;
+    const {uid} = route.params;
     const [userData, setUserData] = useState({});
     const [localUserData, server] = useContext(AuthContext);
     const [overlayVisible, setOverlayVisible] = useState(false);
     const profilePicture = useRef({});
     const [uploading, setUploading] = useState(false);
 
-    navigation.setOptions({
-        headerTitle: 'Perfil de ' + email
-    });
-
     useFocusEffect(
         useCallback(
             () => {
                 fetchUserData();
-            }, [email]
+            }, [uid]
         )
     );
 
     function fetchUserData(){
-        server.getUserInfo(email).then(result => {
+        server.getUserInfo(uid).then(result => {
             setUserData(result);
             navigation.setOptions({
                 headerTitle: 'Perfil de ' + result.full_name
@@ -46,7 +42,7 @@ export default function UserProfile({route, navigation}){
     }
 
     function addAsFriend(){
-        server.addFriend(email).then(result => {
+        server.addFriend(uid).then(result => {
             setOverlayVisible(false);
         });
     }
@@ -97,7 +93,7 @@ export default function UserProfile({route, navigation}){
             <Overlay isVisible={overlayVisible} onBackdropPress={toggleOverlay} overlayStyle={{height: 'auto'}}>
                 <View>
                     {
-                        (email === localUserData.email)
+                        (uid === localUserData.uid)
                             ?
                             <View>
                                 <ListItem title='Preferencias' leftIcon={{name:'settings'}} chevron onPress={goToPreferences} />
@@ -129,7 +125,7 @@ export default function UserProfile({route, navigation}){
                         size={150}
                         source={{uri: userData.avatar_uri}}
                         onPress={
-                            (email === localUserData.email)?
+                            (uid === localUserData.uid)?
                                 changeProfilePicture
                                 :
                                 null
@@ -151,7 +147,7 @@ export default function UserProfile({route, navigation}){
                     titleStyle={{color: colors.title}}
                     subtitleStyle={{color: colors.text}}
                     title='Correo Electrónico'
-                    subtitle={email}
+                    subtitle={userData.email}
                 />
             </View>
             <Divider/>
@@ -179,10 +175,3 @@ export default function UserProfile({route, navigation}){
         </ScrollView>
     );
 }
-
-const styles = StyleSheet.create({
-    general: {
-        flex:1,
-    },
-
-})

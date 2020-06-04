@@ -24,10 +24,10 @@ export default function Friends({navigation}) {
             <FlatList
                 data={friends}
                 renderItem={({item}) => {
-                    const {email, full_name, avatar_url} = item;
+                    const {uid, email, full_name, avatar_url} = item;
                     return (
                         <FriendItem data={item} onPress={() => {
-                            navigation.navigate('Chat', {email, full_name, avatar_url})
+                            navigation.navigate('Chat', {uid, email, full_name, avatar_url})
                         }}/>
                     );
                 }}

@@ -11,7 +11,7 @@ export default function MyProfile({navigation}) {
         <UserProfile
             route={{
                 params: {
-                    email: userData.email
+                    uid: userData.uid
                 }
             }}
             navigation={navigation}
