@@ -68,7 +68,7 @@ export class ServerProxy{
     }
 
     //send a request to appserver
-    async _request(path, method, body){
+    async _request(path, method, body, headers = null){
         const token = await this.user.getIdToken();
         const json_body = JSON.stringify(body);
         console.log("Fetching " + method + " " + apiUrl + path + " with body:");
@@ -80,7 +80,8 @@ export class ServerProxy{
                 "Content-Type": 'application/json',
                 "Accept": '*/*',
                 "Accept-Encoding": 'gzip, deflate, br',
-                "Connection": 'keep-alive'
+                "Connection": 'keep-alive',
+                ...headers
             },
             body: json_body
         });
@@ -181,7 +182,7 @@ export class ServerProxy{
     async getVideos(){
         try {
             const result = await this._request("/videos", "GET", null);
-            return JSON.parse(result);
+            return (result);
         } catch (e) {
             return Promise.reject("Error al recibir la lista de videos");
         }
@@ -189,41 +190,18 @@ export class ServerProxy{
 
     //get information to show user profile
     async getUserInfo(uid){
-        const user={
-            avatar_uri: 'xd',
-            full_name: 'Javier Ferreyra',
-            friends: false,
-            address: 'Calle Falsa 123',
-            phone_number: '1112345678',
-            email: 'emaildelusuario@gmail.com',
-            videos: [
-                {
-                    id: '1',
-                    title: 'Videazo',
-                    author: 'autorazo',
-                    description: 'Dale like y suscribete',
-                    thumbnail_uri: 'https://images.wallpaperscraft.com/image/city_vector_panorama_119914_3840x2160.jpg',
-                    video_url: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
-                    timestamp: '2020-04-28'
-                },
-                {
-                    id: '2',
-                    title: 'Especial 1 suscriptor',
-                    author: 'autorazo',
-                    description: 'Dale like y suscribete',
-                    thumbnail_uri: 'https://images.wallpaperscraft.com/image/city_vector_panorama_119914_3840x2160.jpg',
-                    video_url: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
-                    timestamp: '2020-04-28'
-                }
-            ]
-        };
-
-        return user;
+        try {
+            let response = await this._request('/users/' + uid, 'GET', null);
+            response.videos = await this._request('/users/' + uid + '/videos', 'GET', null);
+            return response;
+        } catch (e) {
+            return Promise.reject("Error el obtener información del usuario");
+        }
     }
 
     //get information to show my own profile
     async getMyInfo(){
-        return this.getUserInfo(this.user.email);
+        return this.getUserInfo(this.user.uid);
     }
 
     //get messages between me and a friend
@@ -252,7 +230,7 @@ export class ServerProxy{
     async getVideoComments(video_id){
         try {
             const response = await this._request("/videos/" + video_id + "/comments", 'GET', null);
-            return JSON.parse(response);
+            return (response);
         } catch (e) {
             return Promise.reject("Error al obtener los comentarios");
         }
@@ -260,38 +238,14 @@ export class ServerProxy{
 
     //get list of users that match the search
     async getUserSearch(search){
-        if (search.length < 1){
-            return []
+        try {
+            const users = await this._request('/users', 'GET', null, {
+                "q": search
+            });
+            return (users);
+        } catch (e) {
+            return Promise.reject("Error al realizar la búsqueda");
         }
-        const results=[
-            {
-                uid: '1',
-                email: 'santi78434',
-                full_name: 'Santiago Mariani',
-                avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
-            },
-            {
-                uid: '2',
-                email: 'fran_giordano',
-                full_name: 'Franco Giordano',
-                avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
-            },
-            {
-                uid: '3',
-                email: 'sebalogue',
-                full_name: 'Sebastian Loguercio',
-                avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
-            },
-            {
-                uid: '4',
-                email: 'javiferr',
-                full_name: 'Javier Ferreyra',
-                avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
-            }
-        ];
-        console.log(`Searching ${search} now`);
-        const filtered = results.filter(user => user.email.includes(search));
-        return filtered;
     }
 
     //send a new video
@@ -327,43 +281,27 @@ export class ServerProxy{
 
     //get a list of my friends
     async getFriendList(){
-        let friends=[
-            {
-                uid: '1',
-                email: 'santi78434',
-                full_name: 'Santiago Mariani',
-                avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
-            },
-            {
-                uid: '2',
-                email: 'fran_giordano',
-                full_name: 'Franco Giordano',
-                avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
-            },
-            {
-                uid: '3',
-                email: 'sebalogue',
-                full_name: 'Sebastian Loguercio',
-                avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
-            },
-            {
-                uid: '4',
-                email: 'javiferr',
-                full_name: 'Javier Ferreyra',
-                avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
-            }
-        ];
-        return friends
+        try {
+            const response = await this._request(`/users/${this.user.uid}/friends`, 'GET', null);
+            return (response);
+        } catch (e) {
+            return Promise.reject("Error al obtener la lista de amigos");
+        }
     }
 
     //send a friend request
-    async addFriend(username){
-        return 'Success'
+    async addFriend(uid){
+        try {
+            await this._request(`/users/${uid}/friends/requests`, 'POST', null);
+            return "ok";
+        } catch (e) {
+            return Promise.reject("Error al enviar solicitud de amistad");
+        }
     }
 
     //send a request to get a reset password code
     async requestResetPasswordEmail(email){
-
+        
     }
 
     //send reset password code with new password
@@ -372,12 +310,26 @@ export class ServerProxy{
     }
 
     //send new profile picture
-    async changeProfilePicture(){
-
+    async changeProfilePicture(url){
+        try {
+            await this._request(`/users/${this.user.uid}`, 'PUT', {
+                "image_location": url
+            });
+            return "ok"
+        } catch (e) {
+            return Promise.reject("Error al cambiar la imagen de perfil");
+        }
     }
 
     //send new user information
     async changeMyUserData(user_data){
-
+        try {
+            await this._request(`/users/${this.user.id}`, 'PUT', {
+                display_name: user_data.full_name,
+                phone_number: user_data.phoneNumber
+            })
+        } catch (e) {
+            return Promise.reject("Error al actualizar la información");
+        }
     }
 }
