@@ -179,7 +179,12 @@ export class ServerProxy{
 
     //get video feed
     async getVideos(){
-        return [];
+        try {
+            const result = await this._request("/videos", "GET", null);
+            return JSON.parse(result);
+        } catch (e) {
+            return Promise.reject("Error al recibir la lista de videos");
+        }
     }
 
     //get information to show user profile
@@ -217,7 +222,7 @@ export class ServerProxy{
 
     //get information to show my own profile
     async getMyInfo(){
-        return this.getUserInfo('javier')
+        return this.getUserInfo(this.user.email);
     }
 
     //get messages between me and a friend
@@ -244,16 +249,12 @@ export class ServerProxy{
 
     //get comments from a video
     async getVideoComments(video_id){
-        let comments = [];
-        for (let i=0; i<30; i++){
-            comments.push({
-                id: i.toString(),
-                author: 'SomeGuy '+i,
-                text: 'Hola soy el comentario '+i,
-                timestamp: '2020-05-13'
-            })
+        try {
+            const response = await this._request("/videos/" + video_id + "/comments", 'GET', null);
+            return JSON.parse(response);
+        } catch (e) {
+            return Promise.reject("Error al obtener los comentarios");
         }
-        return comments.concat(this.published_comments);        
     }
 
     //get list of users that match the search
@@ -290,17 +291,28 @@ export class ServerProxy{
 
     //send a new video
     async publishVideo(video_data){
-        console.log(video_data);
+        try{
+            const response = this._request('/videos', 'POST', {
+                title: video_data.title,
+                description: video_data.description,
+                location: video_data.location,
+                firebase_url: video_data.video_uri,
+            });
+            return "ok";
+        } catch (e) {
+            return Promise.reject("Error al enviar video al servidor")
+        }
     }
 
     //send a new comment
     async publishComment(comment_data){
-        const {video_id, text} = comment_data;
-        const new_comment = {
-            video_id: video_id,
-            text: text,
+        try{
+            await this._request('/videos/' + comment_data.video_id + '/comments', 'POST', {
+                text: comment_data.text
+            })
+        } catch (e) {
+            return Promise.reject("Error al publicar comentario");
         }
-        this.published_comments.push(new_comment);
     }
 
     //send a message to another user
