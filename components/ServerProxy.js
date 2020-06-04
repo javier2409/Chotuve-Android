@@ -346,6 +346,7 @@ export class ServerProxy{
 
     }
 
+    //send new user information
     async changeMyUserData(user_data){
 
     }
