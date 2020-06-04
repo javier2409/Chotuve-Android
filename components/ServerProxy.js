@@ -152,13 +152,14 @@ export class ServerProxy{
     }
 
     //get information to show user profile
-    async getUserInfo(username){
+    async getUserInfo(uid){
         const user={
             avatar_uri: 'xd',
             full_name: 'Javier Ferreyra',
             friends: false,
             address: 'Calle Falsa 123',
             phone_number: '1112345678',
+            email: 'emaildelusuario@gmail.com',
             videos: [
                 {
                     id: '1',
@@ -232,21 +233,25 @@ export class ServerProxy{
         }
         const results=[
             {
+                uid: '1',
                 email: 'santi78434',
                 full_name: 'Santiago Mariani',
                 avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
             },
             {
+                uid: '2',
                 email: 'fran_giordano',
                 full_name: 'Franco Giordano',
                 avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
             },
             {
+                uid: '3',
                 email: 'sebalogue',
                 full_name: 'Sebastian Loguercio',
                 avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
             },
             {
+                uid: '4',
                 email: 'javiferr',
                 full_name: 'Javier Ferreyra',
                 avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
@@ -281,21 +286,25 @@ export class ServerProxy{
     async getFriendList(){
         let friends=[
             {
+                uid: '1',
                 email: 'santi78434',
                 full_name: 'Santiago Mariani',
                 avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
             },
             {
+                uid: '2',
                 email: 'fran_giordano',
                 full_name: 'Franco Giordano',
                 avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
             },
             {
+                uid: '3',
                 email: 'sebalogue',
                 full_name: 'Sebastian Loguercio',
                 avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
             },
             {
+                uid: '4',
                 email: 'javiferr',
                 full_name: 'Javier Ferreyra',
                 avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
