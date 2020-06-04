@@ -19,8 +19,9 @@ export default function Field(props){
             inputStyle={{color: colors.grey}}
             containerStyle={styles.videoComment}
             secureTextEntry={props.secure}
-            ref={props.ref}
+            ref={props.reference}
             onChangeText={text => props.set(text)}
+            onSubmitEditing={props.onSubmit}
             autoCompleteType={props.type}
             autoCapitalize={props.capitalize? 'words' : 'none'}
             multiline={props.multiline}
