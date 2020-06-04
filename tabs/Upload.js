@@ -64,7 +64,8 @@ export default function Upload() {
             title: title,
             description: desc,
             thumbnail_uri: await thumb_ref.current.getDownloadURL(),
-            video_uri: await video_ref.current.getDownloadURL()
+            video_uri: await video_ref.current.getDownloadURL(),
+            location: 'Unknown'
         });
         reset();
     }
