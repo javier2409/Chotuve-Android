@@ -26,7 +26,7 @@ export class ServerProxy{
         this.published_comments = [];
     }
 
-    //update saved user data globally
+    //update user data for the entire app
     updateGlobalUserData(user){
         this.updateLocalUserData(user);
         this.setUserData(user)
@@ -39,27 +39,27 @@ export class ServerProxy{
 
     //manage login success
     manageCredential = async credential => {
-        console.log('Trying to get token ID');
-        const token = await credential.user.getIdToken();
-        console.log(`Obtained token ID from firebase: ${token.substring(0, 30)}...`);
-        console.log(credential.user.displayName);
-        console.log(credential.user.email);
-        let provider = 'email';
-        if (credential.credential) {
-            //delete ".com" from provider
-            provider = credential.credential.providerId.slice(0, -4);
+        try {
+            console.log('Trying to get token ID');
+            const token = await credential.user.getIdToken();
+            console.log(`Obtained token ID from firebase: ${token}`);
+            console.log(credential.user.displayName);
+            console.log(credential.user.email);
+            this.updateLocalUserData(credential.user);
+            if (credential.additionalUserInfo.isNewUser) {
+                console.log("The user is new, sending to AppServer");
+                await this._request('/users', 'POST', {
+                    display_name: credential.user.displayName,
+                    email: credential.user.email,
+                    image_location: credential.user.photoURL,
+                    phone_number: credential.user.phoneNumber
+                });
+            }
+            this.updateGlobalUserData(credential.user);
+        } catch(error) {
+            this.updateGlobalUserData(null);
+            return Promise.reject("Error enviando datos al servidor");
         }
-        console.log(provider);
-        this.updateLocalUserData(credential.user);
-        if (credential.additionalUserInfo.isNewUser){
-            console.log("The user is new, sending to AppServer");
-            await this._request('/users', 'POST', {
-                "fullname": credential.user.full_name,
-                "email": credential.user.email,
-                "login-method": provider
-            });
-        }
-        this.updateGlobalUserData(credential.user);
     }
 
     //manage login failure
@@ -70,16 +70,25 @@ export class ServerProxy{
     //send a request to appserver
     async _request(path, method, body){
         const token = await this.user.getIdToken();
+        const json_body = JSON.stringify(body);
         console.log("Fetching " + method + " " + apiUrl + path + " with body:");
-        console.log(body);
+        console.log((typeof json_body) + " " + json_body);
         const response = await fetch(apiUrl+path, {
-            method,
-            body: body? JSON.stringify(body) : null,
+            method: method,
             headers: {
-                "x-access-token": token
-            }
+                "x-access-token": token,
+                "Content-Type": 'application/json',
+                "Accept": '*/*',
+                "Accept-Encoding": 'gzip, deflate, br',
+                "Connection": 'keep-alive'
+            },
+            body: json_body
         });
 
+        if (!response.ok){
+            console.log("Response not OK");
+            return Promise.reject("Response not OK");
+        }
         const response_json = await response.json();
         console.log("Response:");
         console.log(response_json);
@@ -170,7 +179,7 @@ export class ServerProxy{
 
     //get video feed
     async getVideos(){
-        return await this._request('/videos', 'GET', null);
+        return [];
     }
 
     //get information to show user profile
