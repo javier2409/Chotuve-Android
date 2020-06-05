@@ -55,7 +55,11 @@ export class ServerProxy{
                     phone_number: credential.user.phoneNumber
                 });
             }
-            this.updateGlobalUserData(credential.user);
+            console.log("Requesting user ID");
+            const response = await this._request('/auth', 'GET', null);
+            console.log("User ID: " + response.id);
+            const user_data = {...credential.user, uuid: response.id}
+            this.updateGlobalUserData(user_data);
         } catch(error) {
             this.updateGlobalUserData(null);
             return Promise.reject("Error enviando datos al servidor");
@@ -201,7 +205,7 @@ export class ServerProxy{
 
     //get information to show my own profile
     async getMyInfo(){
-        return this.getUserInfo(this.user.uid);
+        return this.getUserInfo(this.user.uuid);
     }
 
     //get messages between me and a friend
@@ -282,7 +286,7 @@ export class ServerProxy{
     //get a list of my friends
     async getFriendList(){
         try {
-            const response = await this._request(`/users/${this.user.uid}/friends`, 'GET', null);
+            const response = await this._request(`/users/${this.user.uuid}/friends`, 'GET', null);
             return (response);
         } catch (e) {
             return Promise.reject("Error al obtener la lista de amigos");
@@ -312,7 +316,7 @@ export class ServerProxy{
     //send new profile picture
     async changeProfilePicture(url){
         try {
-            await this._request(`/users/${this.user.uid}`, 'PUT', {
+            await this._request(`/users/${this.user.uuid}`, 'PUT', {
                 "image_location": url
             });
             return "ok"

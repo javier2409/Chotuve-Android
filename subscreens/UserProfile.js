@@ -93,7 +93,7 @@ export default function UserProfile({route, navigation}){
             <Overlay isVisible={overlayVisible} onBackdropPress={toggleOverlay} overlayStyle={{height: 'auto'}}>
                 <View>
                     {
-                        (uid === localUserData.uid)
+                        (uid === localUserData.uuid)
                             ?
                             <View>
                                 <ListItem title='Preferencias' leftIcon={{name:'settings'}} chevron onPress={goToPreferences} />
@@ -125,7 +125,7 @@ export default function UserProfile({route, navigation}){
                         size={150}
                         source={{uri: userData.avatar_uri}}
                         onPress={
-                            (uid === localUserData.uid)?
+                            (uid === localUserData.uuid)?
                                 changeProfilePicture
                                 :
                                 null
