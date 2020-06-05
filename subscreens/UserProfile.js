@@ -18,14 +18,6 @@ export default function UserProfile({route, navigation}){
     const profilePicture = useRef({});
     const [uploading, setUploading] = useState(false);
 
-    useFocusEffect(
-        useCallback(
-            () => {
-                fetchUserData();
-            }, [uid]
-        )
-    );
-
     function fetchUserData(){
         server.getUserInfo(uid).then(result => {
             setUserData(result);
@@ -36,6 +28,14 @@ export default function UserProfile({route, navigation}){
             navigation.goBack();
         })
     }
+
+    useFocusEffect(
+        useCallback(
+            () => {
+                fetchUserData();
+            }, []
+        )
+    );
 
     function toggleOverlay(){
         setOverlayVisible(!overlayVisible)
@@ -140,7 +140,7 @@ export default function UserProfile({route, navigation}){
                     titleStyle={{color: colors.title}}
                     subtitleStyle={{color: colors.text}}
                     title='Nombre'
-                    subtitle={userData.full_name}
+                    subtitle={userData.display_name}
                 />
                 <ListItem
                     containerStyle={{backgroundColor: colors.lighterbackground}}

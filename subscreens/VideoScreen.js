@@ -6,6 +6,7 @@ import {Divider, Icon, Input, Text} from 'react-native-elements';
 import {AuthContext} from "../login/AuthContext";
 import * as Orientation from "expo-screen-orientation";
 import {ThemeContext} from "../Styles";
+import * as firebase from "firebase";
 
 export default function VideoScreen({route, navigation}){
     const {styles, colors} = useContext(ThemeContext);
@@ -14,6 +15,7 @@ export default function VideoScreen({route, navigation}){
 	const [comments, setComments] = useState([]);
 	const [myComment, setMyComment] = useState('');
 	const [sending, setSending] = useState(false);
+	const [downloadURL, setDownloadURL] = useState(null);
 
 	function sendComment(){
 		if (myComment.length < 1){
@@ -35,7 +37,9 @@ export default function VideoScreen({route, navigation}){
 
     useEffect(() => {
         return navigation.addListener('focus', () => {
-        	fetchComments()
+        	fetchComments();
+			const url = firebase.storage().ref().child(firebase_url);
+			setDownloadURL(url);
         })
     }, [navigation])
 
@@ -54,7 +58,7 @@ export default function VideoScreen({route, navigation}){
         <View style={styles.videoContainer}>
 			<Video
 				style={styles.video}
-				source={{uri: firebase_url}}
+				source={{uri: downloadURL}}
 				useNativeControls
 				shouldPlay
 				resizeMode={Video.RESIZE_MODE_CONTAIN}

@@ -63,8 +63,8 @@ export default function Upload() {
         await server.publishVideo({
             title: title,
             description: desc,
-            thumbnail_uri: await thumb_ref.current.getDownloadURL(),
-            video_uri: await video_ref.current.getDownloadURL(),
+            thumbnail_uri: thumb_ref.current.fullPath,
+            video_uri: video_ref.current.fullPath,
             location: 'Unknown'
         });
         reset();

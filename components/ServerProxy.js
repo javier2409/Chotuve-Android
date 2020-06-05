@@ -261,6 +261,7 @@ export class ServerProxy{
                 description: video_data.description,
                 location: video_data.location,
                 firebase_url: video_data.video_uri,
+                thumbnail_url: video_data.thumbnail_uri
             });
             return "ok";
         } catch (e) {
@@ -288,7 +289,7 @@ export class ServerProxy{
     async getFriendList(){
         try {
             const response = await this._request(`/users/${this.user.uuid}/friends`, 'GET', null);
-            return (response);
+            return response.friends;
         } catch (e) {
             return Promise.reject("Error al obtener la lista de amigos");
         }
