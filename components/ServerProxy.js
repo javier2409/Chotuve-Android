@@ -58,8 +58,8 @@ export class ServerProxy{
             console.log("Requesting user ID");
             const response = await this._request('/auth', 'GET', null);
             console.log("User ID: " + response.id);
-            const user_data = {...credential.user, uuid: response.id}
-            this.updateGlobalUserData(user_data);
+            credential.user.uuid = response.id;
+            this.updateGlobalUserData(credential.user);
         } catch(error) {
             this.updateGlobalUserData(null);
             return Promise.reject("Error enviando datos al servidor");
@@ -74,7 +74,8 @@ export class ServerProxy{
     //send a request to appserver
     async _request(path, method, body, headers = null){
         const token = await this.user.getIdToken();
-        const json_body = JSON.stringify(body);
+        console.log("Requesting using token: " + token.substring(0,50));
+        const json_body = body ? JSON.stringify(body) : null;
         console.log("Fetching " + method + " " + apiUrl + path + " with body:");
         console.log((typeof json_body) + " " + json_body);
         const response = await fetch(apiUrl+path, {
