@@ -9,7 +9,7 @@ import {ThemeContext} from "../Styles";
 
 export default function VideoScreen({route, navigation}){
     const {styles, colors} = useContext(ThemeContext);
-    const {id, video_url, title, author, description} = route.params;
+    const {video_id, firebase_url, title, author, description} = route.params;
 	const [userData, server] = useContext(AuthContext);
 	const [comments, setComments] = useState([]);
 	const [myComment, setMyComment] = useState('');
@@ -21,7 +21,7 @@ export default function VideoScreen({route, navigation}){
 		}
 		setSending(true);
 		server.publishComment({
-			video_id: id,
+			video_id: video_id,
 			text: myComment
 		}).then(() => {
 			setSending(false);
@@ -30,7 +30,7 @@ export default function VideoScreen({route, navigation}){
 	}
 
 	function fetchComments(){
-        server.getVideoComments(id).then(result => setComments(result));
+        server.getVideoComments(video_id).then(result => setComments(result));
     }
 
     useEffect(() => {
@@ -54,7 +54,7 @@ export default function VideoScreen({route, navigation}){
         <View style={styles.videoContainer}>
 			<Video
 				style={styles.video}
-				source={{uri: video_url}}
+				source={{uri: firebase_url}}
 				useNativeControls
 				shouldPlay
 				resizeMode={Video.RESIZE_MODE_CONTAIN}

@@ -52,7 +52,7 @@ export default function Home({navigation}) {
                     return <VideoItem videoData={item}/>;
                 }}
                 onRefresh={fetchVideos}
-                keyExtractor={item => item.id}
+                keyExtractor={item => item.video_id}
             />
         </View>
     );
