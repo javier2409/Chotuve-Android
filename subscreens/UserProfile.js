@@ -29,7 +29,7 @@ export default function UserProfile({route, navigation}){
             }
             setUserData(result);
             navigation.setOptions({
-                headerTitle: 'Perfil de ' + result.full_name
+                headerTitle: 'Perfil de ' + result.display_name
             });
         }, () => {
             navigation.goBack();

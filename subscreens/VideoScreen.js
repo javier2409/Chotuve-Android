@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import { StyleSheet, View, FlatList, ActivityIndicator } from "react-native"
-import { useTheme } from '@react-navigation/native';
+import {StyleSheet, View, FlatList, ActivityIndicator, TouchableOpacity} from "react-native"
+import { useNavigation } from '@react-navigation/native';
 import { Video } from 'expo-av';
 import {Divider, Icon, Input, Text} from 'react-native-elements';
 import {AuthContext} from "../login/AuthContext";
@@ -9,6 +9,7 @@ import {ThemeContext} from "../Styles";
 import * as firebase from "firebase";
 
 function Comment(props){
+	const navigation = useNavigation();
 	const {colors} = useContext(ThemeContext);
 	const [authorName, setAuthorName] = useState(null);
 	const [user, server] = useContext(AuthContext);
@@ -25,7 +26,14 @@ function Comment(props){
 
 	return (
 		<>
-			<Text style={{color:colors.title, fontWeight: 'bold'}}>{authorName}</Text>
+			<Text
+				style={{color:colors.title, fontWeight: 'bold'}}
+				onPress={() => {
+					navigation.navigate("UserProfile", {uid: props.author_uuid});
+				}}
+			>
+				{authorName}
+			</Text>
 			<Text style={{color:colors.title}}>{props.text}</Text>
 		</>
 	)
@@ -33,7 +41,7 @@ function Comment(props){
 
 export default function VideoScreen({route, navigation}){
     const {styles, colors} = useContext(ThemeContext);
-    const {video_id, firebase_url, title, author, description} = route.params;
+    const {uuid, video_id, firebase_url, title, author, description} = route.params;
 	const [userData, server] = useContext(AuthContext);
 	const [comments, setComments] = useState([]);
 	const [myComment, setMyComment] = useState('');
@@ -92,7 +100,9 @@ export default function VideoScreen({route, navigation}){
 			<View style={styles.videoInfo}>
 				<Text style={{color:colors.title}}>
 					<Text style={{fontSize: 20, fontWeight: 'bold'}}>{title}</Text>
-					<Text> - {author}</Text>
+					<Text onPress={() => {
+						navigation.navigate("UserProfile", {uid: uuid});
+					}}> - {author}</Text>
 				</Text>
 				<Text style={{color:colors.title}}>{description}</Text>
 			</View>
