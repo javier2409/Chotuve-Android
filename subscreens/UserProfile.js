@@ -18,9 +18,15 @@ export default function UserProfile({route, navigation}){
     const [overlayVisible, setOverlayVisible] = useState(false);
     const profilePicture = useRef({});
     const [uploading, setUploading] = useState(false);
+    const [avatar, setAvatar] = useState(null);
 
     function fetchUserData(){
         server.getUserInfo(uid).then(result => {
+            if (result.image_location){
+                firebase.storage().ref().child(result.image_location).getDownloadURL().then(url => {
+                    setAvatar(url);
+                });
+            }
             setUserData(result);
             navigation.setOptions({
                 headerTitle: 'Perfil de ' + result.full_name
@@ -80,7 +86,7 @@ export default function UserProfile({route, navigation}){
 
     async function complete(){
         try {
-            const uri = await profilePicture.current.getDownloadURL();
+            const uri = profilePicture.current.fullPath;
             await server.changeProfilePicture(uri);
             setUserData(Object.assign(userData, {avatar_uri: uri}));
         } catch(error){
@@ -124,7 +130,7 @@ export default function UserProfile({route, navigation}){
                     <Avatar
                         rounded
                         size={150}
-                        source={{uri: userData.avatar_uri}}
+                        source={{uri: avatar}}
                         onPress={
                             (uid === localUserData.uuid)?
                                 changeProfilePicture
