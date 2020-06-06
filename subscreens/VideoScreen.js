@@ -38,8 +38,9 @@ export default function VideoScreen({route, navigation}){
     useEffect(() => {
         return navigation.addListener('focus', () => {
         	fetchComments();
-			const url = firebase.storage().ref().child(firebase_url);
-			setDownloadURL(url);
+	        firebase.storage().ref().child(firebase_url).getDownloadURL().then(url => {
+		        setDownloadURL(url);
+			});
         })
     }, [navigation])
 
@@ -110,7 +111,7 @@ export default function VideoScreen({route, navigation}){
 							</View>
 						);
 					}}
-					keyExtractor={item => item.id}
+					keyExtractor={item => toString(item.id)}
 					refreshing={false}
 					onRefresh={fetchComments}
 				/>
