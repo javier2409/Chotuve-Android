@@ -51,7 +51,6 @@ export class ServerProxy{
                 await this._request('/users', 'POST', {
                     display_name: credential.user.displayName,
                     email: credential.user.email,
-                    image_location: credential.user.photoURL,
                     phone_number: credential.user.phoneNumber
                 });
             }
