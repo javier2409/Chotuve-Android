@@ -143,7 +143,7 @@ export default function VideoScreen({route, navigation}){
 							</View>
 						);
 					}}
-					keyExtractor={item => item.comment_id}
+					keyExtractor={item => item.comment_id.toString()}
 					refreshing={false}
 					onRefresh={fetchComments}
 				/>
