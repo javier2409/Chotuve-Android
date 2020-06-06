@@ -8,6 +8,29 @@ import * as Orientation from "expo-screen-orientation";
 import {ThemeContext} from "../Styles";
 import * as firebase from "firebase";
 
+function Comment(props){
+	const {colors} = useContext(ThemeContext);
+	const [authorName, setAuthorName] = useState(null);
+	const [user, server] = useContext(AuthContext);
+
+	function fetchName(){
+		server.getUserName(props.author_uuid).then(result => {
+			setAuthorName(result);
+		})
+	}
+
+	useEffect(() => {
+		fetchName();
+	}, [props.author_uuid]);
+
+	return (
+		<>
+			<Text style={{color:colors.title, fontWeight: 'bold'}}>{authorName}</Text>
+			<Text style={{color:colors.title}}>{props.text}</Text>
+		</>
+	)
+}
+
 export default function VideoScreen({route, navigation}){
     const {styles, colors} = useContext(ThemeContext);
     const {video_id, firebase_url, title, author, description} = route.params;
@@ -106,12 +129,11 @@ export default function VideoScreen({route, navigation}){
 					renderItem={({item}) => {
 						return (
 							<View style={styles.videoComment}>
-								<Text style={{color:colors.title, fontWeight: 'bold'}}>{item.author}</Text>
-								<Text style={{color:colors.title}}>{item.text}</Text>
+								<Comment author_uuid={item.uuid} text={item.text}/>
 							</View>
 						);
 					}}
-					keyExtractor={item => toString(item.id)}
+					keyExtractor={item => item.comment_id}
 					refreshing={false}
 					onRefresh={fetchComments}
 				/>

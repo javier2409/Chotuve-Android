@@ -204,6 +204,16 @@ export class ServerProxy{
         }
     }
 
+    //get the username from user id
+    async getUserName(uid){
+        try {
+            const response = await this._request(`/users/${uid}`, 'GET', null);
+            return response.display_name;
+        } catch (e) {
+            return Promise.reject("Error al obtener nombre de usuario");
+        }
+    }
+
     //get information to show my own profile
     async getMyInfo(){
         return this.getUserInfo(this.user.uuid);
