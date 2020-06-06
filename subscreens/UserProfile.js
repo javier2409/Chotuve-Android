@@ -7,6 +7,7 @@ import {AuthContext} from "../login/AuthContext";
 import {launchImageLibraryAsync, MediaTypeOptions} from "expo-image-picker";
 import * as firebase from "firebase";
 import {ThemeContext} from "../Styles";
+import VideoItem from "../components/VideoItem";
 
 export default function UserProfile({route, navigation}){
 
@@ -158,17 +159,12 @@ export default function UserProfile({route, navigation}){
                     data={userData.videos}
                     renderItem={({item}) => {
                         return (
-                            <TouchableOpacity
-                                style={styles.profileVideoView}
-                                onPress={() => {
-                                    navigation.navigate("Video", item)
-                                }}>
-                                <Image source={{uri: item.thumbnail_uri}} style={{height: 150, aspectRatio: 16/9}}/>
-                                <Text style={styles.profileVideoTitle}>{item.title}</Text>
-                            </TouchableOpacity>
+                            <View style={{width: 200, height:'auto', marginHorizontal: 20}}>
+                                <VideoItem videoData={item}/>
+                            </View>
                         );
                     }}
-                    keyExtractor={item => item.id}
+                    keyExtractor={item => toString(item.video_id)}
                     style={{alignSelf: 'flex-start'}}
                 />
             </View>
