@@ -6,14 +6,39 @@ import {Divider, Icon, Input, Text} from 'react-native-elements';
 import {AuthContext} from "../login/AuthContext";
 import * as Orientation from "expo-screen-orientation";
 import {ThemeContext} from "../Styles";
+import * as firebase from "firebase";
+
+function Comment(props){
+	const {colors} = useContext(ThemeContext);
+	const [authorName, setAuthorName] = useState(null);
+	const [user, server] = useContext(AuthContext);
+
+	function fetchName(){
+		server.getUserName(props.author_uuid).then(result => {
+			setAuthorName(result);
+		})
+	}
+
+	useEffect(() => {
+		fetchName();
+	}, [props.author_uuid]);
+
+	return (
+		<>
+			<Text style={{color:colors.title, fontWeight: 'bold'}}>{authorName}</Text>
+			<Text style={{color:colors.title}}>{props.text}</Text>
+		</>
+	)
+}
 
 export default function VideoScreen({route, navigation}){
     const {styles, colors} = useContext(ThemeContext);
-    const {id, video_url, title, author, description} = route.params;
+    const {video_id, firebase_url, title, author, description} = route.params;
 	const [userData, server] = useContext(AuthContext);
 	const [comments, setComments] = useState([]);
 	const [myComment, setMyComment] = useState('');
 	const [sending, setSending] = useState(false);
+	const [downloadURL, setDownloadURL] = useState(null);
 
 	function sendComment(){
 		if (myComment.length < 1){
@@ -21,7 +46,7 @@ export default function VideoScreen({route, navigation}){
 		}
 		setSending(true);
 		server.publishComment({
-			video_id: id,
+			video_id: video_id,
 			text: myComment
 		}).then(() => {
 			setSending(false);
@@ -30,12 +55,15 @@ export default function VideoScreen({route, navigation}){
 	}
 
 	function fetchComments(){
-        server.getVideoComments(id).then(result => setComments(result));
+        server.getVideoComments(video_id).then(result => setComments(result));
     }
 
     useEffect(() => {
         return navigation.addListener('focus', () => {
-        	fetchComments()
+        	fetchComments();
+	        firebase.storage().ref().child(firebase_url).getDownloadURL().then(url => {
+		        setDownloadURL(url);
+			});
         })
     }, [navigation])
 
@@ -54,7 +82,7 @@ export default function VideoScreen({route, navigation}){
         <View style={styles.videoContainer}>
 			<Video
 				style={styles.video}
-				source={{uri: video_url}}
+				source={{uri: downloadURL}}
 				useNativeControls
 				shouldPlay
 				resizeMode={Video.RESIZE_MODE_CONTAIN}
@@ -101,12 +129,11 @@ export default function VideoScreen({route, navigation}){
 					renderItem={({item}) => {
 						return (
 							<View style={styles.videoComment}>
-								<Text style={{color:colors.title, fontWeight: 'bold'}}>{item.author}</Text>
-								<Text style={{color:colors.title}}>{item.text}</Text>
+								<Comment author_uuid={item.uuid} text={item.text}/>
 							</View>
 						);
 					}}
-					keyExtractor={item => item.id}
+					keyExtractor={item => item.comment_id}
 					refreshing={false}
 					onRefresh={fetchComments}
 				/>

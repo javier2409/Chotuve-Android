@@ -1,16 +1,16 @@
 import Constants from 'expo-constants';
 
-const localhost = "localhost:5000";
+const localhost = "192.168.0.7:5000";
 
 const ENV = {
     dev: {
-        apiUrl: localhost,
+        apiUrl: "http://chotuve-appserver-staging.herokuapp.com",
     },
     staging: {
-        apiUrl: "chotuve-appserver-staging.herokuapp.com"
+        apiUrl: "http://chotuve-appserver-staging.herokuapp.com"
     },
     prod: {
-        apiUrl: "chotuve-appserver.herokuapp.com"
+        apiUrl: "http://chotuve-appserver.herokuapp.com"
     }
 };
 

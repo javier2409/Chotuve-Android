@@ -26,35 +26,83 @@ export class ServerProxy{
         this.published_comments = [];
     }
 
-    updateUserData(user){
+    //update user data for the entire app
+    updateGlobalUserData(user){
+        this.updateLocalUserData(user);
         this.setUserData(user)
+    }
+
+    //update user data for this object
+    updateLocalUserData(user){
         this.user = user;
     }
 
+    //manage login success
     manageCredential = async credential => {
-        console.log('Trying to get token ID');
-        const token = await credential.user.getIdToken();
-        this.updateUserData(credential.user);
-        console.log(`Obtained token ID from firebase: ${token.substring(0, 30)}...`);
-
-        console.log(credential.user.displayName);
-        console.log(credential.user.email);
-        let provider = 'firebase';
-        if (credential.credential) {
-            provider = credential.credential.providerId;
-        }
-        console.log(provider);
-        if (credential.additionalUserInfo.isNewUser){
+        try {
+            console.log('Trying to get token ID');
+            const token = await credential.user.getIdToken();
+            console.log(`Obtained token ID from firebase: ${token}`);
+            console.log(credential.user.displayName);
+            console.log(credential.user.email);
+            this.updateLocalUserData(credential.user);
+            if (credential.additionalUserInfo.isNewUser) {
+                console.log("The user is new, sending to AppServer");
+                await this._request('/users', 'POST', {
+                    display_name: credential.user.displayName,
+                    email: credential.user.email,
+                    phone_number: credential.user.phoneNumber
+                });
+            }
+            console.log("Requesting user ID");
+            const response = await this._request('/auth', 'GET', null);
+            console.log("User ID: " + response.id);
+            credential.user.uuid = response.id;
+            this.updateGlobalUserData(credential.user);
+        } catch(error) {
+            this.updateGlobalUserData(null);
+            return Promise.reject("Error enviando datos al servidor");
         }
     }
 
+    //manage login failure
     manageFailure = reason => {
         alert(reason);
     }
 
+    //send a request to appserver
+    async _request(path, method, body, headers = null){
+        const token = await this.user.getIdToken();
+        console.log("Requesting using token: " + token.substring(0,50));
+        const json_body = body ? JSON.stringify(body) : null;
+        console.log("Fetching " + method + " " + apiUrl + path + " with body:");
+        console.log((typeof json_body) + " " + json_body);
+        const response = await fetch(apiUrl+path, {
+            method: method,
+            headers: {
+                "x-access-token": token,
+                "Content-Type": 'application/json',
+                "Accept": '*/*',
+                "Accept-Encoding": 'gzip, deflate, br',
+                "Connection": 'keep-alive',
+                ...headers
+            },
+            body: json_body
+        });
+
+        if (!response.ok){
+            console.log("Response not OK");
+            return Promise.reject("Response not OK");
+        }
+        const response_json = await response.json();
+        console.log("Response:");
+        console.log(response_json);
+        return response_json;
+    }
+
     //log out from account
     logOut(){
-        this.updateUserData(null);
+        this.updateGlobalUserData(null);
     }
 
     //get auth token from username and password
@@ -72,6 +120,7 @@ export class ServerProxy{
         }
     }
 
+    //get auth token using facebook
     async tryFacebookLogin(){
         const appId = "591659228371489";
 
@@ -95,6 +144,7 @@ export class ServerProxy{
         }
     }
 
+    //get auth token using google
     async tryGoogleLogin() {
         try {
             const googleLoginResult = await google.logInAsync({
@@ -116,6 +166,7 @@ export class ServerProxy{
         }
     }
 
+    //send new user and get auth token from firebase
     async registerNewUser(user_data){
         const {email, password, full_name} = user_data;
         try{
@@ -133,61 +184,38 @@ export class ServerProxy{
 
     //get video feed
     async getVideos(){
-        let data = [
-        ];
-        
-        for (let i = 0; i<20; i++) {
-            data.push({
-                id: i.toString(),
-                title: 'Video '+i,
-                author: 'Autor '+i,
-                description: 'A normal video',
-                video_url: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
-                thumbnail_url: 'https://images.wallpaperscraft.com/image/city_vector_panorama_119914_3840x2160.jpg',
-                timestamp: '2020-04-25',
-                reaction: 'none'
-            });
+        try {
+            const result = await this._request("/videos", "GET", null);
+            return (result);
+        } catch (e) {
+            return Promise.reject("Error al recibir la lista de videos");
         }
-        return data.concat(this.published_videos);
     }
 
     //get information to show user profile
     async getUserInfo(uid){
-        const user={
-            avatar_uri: 'xd',
-            full_name: 'Javier Ferreyra',
-            friends: false,
-            address: 'Calle Falsa 123',
-            phone_number: '1112345678',
-            email: 'emaildelusuario@gmail.com',
-            videos: [
-                {
-                    id: '1',
-                    title: 'Videazo',
-                    author: 'autorazo',
-                    description: 'Dale like y suscribete',
-                    thumbnail_uri: 'https://images.wallpaperscraft.com/image/city_vector_panorama_119914_3840x2160.jpg',
-                    video_url: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
-                    timestamp: '2020-04-28'
-                },
-                {
-                    id: '2',
-                    title: 'Especial 1 suscriptor',
-                    author: 'autorazo',
-                    description: 'Dale like y suscribete',
-                    thumbnail_uri: 'https://images.wallpaperscraft.com/image/city_vector_panorama_119914_3840x2160.jpg',
-                    video_url: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
-                    timestamp: '2020-04-28'
-                }
-            ]
-        };
+        try {
+            let response = await this._request('/users/' + uid, 'GET', null);
+            response.videos = await this._request('/users/' + uid + '/videos', 'GET', null);
+            return response;
+        } catch (e) {
+            return Promise.reject("Error el obtener información del usuario");
+        }
+    }
 
-        return user;
+    //get the username from user id
+    async getUserName(uid){
+        try {
+            const response = await this._request(`/users/${uid}`, 'GET', null);
+            return response.display_name;
+        } catch (e) {
+            return Promise.reject("Error al obtener nombre de usuario");
+        }
     }
 
     //get information to show my own profile
     async getMyInfo(){
-        return this.getUserInfo('javier')
+        return this.getUserInfo(this.user.uuid);
     }
 
     //get messages between me and a friend
@@ -214,67 +242,51 @@ export class ServerProxy{
 
     //get comments from a video
     async getVideoComments(video_id){
-        let comments = [];
-        for (let i=0; i<30; i++){
-            comments.push({
-                id: i.toString(),
-                author: 'SomeGuy '+i,
-                text: 'Hola soy el comentario '+i,
-                timestamp: '2020-05-13'
-            })
+        try {
+            const response = await this._request("/videos/" + video_id + "/comments", 'GET', null);
+            return (response);
+        } catch (e) {
+            return Promise.reject("Error al obtener los comentarios");
         }
-        return comments.concat(this.published_comments);        
     }
 
     //get list of users that match the search
     async getUserSearch(search){
-        if (search.length < 1){
-            return []
+        try {
+            const users = await this._request('/users', 'GET', null, {
+                "q": search
+            });
+            return (users);
+        } catch (e) {
+            return Promise.reject("Error al realizar la búsqueda");
         }
-        const results=[
-            {
-                uid: '1',
-                email: 'santi78434',
-                full_name: 'Santiago Mariani',
-                avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
-            },
-            {
-                uid: '2',
-                email: 'fran_giordano',
-                full_name: 'Franco Giordano',
-                avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
-            },
-            {
-                uid: '3',
-                email: 'sebalogue',
-                full_name: 'Sebastian Loguercio',
-                avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
-            },
-            {
-                uid: '4',
-                email: 'javiferr',
-                full_name: 'Javier Ferreyra',
-                avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
-            }
-        ];
-        console.log(`Searching ${search} now`);
-        const filtered = results.filter(user => user.email.includes(search));
-        return filtered;
     }
 
     //send a new video
     async publishVideo(video_data){
-        console.log(video_data);
+        try{
+            const response = this._request('/videos', 'POST', {
+                title: video_data.title,
+                description: video_data.description,
+                location: video_data.location,
+                firebase_url: video_data.video_uri,
+                thumbnail_url: video_data.thumbnail_uri
+            });
+            return "ok";
+        } catch (e) {
+            return Promise.reject("Error al enviar video al servidor")
+        }
     }
 
     //send a new comment
     async publishComment(comment_data){
-        const {video_id, text} = comment_data;
-        const new_comment = {
-            video_id: video_id,
-            text: text,
+        try{
+            await this._request('/videos/' + comment_data.video_id + '/comments', 'POST', {
+                text: comment_data.text
+            })
+        } catch (e) {
+            return Promise.reject("Error al publicar comentario");
         }
-        this.published_comments.push(new_comment);
     }
 
     //send a message to another user
@@ -284,52 +296,55 @@ export class ServerProxy{
 
     //get a list of my friends
     async getFriendList(){
-        let friends=[
-            {
-                uid: '1',
-                email: 'santi78434',
-                full_name: 'Santiago Mariani',
-                avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
-            },
-            {
-                uid: '2',
-                email: 'fran_giordano',
-                full_name: 'Franco Giordano',
-                avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
-            },
-            {
-                uid: '3',
-                email: 'sebalogue',
-                full_name: 'Sebastian Loguercio',
-                avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
-            },
-            {
-                uid: '4',
-                email: 'javiferr',
-                full_name: 'Javier Ferreyra',
-                avatar_url: 'https://cdn2.iconfinder.com/data/icons/web-mobile-2-1/64/user_avatar_admin_web_mobile_business_office-512.png'
-            }
-        ];
-        return friends
+        try {
+            const response = await this._request(`/users/${this.user.uuid}/friends`, 'GET', null);
+            return response.friends;
+        } catch (e) {
+            return Promise.reject("Error al obtener la lista de amigos");
+        }
     }
 
-    async addFriend(username){
-        return 'Success'
+    //send a friend request
+    async addFriend(uid){
+        try {
+            await this._request(`/users/${uid}/friends/requests`, 'POST', null);
+            return "ok";
+        } catch (e) {
+            return Promise.reject("Error al enviar solicitud de amistad");
+        }
     }
 
+    //send a request to get a reset password code
     async requestResetPasswordEmail(email){
-
+        
     }
 
+    //send reset password code with new password
     async sendCodeAndNewPassword(code, newPassword){
 
     }
 
-    async changeProfilePicture(){
-
+    //send new profile picture
+    async changeProfilePicture(url){
+        try {
+            await this._request(`/users/${this.user.uuid}`, 'PUT', {
+                "image_location": url
+            });
+            return "ok"
+        } catch (e) {
+            return Promise.reject("Error al cambiar la imagen de perfil");
+        }
     }
 
+    //send new user information
     async changeMyUserData(user_data){
-
+        try {
+            await this._request(`/users/${this.user.uuid}`, 'PUT', {
+                display_name: user_data.full_name,
+                phone_number: user_data.phone_number
+            })
+        } catch (e) {
+            return Promise.reject("Error al actualizar la información");
+        }
     }
 }

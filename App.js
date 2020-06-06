@@ -14,6 +14,9 @@ import RegisterScreen from './login/RegisterScreen';
 import RecoverPasswordScreen from './login/RecoverPasswordScreen';
 import Preferences from "./subscreens/Preferences";
 import {ThemeContext, ThemeContextProvider} from "./Styles";
+import ignoreWarnings from 'react-native-ignore-warnings';
+
+ignoreWarnings('Setting a timer');
 
 const Stack = createStackNavigator();
 
@@ -80,7 +83,7 @@ function Main() {
             console.log(`Credentials saved in async storage: ${username}, ${password}`);
             await serverProxy.tryLogin(username, password);
         } catch(e) {
-            serverProxy.updateUserData(null);
+            serverProxy.updateGlobalUserData(null);
         }
         const saved_theme = await AsyncStorage.getItem('THEME');
         if (saved_theme === 'light'){

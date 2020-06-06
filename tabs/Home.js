@@ -1,30 +1,8 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {useNavigation, useTheme} from '@react-navigation/native';
-import {Image} from 'react-native-elements';
+import {FlatList, View} from 'react-native';
 import {AuthContext} from '../login/AuthContext';
 import {ThemeContext} from "../Styles";
-
-function VideoItem(props) {
-    const {styles} = useContext(ThemeContext);
-    const navigation = useNavigation();
-    return (
-        <TouchableOpacity style={styles.homeVideoItem} onPress={() => {
-            navigation.navigate('Video', props.videoData);
-        }}>
-            <View style={{flexDirection: 'column'}}>
-                <Image source={{uri: props.videoData.thumbnail_url}}
-                       style={{width: '100%', aspectRatio: 16/9}}
-                       PlaceholderContent={<ActivityIndicator/>}
-                />
-                <View style={{flex: 1, padding: 10}}>
-                    <Text style={styles.homeVideoTitle}>{props.videoData.title}</Text>
-                    <Text style={styles.homeVideoSubtitle}>{props.videoData.author} - {props.videoData.timestamp}</Text>
-                </View>
-            </View>
-        </TouchableOpacity>
-    );
-}
+import VideoItem from "../components/VideoItem";
 
 export default function Home({navigation}) {
     const {styles} = useContext(ThemeContext);
@@ -33,12 +11,16 @@ export default function Home({navigation}) {
 
     function fetchVideos(){
         setVideoList([]);
-        server.getVideos().then(result => setVideoList(result));
+        server.getVideos().then(result => {
+            setVideoList(result)
+        });
     }
 
     useEffect(() => {
         return navigation.addListener('focus', () => {
-            fetchVideos();
+            if (videoList.length === 0){
+                fetchVideos();
+            }
         });
     }, [navigation]);
 
@@ -52,7 +34,7 @@ export default function Home({navigation}) {
                     return <VideoItem videoData={item}/>;
                 }}
                 onRefresh={fetchVideos}
-                keyExtractor={item => item.id}
+                keyExtractor={item => toString(item.video_id)}
             />
         </View>
     );

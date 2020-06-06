@@ -7,6 +7,7 @@ import {AuthContext} from "../login/AuthContext";
 import {launchImageLibraryAsync, MediaTypeOptions} from "expo-image-picker";
 import * as firebase from "firebase";
 import {ThemeContext} from "../Styles";
+import VideoItem from "../components/VideoItem";
 
 export default function UserProfile({route, navigation}){
 
@@ -17,17 +18,15 @@ export default function UserProfile({route, navigation}){
     const [overlayVisible, setOverlayVisible] = useState(false);
     const profilePicture = useRef({});
     const [uploading, setUploading] = useState(false);
-
-    useFocusEffect(
-        useCallback(
-            () => {
-                fetchUserData();
-            }, [uid]
-        )
-    );
+    const [avatar, setAvatar] = useState(null);
 
     function fetchUserData(){
         server.getUserInfo(uid).then(result => {
+            if (result.image_location){
+                firebase.storage().ref().child(result.image_location).getDownloadURL().then(url => {
+                    setAvatar(url);
+                });
+            }
             setUserData(result);
             navigation.setOptions({
                 headerTitle: 'Perfil de ' + result.full_name
@@ -36,6 +35,14 @@ export default function UserProfile({route, navigation}){
             navigation.goBack();
         })
     }
+
+    useFocusEffect(
+        useCallback(
+            () => {
+                fetchUserData();
+            }, []
+        )
+    );
 
     function toggleOverlay(){
         setOverlayVisible(!overlayVisible)
@@ -79,7 +86,7 @@ export default function UserProfile({route, navigation}){
 
     async function complete(){
         try {
-            const uri = await profilePicture.current.getDownloadURL();
+            const uri = profilePicture.current.fullPath;
             await server.changeProfilePicture(uri);
             setUserData(Object.assign(userData, {avatar_uri: uri}));
         } catch(error){
@@ -93,7 +100,7 @@ export default function UserProfile({route, navigation}){
             <Overlay isVisible={overlayVisible} onBackdropPress={toggleOverlay} overlayStyle={{height: 'auto'}}>
                 <View>
                     {
-                        (uid === localUserData.uid)
+                        (uid === localUserData.uuid)
                             ?
                             <View>
                                 <ListItem title='Preferencias' leftIcon={{name:'settings'}} chevron onPress={goToPreferences} />
@@ -123,9 +130,9 @@ export default function UserProfile({route, navigation}){
                     <Avatar
                         rounded
                         size={150}
-                        source={{uri: userData.avatar_uri}}
+                        source={{uri: avatar}}
                         onPress={
-                            (uid === localUserData.uid)?
+                            (uid === localUserData.uuid)?
                                 changeProfilePicture
                                 :
                                 null
@@ -140,7 +147,7 @@ export default function UserProfile({route, navigation}){
                     titleStyle={{color: colors.title}}
                     subtitleStyle={{color: colors.text}}
                     title='Nombre'
-                    subtitle={userData.full_name}
+                    subtitle={userData.display_name}
                 />
                 <ListItem
                     containerStyle={{backgroundColor: colors.lighterbackground}}
@@ -158,17 +165,12 @@ export default function UserProfile({route, navigation}){
                     data={userData.videos}
                     renderItem={({item}) => {
                         return (
-                            <TouchableOpacity
-                                style={styles.profileVideoView}
-                                onPress={() => {
-                                    navigation.navigate("Video", item)
-                                }}>
-                                <Image source={{uri: item.thumbnail_uri}} style={{height: 150, aspectRatio: 16/9}}/>
-                                <Text style={styles.profileVideoTitle}>{item.title}</Text>
-                            </TouchableOpacity>
+                            <View style={{width: 200, height:'auto', marginHorizontal: 20}}>
+                                <VideoItem videoData={item}/>
+                            </View>
                         );
                     }}
-                    keyExtractor={item => item.id}
+                    keyExtractor={item => toString(item.video_id)}
                     style={{alignSelf: 'flex-start'}}
                 />
             </View>
