@@ -330,9 +330,9 @@ export class ServerProxy{
     //send new user information
     async changeMyUserData(user_data){
         try {
-            await this._request(`/users/${this.user.id}`, 'PUT', {
+            await this._request(`/users/${this.user.uuid}`, 'PUT', {
                 display_name: user_data.full_name,
-                phone_number: user_data.phoneNumber
+                phone_number: user_data.phone_number
             })
         } catch (e) {
             return Promise.reject("Error al actualizar la información");

@@ -43,7 +43,7 @@ export default function Preferences(){
     function fetchUserData(){
         server.getMyInfo().then(
             info => {
-                setName(info.full_name);
+                setName(info.display_name);
                 setNumber(info.phone_number);
                 setAddress(info.address);
             },
