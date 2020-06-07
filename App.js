@@ -77,17 +77,31 @@ function Main() {
     const [ready, setReady] = useState(false);
 
     async function fetchStorage(){
-        try {
-            const username = await AsyncStorage.getItem('USERNAME');
-            const password = await AsyncStorage.getItem('PASSWORD');
-            console.log(`Credentials saved in async storage: ${username}, ${password}`);
-            await serverProxy.tryLogin(username, password);
-        } catch(e) {
-            serverProxy.updateGlobalUserData(null);
-        }
         const saved_theme = await AsyncStorage.getItem('THEME');
         if (saved_theme === 'light'){
             setLightMode();
+        }
+        try {
+            const loginMethod = await AsyncStorage.getItem('LOGIN_METHOD');
+            console.log("Trying " + loginMethod + " login");
+            switch (loginMethod) {
+                case "firebase":
+                    const username = await AsyncStorage.getItem('USERNAME');
+                    const password = await AsyncStorage.getItem('PASSWORD');
+                    console.log("Using credentials: " + username + " , " + password);
+                    await serverProxy.tryLogin(username, password);
+                    break;
+                case "facebook.com":
+                    await serverProxy.tryFacebookLogin();
+                    break;
+                case "google.com":
+                    await serverProxy.tryGoogleLogin();
+                    break;
+                default:
+                    serverProxy.updateGlobalUserData(null);
+            }
+        } catch(e) {
+            serverProxy.updateGlobalUserData(null);
         }
     }
 

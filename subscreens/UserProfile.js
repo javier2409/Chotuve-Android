@@ -60,7 +60,7 @@ export default function UserProfile({route, navigation}){
     }
 
     function logOut(){
-        server.logOut();
+        server.logOut().then();
     }
 
     async function changeProfilePicture(){

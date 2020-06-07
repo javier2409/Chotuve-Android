@@ -2,6 +2,7 @@ import * as firebase from 'firebase';
 import * as facebook from 'expo-facebook';
 import * as google from 'expo-google-app-auth';
 import getEnv from "../environment";
+import {AsyncStorage} from "react-native";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDlBeowWP8UPWsvk9kXj9JDaN5_xsuNu4I",
@@ -58,6 +59,8 @@ export class ServerProxy{
             const response = await this._request('/auth', 'GET', null);
             console.log("User ID: " + response.id);
             credential.user.uuid = response.id;
+            console.log("Saving login method: " + credential.user.providerId);
+            await AsyncStorage.setItem("LOGIN_METHOD", credential.user.providerId);
             this.updateGlobalUserData(credential.user);
         } catch(error) {
             this.updateGlobalUserData(null);
@@ -67,6 +70,7 @@ export class ServerProxy{
 
     //manage login failure
     manageFailure = reason => {
+        console.log("Login failed: " + reason);
         alert(reason);
     }
 
@@ -101,7 +105,8 @@ export class ServerProxy{
     }
 
     //log out from account
-    logOut(){
+    async logOut(){
+        await AsyncStorage.setItem("LOGIN_METHOD", "none");
         this.updateGlobalUserData(null);
     }
 
@@ -110,6 +115,8 @@ export class ServerProxy{
         if (user && pass) {
             try {
                 const loginResult = await firebase.auth().signInWithEmailAndPassword(user, pass);
+                await AsyncStorage.setItem("USERNAME", user);
+                await AsyncStorage.setItem("PASSWORD", pass);
                 await this.manageCredential(loginResult);
             } catch (error) {
                 this.manageFailure(error);
