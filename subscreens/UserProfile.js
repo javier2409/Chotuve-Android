@@ -170,7 +170,7 @@ export default function UserProfile({route, navigation}){
                             </View>
                         );
                     }}
-                    keyExtractor={item => toString(item.video_id)}
+                    keyExtractor={item => item.video_id.toString()}
                     style={{alignSelf: 'flex-start'}}
                 />
             </View>
