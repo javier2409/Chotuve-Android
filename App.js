@@ -92,10 +92,12 @@ function Main() {
                     await serverProxy.tryLogin(username, password);
                     break;
                 case "facebook.com":
-                    await serverProxy.tryFacebookLogin();
+                    //await serverProxy.tryFacebookLogin();
+                    serverProxy.updateGlobalUserData(null);
                     break;
                 case "google.com":
-                    await serverProxy.tryGoogleLogin();
+                    //await serverProxy.tryGoogleLogin();
+                    serverProxy.updateGlobalUserData(null);
                     break;
                 default:
                     serverProxy.updateGlobalUserData(null);
