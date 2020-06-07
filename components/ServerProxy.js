@@ -303,7 +303,17 @@ export class ServerProxy{
             return Promise.reject("Error al obtener la lista de amigos");
         }
     }
-
+    
+    //get friend requests
+    async getFriendRequests(){
+        try {
+            const response = await this._request(`/users/${this.user.uuid}/friends/requests`, 'GET', null);
+            return response.pending_reqs;
+        } catch (e) {
+            return Promise.reject("Error al obtener las solicitudes de amistad");
+        }
+    }
+    
     //send a friend request
     async addFriend(uid){
         try {
