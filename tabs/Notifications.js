@@ -1,9 +1,67 @@
-import React, {useCallback, useContext, useState} from "react";
-import {ScrollView, View} from "react-native";
-import {Text} from "react-native-elements";
+import React, {useCallback, useContext, useEffect, useState} from "react";
+import {FlatList, ScrollView, View} from "react-native";
+import {ListItem, Text, Button, Icon} from "react-native-elements";
 import {ThemeContext} from "../Styles";
 import {AuthContext} from "../login/AuthContext";
 import {useFocusEffect} from "@react-navigation/native";
+
+function FriendRequest(props){
+    const [userData, setUserData] = useState({});
+    const [photoURL, setPhotoURL] = useState(null);
+    const [finished, setFinished] = useState(false);
+    const [user, server] = useContext(AuthContext);
+    const {styles, colors} = useContext(ThemeContext);
+    const uuid = props.uuid;
+
+    function fetchData(){
+        server.getUserInfo(uuid).then(result => {
+            setUserData(result);
+            server.getFirebaseDirectURL(result.image_location).then(setPhotoURL);
+        });
+    }
+
+    function answerRequest(answer){
+        server.answerFriendRequest(uuid, answer).then(
+            () => {
+                setFinished(true);
+            },
+            () => {
+
+            }
+        );
+    }
+
+    useEffect(() => {
+        fetchData();
+    }, [uuid]);
+
+    function rightButtons(){
+        return (
+            <View style={{flexDirection: 'row'}}>
+                <Icon name={'check'} color={colors.text} onPress={() => {answerRequest(true)}}/>
+                <Icon name={'close'} color={colors.text} onPress={() => {answerRequest(false)}}/>
+            </View>
+        )
+    }
+
+    if (finished) {
+        return (
+            <></>
+        )
+    }
+
+    return (
+        <View style={styles.friendItem}>
+            <ListItem
+                leftAvatar={{source: {uri: photoURL}}}
+                containerStyle={{backgroundColor: colors.lighterbackground}}
+                title={userData.display_name}
+                titleStyle={{color: colors.text}}
+                rightElement={rightButtons()}
+            />
+        </View>
+    )
+}
 
 export default function Notifications(){
     const {styles} = useContext(ThemeContext);
@@ -24,12 +82,16 @@ export default function Notifications(){
         fetchFriendRequests();
     }, []))
 
+    function renderFriendRequest({item}){
+        return (
+            <FriendRequest uuid={item}/>
+        )
+    }
+
     return(
-        <View>
-            <ScrollView>
-                <Text style={styles.preferencesTitleView}>Solictudes de amistad</Text>
-                <Text style={styles.preferencesTitleView}>Mensajes</Text>
-            </ScrollView>
+        <View style={{...styles.container, ...styles.flexContainer}}>
+            <Text style={styles.preferencesTitleView}>Solictudes de amistad</Text>
+            <FlatList data={friendRequests} renderItem={renderFriendRequest} keyExtractor={item => item}/>
         </View>
     )
 }

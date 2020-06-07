@@ -220,6 +220,11 @@ export class ServerProxy{
         }
     }
 
+    //get direct url from firebase path
+    async getFirebaseDirectURL(path){
+        return await firebase.storage().ref().child(path).getDownloadURL();
+    }
+
     //get information to show my own profile
     async getMyInfo(){
         return this.getUserInfo(this.user.uuid);
@@ -318,6 +323,17 @@ export class ServerProxy{
             return response.pending_reqs;
         } catch (e) {
             return Promise.reject("Error al obtener las solicitudes de amistad");
+        }
+    }
+
+    //answer a friend request, true = accept, false = deny
+    async answerFriendRequest(uuid, answer){
+        try {
+            await this._request(`/users/${this.user.uuid}/friends/requests/${uuid}`, 'POST', {
+               "accept": answer
+            });
+        } catch (e) {
+            return Promise.reject("No se pudo completar la solicitud");
         }
     }
     
