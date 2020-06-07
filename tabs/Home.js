@@ -1,8 +1,9 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {FlatList, View} from 'react-native';
 import {AuthContext} from '../login/AuthContext';
 import {ThemeContext} from "../Styles";
 import VideoItem from "../components/VideoItem";
+import {useFocusEffect} from "@react-navigation/native";
 
 export default function Home({navigation}) {
     const {styles} = useContext(ThemeContext);
@@ -10,19 +11,16 @@ export default function Home({navigation}) {
     const [videoList, setVideoList] = useState([]);
 
     function fetchVideos(){
-        setVideoList([]);
         server.getVideos().then(result => {
             setVideoList(result)
         });
     }
 
-    useEffect(() => {
-        return navigation.addListener('focus', () => {
-            if (videoList.length === 0){
-                fetchVideos();
-            }
-        });
-    }, [navigation]);
+    useFocusEffect(useCallback(() => {
+        if (videoList.length < 1){
+            fetchVideos();
+        }
+    }, []));
 
     return (
         <View style={styles.flexContainer}>
