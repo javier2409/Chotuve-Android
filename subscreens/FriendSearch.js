@@ -29,10 +29,11 @@ export default function FriendSearch ({navigation}){
             <FlatList
                 data={searchResult}
                 renderItem={({item}) => {
-                    const {email} = item;
+                    const {user_id} = item;
+                    const uid = user_id;
                     return (
-                        <FriendItem data={item} onPress={() => {
-                            navigation.navigate('UserProfile', {email})
+                        <FriendItem data={user_id} onPress={() => {
+                            navigation.navigate('UserProfile', {uid})
                         }}/>
                     );
                 }}
