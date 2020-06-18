@@ -222,7 +222,11 @@ export class ServerProxy{
 
     //get direct url from firebase path
     async getFirebaseDirectURL(path){
-        return await firebase.storage().ref().child(path).getDownloadURL();
+        try {
+            return await firebase.storage().ref().child(path).getDownloadURL();
+        } catch (e) {
+            return Promise.reject("El archivo no existe en el servidor");
+        }
     }
 
     //get information to show my own profile

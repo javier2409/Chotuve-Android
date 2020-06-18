@@ -24,14 +24,14 @@ export default function Friends({navigation}) {
             <FlatList
                 data={friends}
                 renderItem={({item}) => {
-                    const {uid, email, full_name, avatar_url} = item;
+                    const {user_id} = item;
                     return (
-                        <FriendItem data={item} onPress={() => {
-                            navigation.navigate('Chat', {uid, email, full_name, avatar_url})
+                        <FriendItem data={user_id} onPress={() => {
+                            navigation.navigate('Chat', user_id)
                         }}/>
                     );
                 }}
-                keyExtractor={item => item.email}
+                keyExtractor={item => item.user_id.toString()}
             />
             <Icon
                 name='person-add'

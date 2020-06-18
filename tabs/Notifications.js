@@ -16,7 +16,7 @@ function FriendRequest(props){
     function fetchData(){
         server.getUserInfo(uuid).then(result => {
             setUserData(result);
-            server.getFirebaseDirectURL(result.image_location).then(setPhotoURL);
+            server.getFirebaseDirectURL(result.image_location).then(setPhotoURL, null);
         });
     }
 
@@ -84,7 +84,7 @@ export default function Notifications(){
 
     function renderFriendRequest({item}){
         return (
-            <FriendRequest uuid={item}/>
+            <FriendRequest uuid={item.user_id}/>
         )
     }
 

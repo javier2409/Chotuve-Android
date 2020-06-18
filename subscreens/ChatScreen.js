@@ -8,10 +8,14 @@ import {ThemeContext} from "../Styles";
 
 export default function ChatScreen({route, navigation}){
     const {styles, colors} = useContext(ThemeContext);
-    const {uid, email, full_name, avatar_url} = route.params;
+    const uid = route.params;
     const [userData, server] = useContext(AuthContext);
     const [messages, setMessages] = useState([]);
     const [myMessage, setMyMessage] = useState('');
+    const [fullName, setFullName] = useState(null);
+    const [email, setEmail] = useState(null);
+    const [avatarURL, setAvatarURL] = useState(null);
+
     const flatlist = useRef();
 
     function sendMessage(){
@@ -28,6 +32,11 @@ export default function ChatScreen({route, navigation}){
         server.getChatInfo(email).then(result => {
             setMessages(result)
         })
+        server.getUserInfo(uid).then(result => {
+            setFullName(result.display_name);
+            setEmail(result.email);
+            server.getFirebaseDirectURL(result.image_location).then(setAvatarURL, null);
+        })
     }
 
     useEffect(() => {
@@ -43,8 +52,8 @@ export default function ChatScreen({route, navigation}){
                         navigation.navigate("UserProfile", {uid});
                     }}
                 >
-                    <Avatar source={{uri: avatar_url}} rounded/>
-                    <Text style={styles.chatHeaderTitle}>{full_name}</Text>
+                    <Avatar source={{uri: avatarURL}} rounded/>
+                    <Text style={styles.chatHeaderTitle}>{fullName}</Text>
                 </TouchableOpacity>
             );
         }
