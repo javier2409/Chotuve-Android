@@ -35,7 +35,9 @@ export default function ChatScreen({route, navigation}){
         server.getUserInfo(uid).then(result => {
             setFullName(result.display_name);
             setEmail(result.email);
-            server.getFirebaseDirectURL(result.image_location).then(setAvatarURL, null);
+            if (result.image_location){
+                server.getFirebaseDirectURL(result.image_location).then(setAvatarURL, null);
+            }
         })
     }
 
