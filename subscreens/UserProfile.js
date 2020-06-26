@@ -9,6 +9,28 @@ import * as firebase from "firebase";
 import {ThemeContext} from "../Styles";
 import VideoItem from "../components/VideoItem";
 
+function ProfileInfoItem(props){
+
+    const {colors} = useContext(ThemeContext);
+
+    if (props.subtitle){
+        return (
+            <ListItem
+                containerStyle={{backgroundColor: colors.lighterbackground}}
+                titleStyle={{color: colors.title}}
+                subtitleStyle={{color: colors.text}}
+                title={props.title}
+                subtitle={props.subtitle}
+            />
+        )
+    } else {
+        return (
+            <></>
+        )
+    }
+
+}
+
 export default function UserProfile({route, navigation}){
 
     const {styles, colors} = useContext(ThemeContext);
@@ -142,20 +164,9 @@ export default function UserProfile({route, navigation}){
             </View>
             <Divider/>
             <View>
-                <ListItem
-                    containerStyle={{backgroundColor: colors.lighterbackground}}
-                    titleStyle={{color: colors.title}}
-                    subtitleStyle={{color: colors.text}}
-                    title='Nombre'
-                    subtitle={userData.display_name}
-                />
-                <ListItem
-                    containerStyle={{backgroundColor: colors.lighterbackground}}
-                    titleStyle={{color: colors.title}}
-                    subtitleStyle={{color: colors.text}}
-                    title='Correo Electrónico'
-                    subtitle={userData.email}
-                />
+                <ProfileInfoItem title={'Nombre'} subtitle={userData.display_name}/>
+                <ProfileInfoItem title={'Correo electrónico'} subtitle={userData.email}/>
+                <ProfileInfoItem title={'Teléfono'} subtitle={userData.phone_number}/>
             </View>
             <Divider/>
             <View style={styles.profileVideoList}>
