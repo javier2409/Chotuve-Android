@@ -86,8 +86,6 @@ export class ServerProxy{
             headers: {
                 "x-access-token": token,
                 "Content-Type": 'application/json',
-                "Accept": '*/*',
-                "Accept-Encoding": 'gzip, deflate, br',
                 "Connection": 'keep-alive',
                 ...headers
             },
@@ -95,7 +93,7 @@ export class ServerProxy{
         });
 
         if (!response.ok){
-            console.log("Response not OK");
+            console.log("Response not OK: " + response.status);
             return Promise.reject("Response not OK");
         }
         const response_json = await response.json();
@@ -270,7 +268,7 @@ export class ServerProxy{
     async getUserSearch(search){
         try {
             const users = await this._request('/users', 'GET', null, {
-                "q": search
+                q: search
             });
             return (users);
         } catch (e) {
@@ -281,7 +279,7 @@ export class ServerProxy{
     //send a new video
     async publishVideo(video_data){
         try{
-            const response = this._request('/videos', 'POST', {
+            const response = await this._request('/videos', 'POST', {
                 title: video_data.title,
                 description: video_data.description,
                 location: video_data.location,
