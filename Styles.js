@@ -103,8 +103,8 @@ export function ThemeContextProvider(props){
         },
         videoInfo: {
             padding: 10,
-            justifyContent: 'space-between',
-            backgroundColor: colors.lighterbackground
+            justifyContent: 'center',
+            backgroundColor: colors.lighterbackground,
         },
         videoTitle: {
             justifyContent: 'space-between',

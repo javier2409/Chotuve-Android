@@ -19,7 +19,7 @@ export default function VideoItem(props) {
     function isToday(date){
         const today = new Date()
         return (
-            (date.getDay() === today.getDay()) &&
+            (date.getDate() === today.getDate()) &&
             (date.getMonth() === today.getMonth()) &&
             (date.getFullYear() === today.getFullYear())
         )
