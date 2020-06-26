@@ -41,12 +41,15 @@ function Comment(props){
 
 export default function VideoScreen({route, navigation}){
     const {styles, colors} = useContext(ThemeContext);
-    const {uuid, video_id, firebase_url, title, author, description} = route.params;
+    const {uuid, video_id, firebase_url, title, author, description, dislikes, likes, reaction} = route.params;
 	const [userData, server] = useContext(AuthContext);
 	const [comments, setComments] = useState([]);
 	const [myComment, setMyComment] = useState('');
 	const [sending, setSending] = useState(false);
 	const [downloadURL, setDownloadURL] = useState(null);
+	const [videoLikes, setLikes] = useState(likes);
+	const [videoDislikes, setDislikes] = useState(dislikes);
+	const [myReaction, setMyReaction] = useState(reaction);
 
 	function sendComment(){
 		if (myComment.length < 1){
@@ -86,6 +89,18 @@ export default function VideoScreen({route, navigation}){
 		}
 	}
 
+	function react(reaction){
+		server.reactToVideo(reaction, video_id).then(
+			() => {
+				if (reaction === 'like'){
+					setLikes(videoLikes + 1);
+				} else {
+					setDislikes(videoDislikes + 1);
+				}
+			}
+		)
+	}
+
     return (
         <View style={styles.videoContainer}>
 			<Video
@@ -98,12 +113,21 @@ export default function VideoScreen({route, navigation}){
 			/>
 			<Divider/>
 			<View style={styles.videoInfo}>
-				<Text style={{color:colors.title}}>
-					<Text style={{fontSize: 20, fontWeight: 'bold'}}>{title}</Text>
-					<Text onPress={() => {
-						navigation.navigate("UserProfile", {uid: uuid});
-					}}> - {author}</Text>
-				</Text>
+				<View style={styles.videoTitle}>
+					<Text style={{color:colors.title}}>
+						<Text style={{fontSize: 20, fontWeight: 'bold'}}>{title}</Text>
+						<Text onPress={() => {
+								navigation.navigate("UserProfile", {uid: uuid});
+							}}> - {author}
+						</Text>
+					</Text>
+					<View style={styles.videoReactions}>
+						<Icon name={'thumb-up'} color={colors.title} onPress={() => {react('like')}}/>
+						<Text style={{marginHorizontal: 7, color: colors.title}}>{videoLikes}</Text>
+						<Icon name={'thumb-down'} color={colors.title} onPress={() => {react('dislike')}} />
+						<Text style={{marginHorizontal: 7, color: colors.title}}>{videoDislikes}</Text>
+					</View>
+				</View>
 				<Text style={{color:colors.title}}>{description}</Text>
 			</View>
 			<Divider/>

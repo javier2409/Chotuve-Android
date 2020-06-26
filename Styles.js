@@ -106,6 +106,14 @@ export function ThemeContextProvider(props){
             justifyContent: 'space-between',
             backgroundColor: colors.lighterbackground
         },
+        videoTitle: {
+            justifyContent: 'space-between',
+            flexDirection: 'row'
+        },
+        videoReactions: {
+            flexDirection: 'row',
+            alignItems: 'center'
+        },
         video: {
             width: '100%',
             aspectRatio: 16/9

@@ -308,6 +308,16 @@ export class ServerProxy{
 
     }
 
+    async reactToVideo(reaction, id){
+        try {
+            await this._request(`/videos/${id}/reactions`, 'POST', {
+                likes_video: (reaction === 'like')
+            });
+        } catch (e) {
+            return Promise.reject("Error al reaccionar al video");
+        }
+    }
+
     //get a list of my friends
     async getFriendList(){
         try {
