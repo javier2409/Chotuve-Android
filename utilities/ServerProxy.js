@@ -3,7 +3,6 @@ import * as facebook from 'expo-facebook';
 import * as google from 'expo-google-app-auth';
 import getEnv from "../environment";
 import {AsyncStorage} from "react-native";
-import {Notifications} from "expo";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDlBeowWP8UPWsvk9kXj9JDaN5_xsuNu4I",
