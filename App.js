@@ -2,7 +2,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React, {useState, useContext, useEffect} from 'react';
 import Tabs from './tabs/Tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import {StyleSheet, StatusBar, AsyncStorage} from 'react-native';
+import {StatusBar, AsyncStorage} from 'react-native';
 import VideoScreen from './subscreens/VideoScreen';
 import ChatScreen from './subscreens/ChatScreen';
 import FriendSearch from './subscreens/FriendSearch';
@@ -15,7 +15,6 @@ import RecoverPasswordScreen from './login/RecoverPasswordScreen';
 import Preferences from "./subscreens/Preferences";
 import {ThemeContext, ThemeContextProvider} from "./Styles";
 import ignoreWarnings from 'react-native-ignore-warnings';
-import {useNavigation} from "@react-navigation/native";
 import {Notifications} from "expo";
 import {navigate, navigationRef} from "./utilities/RootNavigation";
 
