@@ -3,7 +3,7 @@ import {StyleSheet, View, FlatList, ActivityIndicator, TouchableOpacity} from "r
 import { useNavigation } from '@react-navigation/native';
 import { Video } from 'expo-av';
 import {Divider, Icon, Input, Text} from 'react-native-elements';
-import {AuthContext} from "../login/AuthContext";
+import {AuthContext} from "../utilities/AuthContext";
 import * as Orientation from "expo-screen-orientation";
 import {ThemeContext} from "../Styles";
 import * as firebase from "firebase";

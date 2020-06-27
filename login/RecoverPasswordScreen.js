@@ -3,7 +3,7 @@ import * as React from 'react';
 import { useContext, useState } from 'react';
 import {StyleSheet, View, ActivityIndicator, ScrollView} from 'react-native';
 import {Button, Text} from 'react-native-elements';
-import { AuthContext } from './AuthContext';
+import { AuthContext } from '../utilities/AuthContext';
 import Field from "./Field";
 import {ThemeContext} from "../Styles";
 

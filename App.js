@@ -1,5 +1,5 @@
 import { createStackNavigator } from '@react-navigation/stack';
-import React, { useState, useContext } from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import Tabs from './tabs/Tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import {StyleSheet, StatusBar, AsyncStorage} from 'react-native';
@@ -9,12 +9,15 @@ import FriendSearch from './subscreens/FriendSearch';
 import UserProfile from './subscreens/UserProfile';
 import { AppLoading } from 'expo';
 import LoginScreen from './login/LoginScreen';
-import { AuthContext, AuthContextProvider } from './login/AuthContext';
+import { AuthContext, AuthContextProvider } from './utilities/AuthContext';
 import RegisterScreen from './login/RegisterScreen';
 import RecoverPasswordScreen from './login/RecoverPasswordScreen';
 import Preferences from "./subscreens/Preferences";
 import {ThemeContext, ThemeContextProvider} from "./Styles";
 import ignoreWarnings from 'react-native-ignore-warnings';
+import {useNavigation} from "@react-navigation/native";
+import {Notifications} from "expo";
+import {navigate, navigationRef} from "./utilities/RootNavigation";
 
 ignoreWarnings('Setting a timer');
 
@@ -37,6 +40,19 @@ const Theme = {
 
 function MainApp(){
     const {colors} = useContext(ThemeContext);
+
+    useEffect(() => {
+        Notifications.addListener(notification => {
+            if (notification.origin === 'selected'){
+                if (notification.data.type === 'message'){
+                    navigate("Chat", notification.data.uuid);
+                } else {
+                    navigate("Notificaciones");
+                }
+            }
+        })
+    })
+
     return (
         <Stack.Navigator
             screenOptions={{
@@ -46,6 +62,7 @@ function MainApp(){
             style={{
                 backgroundColor: colors.background
             }}
+
         >
             <Stack.Screen name="Chotuve" component={Tabs} />
             <Stack.Screen name="Video" component={VideoScreen} />
@@ -117,7 +134,7 @@ function Main() {
     }
 
     return (
-        <NavigationContainer theme={Theme}>
+        <NavigationContainer theme={Theme} ref={navigationRef}>
             <StatusBar/>
             {userData ? (
                 <MainApp/>

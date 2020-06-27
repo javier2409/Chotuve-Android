@@ -3,7 +3,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'react-native-elements';
 import FriendItem from './../components/FriendItem';
-import {AuthContext} from "../login/AuthContext";
+import {AuthContext} from "../utilities/AuthContext";
 import {ThemeContext} from "../Styles";
 
 export default function Friends({navigation}) {

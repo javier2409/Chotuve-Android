@@ -1,6 +1,6 @@
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {FlatList, View} from 'react-native';
-import {AuthContext} from '../login/AuthContext';
+import {AuthContext} from '../utilities/AuthContext';
 import {ThemeContext} from "../Styles";
 import VideoItem from "../components/VideoItem";
 import {useFocusEffect} from "@react-navigation/native";

@@ -3,7 +3,7 @@ import { View, StyleSheet, FlatList, Image, ScrollView, TouchableOpacity, Activi
 import {Avatar, Divider, ListItem, colors, Text, Icon, Overlay} from 'react-native-elements';
 import { useTheme } from '@react-navigation/native';
 import { useFocusEffect } from "@react-navigation/native";
-import {AuthContext} from "../login/AuthContext";
+import {AuthContext} from "../utilities/AuthContext";
 import {launchImageLibraryAsync, MediaTypeOptions} from "expo-image-picker";
 import * as firebase from "firebase";
 import {ThemeContext} from "../Styles";

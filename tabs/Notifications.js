@@ -2,7 +2,7 @@ import React, {useCallback, useContext, useEffect, useState} from "react";
 import {FlatList, ScrollView, View} from "react-native";
 import {ListItem, Text, Button, Icon} from "react-native-elements";
 import {ThemeContext} from "../Styles";
-import {AuthContext} from "../login/AuthContext";
+import {AuthContext} from "../utilities/AuthContext";
 import {useFocusEffect} from "@react-navigation/native";
 
 function FriendRequest(props){

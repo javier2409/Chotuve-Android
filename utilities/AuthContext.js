@@ -1,5 +1,5 @@
 import React, { useState, createContext, useRef } from 'react';
-import { ServerProxy } from '../components/ServerProxy';
+import { ServerProxy } from './ServerProxy';
 
 export const AuthContext = createContext([{}, {}]);
 

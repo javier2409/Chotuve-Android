@@ -6,7 +6,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as Thumbnails from 'expo-video-thumbnails';
 import { Video } from 'expo-av';
 import Field from "../login/Field";
-import {AuthContext} from "../login/AuthContext";
+import {AuthContext} from "../utilities/AuthContext";
 import * as firebase from "firebase";
 import ProgressCircle from 'react-native-progress-circle';
 import {ThemeContext} from "../Styles";

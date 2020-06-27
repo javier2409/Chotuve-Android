@@ -2,9 +2,10 @@ import { useTheme } from '@react-navigation/native';
 import React, {useContext, useEffect, useState, useRef, useLayoutEffect} from 'react';
 import { FlatList, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Avatar, Icon, Input, Text } from 'react-native-elements';
-import {AuthContext} from "../login/AuthContext";
+import {AuthContext} from "../utilities/AuthContext";
 import hash from "react-native-web/dist/vendor/hash";
 import {ThemeContext} from "../Styles";
+import {Notifications} from "expo";
 
 export default function ChatScreen({route, navigation}){
     const {styles, colors} = useContext(ThemeContext);
@@ -21,15 +22,16 @@ export default function ChatScreen({route, navigation}){
     function sendMessage(){
         const newMessage = {
             id: hash(email+myMessage+messages.length),
-            email: userData.email,
+            uid: userData.uuid,
             msg: myMessage
         }
         setMessages(messages.concat([newMessage]));
         setMyMessage('');
+        server.sendMessage(myMessage, uid);
     }
 
     function fetchMessages(){
-        server.getChatInfo(email).then(result => {
+        server.getChatInfo(uid).then(result => {
             setMessages(result)
         })
         server.getUserInfo(uid).then(result => {
@@ -44,6 +46,23 @@ export default function ChatScreen({route, navigation}){
     useEffect(() => {
         return navigation.addListener('focus', fetchMessages);
     }, [navigation])
+
+    useEffect(() => {
+       const subscription = Notifications.addListener((notification) => {
+           const data = notification.data;
+           console.log(notification.data);
+           if (data.type === 'message' && data.uuid === uid){
+               Notifications.dismissAllNotificationsAsync();
+               const newMessage = {
+                   id: data.id,
+                   uid: data.uuid,
+                   msg: data.message
+               }
+               setMessages(messages.concat([newMessage]));
+           }
+       });
+       return () => subscription.remove();
+    });
 
     navigation.setOptions({
         headerTitle: () => {
@@ -70,7 +89,7 @@ export default function ChatScreen({route, navigation}){
                         return (
                             <View style={{
                                 alignSelf:
-                                    (item.email === email)
+                                    (item.uid === uid)
                                         ? 'flex-start'
                                         : 'flex-end',
                                 padding: 10,

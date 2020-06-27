@@ -3,6 +3,7 @@ import * as facebook from 'expo-facebook';
 import * as google from 'expo-google-app-auth';
 import getEnv from "../environment";
 import {AsyncStorage} from "react-native";
+import {Notifications} from "expo";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDlBeowWP8UPWsvk9kXj9JDaN5_xsuNu4I",
@@ -233,21 +234,21 @@ export class ServerProxy{
     }
 
     //get messages between me and a friend
-    async getChatInfo(username){
+    async getChatInfo(uid){
         const messages=[
             {
                 id: '1',
-                email: 'fran_giordano',
+                uid: uid,
                 msg: 'Hola, todo bien?'
             },
             {
                 id: '2',
-                email: 'javiferr',
+                uid: this.user.uuid,
                 msg: 'Holaaa todo bien y vos?'
             },
             {
                 id: '3',
-                email: 'fran_giordano',
+                uid,
                 msg: 'Viste esta nueva app Chotuve? Dicen que esta buenisima'
             },
         ];
@@ -304,7 +305,7 @@ export class ServerProxy{
     }
 
     //send a message to another user
-    async sendMessage(message_data){
+    async sendMessage(message, destination_uid){
 
     }
 
@@ -391,5 +392,10 @@ export class ServerProxy{
         } catch (e) {
             return Promise.reject("Error al actualizar la información");
         }
+    }
+
+    //send push token to appserver to receive notifications
+    async sendPushToken(token){
+
     }
 }

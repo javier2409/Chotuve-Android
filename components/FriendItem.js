@@ -3,7 +3,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import {ThemeContext} from "../Styles";
-import {AuthContext} from "../login/AuthContext";
+import {AuthContext} from "../utilities/AuthContext";
 
 export default function FriendItem(props){
     const {styles, colors} = useContext(ThemeContext);

@@ -2,7 +2,7 @@ import React, {useCallback, useContext, useState} from "react";
 import {View, StyleSheet, ScrollView} from "react-native";
 import {Button, Divider, Input, ListItem, Overlay, Text} from "react-native-elements";
 import {useFocusEffect, useTheme} from "@react-navigation/native";
-import {AuthContext} from "../login/AuthContext";
+import {AuthContext} from "../utilities/AuthContext";
 import {ThemeContext} from "../Styles";
 
 function Setting(props){

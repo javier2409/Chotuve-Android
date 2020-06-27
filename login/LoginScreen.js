@@ -3,7 +3,7 @@ import * as React from 'react';
 import { useContext, useRef, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import { Image, Input, SocialIcon, Text } from 'react-native-elements';
-import { AuthContext } from './AuthContext';
+import { AuthContext } from '../utilities/AuthContext';
 import {ThemeContext} from "../Styles";
 import Field from "./Field";
 
