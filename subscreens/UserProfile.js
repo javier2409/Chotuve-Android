@@ -108,8 +108,9 @@ export default function UserProfile({route, navigation}){
 
     async function complete(){
         try {
-            const uri = profilePicture.current.fullPath;
-            await server.changeProfilePicture(uri);
+            const path = profilePicture.current.fullPath;
+            await server.changeProfilePicture(path);
+            const uri = await server.getFirebaseDirectURL(path);
             setUserData(Object.assign(userData, {avatar_uri: uri}));
         } catch(error){
             alert('Hubo un error al cambiar la foto');
