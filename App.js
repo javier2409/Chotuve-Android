@@ -39,9 +39,12 @@ const Theme = {
 
 function MainApp(){
     const {colors} = useContext(ThemeContext);
+    const [user, server] = useContext(AuthContext);
 
     useEffect(() => {
-        Notifications.addListener(notification => {
+        const subscription = Notifications.addListener(notification => {
+            console.log("Notification info:");
+            console.log(notification);
             if (notification.origin === 'selected'){
                 if (notification.data.type === 'message'){
                     navigate("Chat", notification.data.uuid);
@@ -50,7 +53,15 @@ function MainApp(){
                 }
             }
         })
-    })
+        return (() => subscription.remove());
+    });
+
+    useEffect(() => {
+        Notifications.getExpoPushTokenAsync().then(token => {
+            server.sendPushToken(token).then(null);
+            console.log("Push token: " + token);
+        });
+    });
 
     return (
         <Stack.Navigator

@@ -48,11 +48,10 @@ export default function ChatScreen({route, navigation}){
     }, [navigation])
 
     useEffect(() => {
-       const subscription = Notifications.addListener((notification) => {
+       const subscription = Notifications.addListener(async (notification) => {
            const data = notification.data;
-           console.log(notification.data);
            if (data.type === 'message' && data.uuid === uid){
-               Notifications.dismissAllNotificationsAsync();
+               Notifications.dismissNotificationAsync(notification.notificationId).then(null);
                const newMessage = {
                    id: data.id,
                    uid: data.uuid,
@@ -94,8 +93,12 @@ export default function ChatScreen({route, navigation}){
                                         : 'flex-end',
                                 padding: 10,
                                 margin: 10,
-                                backgroundColor: colors.lighterbackground,
-                                maxWidth: '70%'
+                                backgroundColor:
+                                    (item.uid === uid)
+                                        ?   colors.lighterbackground
+                                        :   colors.primary,
+                                maxWidth: '70%',
+                                borderRadius: 10
                             }}>
                                 <Text style={styles.chatMessage}>
                                     {item.msg}
