@@ -23,6 +23,7 @@ export default function Upload() {
     const [progress, setProgress] = useState(0);
     const video_ref = useRef({});
     const thumb_ref = useRef({});
+    const previewRef = useRef({});
 
     function checkVideo(){
         return (file && (title.length > 0) && (desc.length > 0))
@@ -38,7 +39,8 @@ export default function Upload() {
 
     async function pickImage(){
         try {
-            let result = await ImagePicker.launchImageLibraryAsync({
+            setFile(null);
+            const result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Videos,
                 allowsEditing: false,
                 aspect: [16, 9],
@@ -151,6 +153,7 @@ export default function Upload() {
                             source={{uri: file.uri}}
                             shouldPlay
                             useNativeControls
+                            ref={previewRef}
                         />
                     }
                 </View>
@@ -164,6 +167,7 @@ export default function Upload() {
                         onPress={togglePrivate}
                         containerStyle={{backgroundColor: colors.background, borderColor: colors.background}}
                         titleProps={{style: {color: colors.text}}}
+                        checkedColor={colors.primary}
                     />
                 </View>
                 <View style={styles.formButtonView}>
