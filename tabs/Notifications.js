@@ -16,7 +16,9 @@ function FriendRequest(props){
     function fetchData(){
         server.getUserInfo(uuid).then(result => {
             setUserData(result);
-            server.getFirebaseDirectURL(result.image_location).then(setPhotoURL, null);
+            if (result.image_location) {
+                server.getFirebaseDirectURL(result.image_location).then(setPhotoURL, null);
+            }
         });
     }
 
