@@ -320,7 +320,8 @@ export class ServerProxy{
     async publishComment(comment_data){
         try{
             await this._request('/videos/' + comment_data.video_id + '/comments', 'POST', {
-                text: comment_data.text
+                text: comment_data.text,
+                vid_time: comment_data.vid_time
             })
         } catch (e) {
             return Promise.reject("Error al publicar comentario");
