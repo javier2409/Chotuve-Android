@@ -157,7 +157,7 @@ export default function VideoScreen({route, navigation}){
 											/>
 									}
 								</View>
-								<Icon name={'send'} color={colors.background} containerStyle={{margin:0}} onPress={sendComment} raised reverse/>
+								<Icon name={'send'} color={colors.text} containerStyle={{margin:20}} onPress={sendComment} />
 							</View>
 						</>
 					}
