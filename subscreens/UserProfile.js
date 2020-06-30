@@ -36,6 +36,7 @@ export default function UserProfile({route, navigation}){
     const {styles, colors} = useContext(ThemeContext);
     const {uid} = route.params;
     const [userData, setUserData] = useState({});
+    const [userVideos, setUserVideos] = useState([]);
     const [localUserData, server] = useContext(AuthContext);
     const [overlayVisible, setOverlayVisible] = useState(false);
     const profilePicture = useRef({});
@@ -49,6 +50,9 @@ export default function UserProfile({route, navigation}){
                     setAvatar(url);
                 });
             }
+            server.getUserVideos(uid).then(result => {
+                setUserVideos(result);
+            })
             setUserData(result);
             navigation.setOptions({
                 headerTitle: 'Perfil de ' + result.display_name
@@ -174,7 +178,7 @@ export default function UserProfile({route, navigation}){
                 <Text style={{...styles.profileVideoListTitle}}>Videos subidos</Text>
                 <FlatList
                     horizontal
-                    data={userData.videos}
+                    data={userVideos}
                     renderItem={({item}) => {
                         return (
                             <View style={{width: 200, height:'auto', marginHorizontal: 20}}>

@@ -206,10 +206,19 @@ export class ServerProxy{
                 response = await this._request('/users/' + uid, 'GET', null);
                 this.usersInfo[uid] = response;
             }
-            response.videos = await this._request('/users/' + uid + '/videos', 'GET', null);
             return response;
         } catch (e) {
             return Promise.reject("Error el obtener información del usuario");
+        }
+    }
+
+    //get videos from one user
+    async getUserVideos(uid){
+        try {
+            const response = await this._request('/users/' + uid + '/videos', 'GET', null);
+            return response;
+        } catch (e) {
+            return Promise.reject("Error el obtener videos del usuario");
         }
     }
 
