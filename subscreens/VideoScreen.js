@@ -50,6 +50,7 @@ export default function VideoScreen({route, navigation}){
 	const [videoLikes, setLikes] = useState(likes);
 	const [videoDislikes, setDislikes] = useState(dislikes);
 	const [myReaction, setMyReaction] = useState(reaction);
+	const videoRef = useRef();
 
 	function sendComment(){
 		if (myComment.length < 1){
@@ -110,54 +111,55 @@ export default function VideoScreen({route, navigation}){
 				shouldPlay
 				resizeMode={Video.RESIZE_MODE_CONTAIN}
 				onFullscreenUpdate={setOrientation}
+				ref={videoRef}
 			/>
 			<Divider/>
-			<View style={styles.videoInfo}>
-				<View style={styles.videoTitle}>
-					<Text style={{color:colors.title}}>
-						<Text style={{fontSize: 20, fontWeight: 'bold'}}>{title}</Text>
-						<Text onPress={() => {
-								navigation.navigate("UserProfile", {uid: uuid});
-							}}> - {author}
-						</Text>
-					</Text>
-					<View style={styles.videoReactions}>
-						<Icon name={'thumb-up'} color={colors.title} onPress={() => {react('like')}}/>
-						<Text style={{marginHorizontal: 7, color: colors.title}}>{videoLikes}</Text>
-						<Icon name={'thumb-down'} color={colors.title} onPress={() => {react('dislike')}} />
-						<Text style={{marginHorizontal: 7, color: colors.title}}>{videoDislikes}</Text>
-					</View>
-				</View>
-				<Text style={{color:colors.title}}>{description}</Text>
-			</View>
-			<Divider/>
-			<View style={styles.commentView}>
-				<View style={{flex:1}}>
-					{
-						sending
-							?
-							<ActivityIndicator/>
-							:
-							<Input
-								inputStyle={styles.videoCommentInput}
-								leftIcon={{name:'comment', color:colors.grey}}
-								leftIconContainerStyle={{marginLeft:0, marginRight: 5}}
-								containerStyle={styles.inputContainer}
-								placeholder={'Escribe un comentario...'}
-								placeholderTextColor={colors.grey}
-								underlineColorAndroid={colors.background}
-								onChangeText={setMyComment}
-								value={myComment}
-							/>
-					}
-				</View>
-				<Icon name={'send'} color={colors.background} containerStyle={{margin:0}} onPress={sendComment} raised reverse/>
-			</View>
-	        <Divider/>
 			<View style={styles.commentList}>
 				<FlatList 
 					ListHeaderComponent={              
-						<Text style={{color:colors.title, fontSize: 18, fontWeight: 'bold'}}>Comentarios</Text>
+						<>
+							<View style={styles.videoInfo}>
+								<View style={styles.videoTitle}>
+									<Text style={{color:colors.title}}>
+										<Text style={{fontSize: 20, fontWeight: 'bold'}}>{title}</Text>
+										<Text onPress={() => {
+											navigation.navigate("UserProfile", {uid: uuid});
+										}}> - {author}
+										</Text>
+									</Text>
+									<View style={styles.videoReactions}>
+										<Icon name={'thumb-up'} color={colors.title} onPress={() => {react('like')}}/>
+										<Text style={{marginHorizontal: 7, color: colors.title}}>{videoLikes}</Text>
+										<Icon name={'thumb-down'} color={colors.title} onPress={() => {react('dislike')}} />
+										<Text style={{marginHorizontal: 7, color: colors.title}}>{videoDislikes}</Text>
+									</View>
+								</View>
+								<Text style={{color:colors.title}}>{description}</Text>
+							</View>
+							<Text style={styles.videoCommentsTitle}>Comentarios</Text>
+							<View style={styles.commentView}>
+								<View style={{flex:1}}>
+									{
+										sending
+											?
+											<ActivityIndicator/>
+											:
+											<Input
+												inputStyle={styles.videoCommentInput}
+												leftIcon={{name:'comment', color:colors.grey}}
+												leftIconContainerStyle={{marginLeft:0, marginRight: 5}}
+												containerStyle={styles.inputContainer}
+												placeholder={'Escribe un comentario...'}
+												placeholderTextColor={colors.grey}
+												underlineColorAndroid={colors.background}
+												onChangeText={setMyComment}
+												value={myComment}
+											/>
+									}
+								</View>
+								<Icon name={'send'} color={colors.background} containerStyle={{margin:0}} onPress={sendComment} raised reverse/>
+							</View>
+						</>
 					}
 					data={comments}
 					renderItem={({item}) => {

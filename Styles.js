@@ -125,6 +125,12 @@ export function ThemeContextProvider(props){
             marginRight: 10,
             color: colors.text
         },
+        videoCommentsTitle: {
+            color:colors.title,
+            fontSize: 18,
+            fontWeight: 'bold',
+            marginTop: 15,
+        },
         inputContainer: {
             margin: 10,
             marginRight: 20
