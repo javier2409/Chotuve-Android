@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useRef, useState} from 'react';
 import {StyleSheet, View, FlatList, ActivityIndicator, TouchableOpacity} from "react-native"
 import { useNavigation } from '@react-navigation/native';
 import { Video } from 'expo-av';
@@ -11,17 +11,11 @@ import * as firebase from "firebase";
 function Comment(props){
 	const navigation = useNavigation();
 	const {colors} = useContext(ThemeContext);
-	const [authorName, setAuthorName] = useState(null);
 	const [user, server] = useContext(AuthContext);
-
-	function fetchName(){
-		server.getUserName(props.author_uuid).then(result => {
-			setAuthorName(result);
-		})
-	}
+	const [authorName, setAuthorName] = useState('');
 
 	useEffect(() => {
-		fetchName();
+		server.getUserName(props.author_uuid).then(setAuthorName);
 	}, [props.author_uuid]);
 
 	return (
@@ -44,6 +38,7 @@ export default function VideoScreen({route, navigation}){
     const {uuid, video_id, firebase_url, title, author, description, dislikes, likes, reaction} = route.params;
 	const [userData, server] = useContext(AuthContext);
 	const [comments, setComments] = useState([]);
+	const [showComments, setShowComments] = useState([]);
 	const [myComment, setMyComment] = useState('');
 	const [sending, setSending] = useState(false);
 	const [downloadURL, setDownloadURL] = useState(null);
@@ -67,7 +62,9 @@ export default function VideoScreen({route, navigation}){
 	}
 
 	function fetchComments(){
-        server.getVideoComments(video_id).then(result => setComments(result));
+        server.getVideoComments(video_id).then(result => {
+        	setComments(result);
+        });
     }
 
     useEffect(() => {
@@ -102,6 +99,19 @@ export default function VideoScreen({route, navigation}){
 		)
 	}
 
+	function updateComments(av_status){
+		/*
+		setShowComments(comments.filter(element => {
+			if (element.time) {
+				return element.time <= av_status.positionMillis
+			} else {
+				return true
+			}
+		}));
+
+		 */
+	}
+
     return (
         <View style={styles.videoContainer}>
 			<Video
@@ -112,6 +122,7 @@ export default function VideoScreen({route, navigation}){
 				resizeMode={Video.RESIZE_MODE_CONTAIN}
 				onFullscreenUpdate={setOrientation}
 				ref={videoRef}
+				onPlaybackStatusUpdate={updateComments}
 			/>
 			<Divider/>
 			<View style={styles.commentList}>
