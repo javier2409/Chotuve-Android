@@ -1,7 +1,7 @@
 import { useTheme } from '@react-navigation/native';
 import React, {useContext, useRef, useState} from 'react';
 import {StyleSheet, View, ScrollView} from 'react-native';
-import { Button, Icon, Text } from 'react-native-elements';
+import {Button, CheckBox, Icon, Text} from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
 import * as Thumbnails from 'expo-video-thumbnails';
 import { Video } from 'expo-av';
@@ -16,6 +16,8 @@ export default function Upload() {
     const [file, setFile] = useState(null);
     const [title, setTitle] = useState('');
     const [desc, setDesc] = useState('');
+    const [location, setLocation] = useState('');
+    const [privateVideo, setPrivate] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [user, server] = useContext(AuthContext);
     const [progress, setProgress] = useState(0);
@@ -60,13 +62,18 @@ export default function Upload() {
     }
 
     async function complete(){
-        await server.publishVideo({
-            title: title,
-            description: desc,
-            thumbnail_uri: thumb_ref.current.fullPath,
-            video_uri: video_ref.current.fullPath,
-            location: 'Unknown'
-        });
+        try {
+            await server.publishVideo({
+                title: title,
+                description: desc,
+                thumbnail_uri: thumb_ref.current.fullPath,
+                video_uri: video_ref.current.fullPath,
+                location: location,
+                is_private: privateVideo
+            });
+        } catch (error) {
+
+        }
         reset();
     }
 
@@ -97,8 +104,12 @@ export default function Upload() {
         }
     }
 
-    return (uploading
-            ?
+    function togglePrivate(){
+        setPrivate(!privateVideo);
+    }
+
+    if (uploading) {
+        return (
             <View style={styles.uploadContainer}>
                 <Text h4 style={{color: colors.text}}>{'Tu video se está subiendo\n'}</Text>
                 <ProgressCircle
@@ -113,17 +124,27 @@ export default function Upload() {
                     </Text>
                 </ProgressCircle>
             </View>
-            :
-            <View style={styles.flexContainer}>
-                <ScrollView contentContainerStyle={styles.container}>
-                    <View style={styles.uploadBlock}>
-                        <Icon name='attach-file' containerStyle={styles.icon} color={colors.primary} size={40} onPress={pickImage} reverse />
-                        <Text style={{...styles.filename, ...{color: colors.text}}}>
-                            {file? file.uri : 'Ningún archivo seleccionado'}
-                        </Text>
-                    </View>
-                    <View style={styles.uploadVideoPreview} >
-                        {file &&
+        );
+    }
+
+    return (
+        <View style={styles.flexContainer}>
+            <ScrollView contentContainerStyle={styles.container}>
+                <View style={styles.uploadBlock}>
+                    <Icon
+                        name='attach-file'
+                        containerStyle={styles.icon}
+                        color={colors.primary}
+                        size={40}
+                        onPress={pickImage}
+                        reverse
+                    />
+                    <Text style={{...styles.filename, ...{color: colors.text}}}>
+                        {file? file.uri : 'Ningún archivo seleccionado'}
+                    </Text>
+                </View>
+                <View style={styles.uploadVideoPreview}>
+                    {file &&
                         <Video
                             style={{width: '90%', aspectRatio: file.width/file.height}}
                             resizeMode={Video.RESIZE_MODE_CONTAIN}
@@ -131,22 +152,30 @@ export default function Upload() {
                             shouldPlay
                             useNativeControls
                         />
-                        }
-                    </View>
-                    <View style={styles.uploadForm}>
-                        <Field label={'Título'} set={setTitle} />
-                        <Field label={'Descripción'} set={setDesc} multiline/>
-                    </View>
-                    <View style={styles.formButtonView}>
-                        <Button
-                            title='Publicar video'
-                            buttonStyle={styles.formButton}
-                            icon={{name:'file-upload', color: colors.highlight}}
-                            disabled={uploading || !checkVideo()}
-                            onPress={uploadVideo}
-                        />
-                    </View>
-                </ScrollView>
-            </View>
+                    }
+                </View>
+                <View style={styles.uploadForm}>
+                    <Field label={'Título'} set={setTitle} />
+                    <Field label={'Descripción'} set={setDesc} multiline />
+                    <Field label={'Ubicación'} set={setLocation} />
+                    <CheckBox
+                        checked={privateVideo}
+                        title={'Sólo amigos'}
+                        onPress={togglePrivate}
+                        containerStyle={{backgroundColor: colors.background, borderColor: colors.background}}
+                        titleProps={{style: {color: colors.text}}}
+                    />
+                </View>
+                <View style={styles.formButtonView}>
+                    <Button
+                        title='Publicar video'
+                        buttonStyle={styles.formButton}
+                        icon={{name:'file-upload', color: colors.highlight}}
+                        disabled={uploading || !checkVideo()}
+                        onPress={uploadVideo}
+                    />
+                </View>
+            </ScrollView>
+        </View>
     );
 }

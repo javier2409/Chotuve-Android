@@ -287,7 +287,8 @@ export class ServerProxy{
                 description: video_data.description,
                 location: video_data.location,
                 firebase_url: video_data.video_uri,
-                thumbnail_url: video_data.thumbnail_uri
+                thumbnail_url: video_data.thumbnail_uri,
+                is_private: video_data.is_private
             });
             return "ok";
         } catch (e) {
