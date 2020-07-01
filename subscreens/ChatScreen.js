@@ -20,6 +20,9 @@ export default function ChatScreen({route, navigation}){
     const flatlist = useRef();
 
     function sendMessage(){
+        if (myMessage.length < 1){
+            return;
+        }
         server.sendMessage(myMessage, uid).then(() => {
             const newMessage = {
                 id: hash(email+myMessage+messages.length),
@@ -55,8 +58,8 @@ export default function ChatScreen({route, navigation}){
                Notifications.dismissNotificationAsync(notification.notificationId).then(null);
                const newMessage = {
                    id: data.id,
-                   uid: data.uuid,
-                   msg: data.text
+                   sender_id: data.uuid,
+                   text: data.msg
                }
                setMessages(messages.concat([newMessage]));
            }

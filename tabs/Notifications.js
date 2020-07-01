@@ -93,7 +93,7 @@ export default function Notifications(){
     return(
         <View style={{...styles.container, ...styles.flexContainer}}>
             <Text style={styles.preferencesTitleView}>Solictudes de amistad</Text>
-            <FlatList data={friendRequests} renderItem={renderFriendRequest} keyExtractor={item => item}/>
+            <FlatList data={friendRequests} renderItem={renderFriendRequest} keyExtractor={item => item.toString()}/>
         </View>
     )
 }
