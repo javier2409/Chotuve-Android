@@ -23,7 +23,8 @@ export class ServerProxy{
     constructor(setUserData){
         this.user = null;
         this.setUserData = setUserData;
-        this.usersInfo = {}
+        this.userCache = {};
+        this.urlCache = {}
     }
 
     //update user data for the entire app
@@ -198,14 +199,13 @@ export class ServerProxy{
 
     //get information to show user profile
     async getUserInfo(uid){
+        if (this.userCache[uid]){
+            return this.userCache[uid];
+        }
+
         try {
-            let response;
-            if (this.usersInfo[uid]) {
-                response = this.usersInfo[uid]
-            } else {
-                response = await this._request('/users/' + uid, 'GET', null);
-                this.usersInfo[uid] = response;
-            }
+            const response = await this._request('/users/' + uid, 'GET', null);
+            this.userCache[uid] = response;
             return response;
         } catch (e) {
             return Promise.reject("Error el obtener información del usuario");
@@ -224,14 +224,13 @@ export class ServerProxy{
 
     //get the username from user id
     async getUserName(uid){
-
-        if (this.usersInfo[uid]){
-            return this.usersInfo[uid].display_name
+        if (this.userCache[uid]){
+            return this.userCache[uid].display_name
         }
 
         try {
             const response = await this._request(`/users/${uid}`, 'GET', null);
-            this.usersInfo[uid] = response;
+            this.userCache[uid] = response;
             return response.display_name;
         } catch (e) {
             return Promise.reject("Error al obtener nombre de usuario");
@@ -240,8 +239,14 @@ export class ServerProxy{
 
     //get direct url from firebase path
     async getFirebaseDirectURL(path){
+        if (this.urlCache[path]){
+            return this.urlCache[path];
+        }
+
         try {
-            return await firebase.storage().ref().child(path).getDownloadURL();
+            const url = await firebase.storage().ref().child(path).getDownloadURL();
+            this.urlCache[path] = url;
+            return url;
         } catch (e) {
             return Promise.reject("El archivo no existe en el servidor");
         }
@@ -399,7 +404,7 @@ export class ServerProxy{
     //send new user information
     async changeMyUserData(user_data){
 
-        this.usersInfo[this.user.uuid] = null;
+        this.userCache[this.user.uuid] = null;
 
         try {
             await this._request(`/users/${this.user.uuid}`, 'PUT', {
