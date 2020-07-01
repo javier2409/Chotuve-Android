@@ -29,15 +29,14 @@ export default function FriendSearch ({navigation}){
             <FlatList
                 data={searchResult}
                 renderItem={({item}) => {
-                    const {user_id} = item;
-                    const uid = user_id;
+                    const uid = item.id;
                     return (
-                        <FriendItem data={user_id} onPress={() => {
+                        <FriendItem data={uid} onPress={() => {
                             navigation.navigate('UserProfile', {uid})
                         }}/>
                     );
                 }}
-                keyExtractor={item => item.email}
+                keyExtractor={item => item.id.toString()}
             />
         </View>
     );

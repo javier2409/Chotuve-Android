@@ -286,17 +286,12 @@ export class ServerProxy{
 
     //get list of users that match the search
     async getUserSearch(search){
-        return [];
-        /*
         try {
-            const users = await this._request('/users', 'GET', null, {
-                q: search
-            });
-            return (users);
+            const users = await this._request(`/users?name=${search}&per_page=20&page=1`, 'GET', null);
+            return (users.users);
         } catch (e) {
             return Promise.reject("Error al realizar la búsqueda");
         }
-         */
     }
 
     //send a new video
