@@ -107,7 +107,7 @@ export default function ChatScreen({route, navigation}){
                             </View>
                         );
                     }}
-                    keyExtractor={item => item.id}
+                    keyExtractor={item => item.id.toString()}
                     ref={flatlist}
                     onContentSizeChange={() => {
                         flatlist.current.scrollToEnd()
