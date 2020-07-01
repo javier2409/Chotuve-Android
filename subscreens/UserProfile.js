@@ -1,5 +1,5 @@
 import React, {useCallback, useContext, useRef, useState} from 'react';
-import { View, StyleSheet, FlatList, Image, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
+import { View, StyleSheet, FlatList, Image, ScrollView, TouchableOpacity, ActivityIndicator, RefreshControl } from "react-native";
 import {Avatar, Divider, ListItem, colors, Text, Icon, Overlay} from 'react-native-elements';
 import { useTheme } from '@react-navigation/native';
 import { useFocusEffect } from "@react-navigation/native";
@@ -42,9 +42,11 @@ export default function UserProfile({route, navigation}){
     const profilePicture = useRef({});
     const [uploading, setUploading] = useState(false);
     const [avatar, setAvatar] = useState(null);
+    const [refreshing, setRefreshing] = useState(false);
 
-    function fetchUserData(){
-        server.getUserInfo(uid).then(result => {
+    function fetchUserData(force = false){
+        setRefreshing(true);
+        server.getUserInfo(uid, force).then(result => {
             if (result.image_location){
                 firebase.storage().ref().child(result.image_location).getDownloadURL().then(url => {
                     setAvatar(url);
@@ -54,6 +56,7 @@ export default function UserProfile({route, navigation}){
                 setUserVideos(result);
             })
             setUserData(result);
+            setRefreshing(false);
             navigation.setOptions({
                 headerTitle: 'Perfil de ' + result.display_name
             });
@@ -123,7 +126,12 @@ export default function UserProfile({route, navigation}){
     }
 
     return (
-        <ScrollView style={styles.flexContainer}>
+        <ScrollView 
+            style={styles.flexContainer}
+            refreshControl={
+                <RefreshControl onRefresh={() => {fetchUserData(force=true)}} refreshing={refreshing}/>
+            }
+        >
             <Overlay isVisible={overlayVisible} onBackdropPress={toggleOverlay} overlayStyle={{height: 'auto'}}>
                 <View>
                     {
