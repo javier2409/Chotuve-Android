@@ -165,16 +165,17 @@ export default function Upload() {
                         checked={privateVideo}
                         title={'Sólo amigos'}
                         onPress={togglePrivate}
-                        containerStyle={{backgroundColor: colors.background, borderColor: colors.background}}
+                        containerStyle={styles.uploadCheckBox}
                         titleProps={{style: {color: colors.text}}}
                         checkedColor={colors.primary}
+                        center={false}
                     />
                 </View>
                 <View style={styles.formButtonView}>
                     <Button
                         title='Publicar video'
                         buttonStyle={styles.formButton}
-                        icon={{name:'file-upload', color: colors.highlight}}
+                        icon={{name:'file-upload', color: colors.text}}
                         disabled={uploading || !checkVideo()}
                         onPress={uploadVideo}
                     />
