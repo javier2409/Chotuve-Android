@@ -20,14 +20,15 @@ export default function ChatScreen({route, navigation}){
     const flatlist = useRef();
 
     function sendMessage(){
-        const newMessage = {
-            id: hash(email+myMessage+messages.length),
-            uid: userData.uuid,
-            msg: myMessage
-        }
-        setMessages(messages.concat([newMessage]));
-        setMyMessage('');
-        server.sendMessage(myMessage, uid);
+        server.sendMessage(myMessage, uid).then(() => {
+            const newMessage = {
+                id: hash(email+myMessage+messages.length),
+                sender_id: userData.uuid,
+                text: myMessage
+            }
+            setMessages(messages.concat([newMessage]));
+            setMyMessage('');
+        });
     }
 
     function fetchMessages(){
@@ -50,12 +51,12 @@ export default function ChatScreen({route, navigation}){
     useEffect(() => {
        const subscription = Notifications.addListener(async (notification) => {
            const data = notification.data;
-           if (data.type === 'message' && data.uuid === uid){
+           if (data.type === 'message' && data.sender_id === uid){
                Notifications.dismissNotificationAsync(notification.notificationId).then(null);
                const newMessage = {
                    id: data.id,
-                   uid: data.uuid,
-                   msg: data.message
+                   uid: data.sender_id,
+                   msg: data.text
                }
                setMessages(messages.concat([newMessage]));
            }
@@ -88,20 +89,20 @@ export default function ChatScreen({route, navigation}){
                         return (
                             <View style={{
                                 alignSelf:
-                                    (item.uid === uid)
+                                    (item.sender_id === uid)
                                         ? 'flex-start'
                                         : 'flex-end',
                                 padding: 10,
                                 margin: 10,
                                 backgroundColor:
-                                    (item.uid === uid)
+                                    (item.sender_id === uid)
                                         ?   colors.lighterbackground
                                         :   colors.primary,
                                 maxWidth: '70%',
                                 borderRadius: 10
                             }}>
                                 <Text style={styles.chatMessage}>
-                                    {item.msg}
+                                    {item.text}
                                 </Text>
                             </View>
                         );

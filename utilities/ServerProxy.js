@@ -74,7 +74,7 @@ export class ServerProxy{
     }
 
     //send a request to appserver
-    async _request(path, method, body, headers = null){
+    async _request(path, method, body = undefined, headers = undefined){
         const token = await this.user.getIdToken();
         console.log("Requesting using token: " + token.substring(0,50));
         const json_body = body ? JSON.stringify(body) : null;
@@ -254,24 +254,12 @@ export class ServerProxy{
 
     //get messages between me and a friend
     async getChatInfo(uid){
-        const messages=[
-            {
-                id: '1',
-                uid: uid,
-                msg: 'Hola, todo bien?'
-            },
-            {
-                id: '2',
-                uid: this.user.uuid,
-                msg: 'Holaaa todo bien y vos?'
-            },
-            {
-                id: '3',
-                uid,
-                msg: 'Viste esta nueva app Chotuve? Dicen que esta buenisima'
-            },
-        ];
-        return messages;
+        try {
+            const messages = await this._request(`/messages?chat_with=${uid}&page=1&per_page=50`, 'GET');
+            return messages;
+        } catch (e) {
+            return Promise.reject("No se pudieron obtener los mensajes del chat.");
+        }
     }
 
     //get comments from a video
@@ -325,7 +313,14 @@ export class ServerProxy{
 
     //send a message to another user
     async sendMessage(message, destination_uid){
-
+        try {
+            return await this._request('/messages', 'POST', {
+                chat_with: destination_uid,
+                text: message
+            })
+        } catch (e) {
+            return Promise.reject("No se pudo enviar el mensaje");
+        }
     }
 
     async reactToVideo(reaction, id){
@@ -341,7 +336,7 @@ export class ServerProxy{
     //get a list of my friends
     async getFriendList(){
         try {
-            const response = await this._request(`/users/${this.user.uuid}/friends`, 'GET', null);
+            const response = await this._request(`/users/${this.user.uuid}/friends`, 'GET');
             return response.friends;
         } catch (e) {
             return Promise.reject("Error al obtener la lista de amigos");
