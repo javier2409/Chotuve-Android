@@ -198,8 +198,8 @@ export class ServerProxy{
     }
 
     //get information to show user profile
-    async getUserInfo(uid){
-        if (this.userCache[uid]){
+    async getUserInfo(uid, forceFetch = false){
+        if (this.userCache[uid] && !forceFetch){
             return this.userCache[uid];
         }
 
@@ -223,8 +223,8 @@ export class ServerProxy{
     }
 
     //get the username from user id
-    async getUserName(uid){
-        if (this.userCache[uid]){
+    async getUserName(uid, forceFetch = false){
+        if (this.userCache[uid] && !forceFetch){
             return this.userCache[uid].display_name
         }
 
@@ -327,6 +327,7 @@ export class ServerProxy{
         }
     }
 
+    //add a reaction (like=true, dislike=false) to a video given it's id
     async reactToVideo(reaction, id){
         try {
             await this._request(`/videos/${id}/reactions`, 'POST', {
@@ -390,6 +391,10 @@ export class ServerProxy{
 
     //send new profile picture
     async changeProfilePicture(url){
+        if (this.userCache[this.user.uuid] && (this.userCache[this.user.uuid].image_location != url)){
+            this.userCache[this.user.uuid] = null;
+        }
+
         try {
             await this._request(`/users/${this.user.uuid}`, 'PUT', {
                 "image_location": url
