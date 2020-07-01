@@ -417,6 +417,12 @@ export class ServerProxy{
 
     //send push token to appserver to receive notifications
     async sendPushToken(token){
-
+        try {
+            return await this._request(`/tokens`, 'POST', {
+                "push_token": token
+            });
+        } catch (e) {
+            return Promise.reject("Error al cambiar la imagen de perfil");
+        }
     }
 }

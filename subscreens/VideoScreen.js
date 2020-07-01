@@ -54,7 +54,7 @@ function Comment(props){
 function VideoInfo(props){
 	const [videoLikes, setLikes] = useState(props.likes);
 	const [videoDislikes, setDislikes] = useState(props.dislikes);
-
+	const [user, server] = useContext(AuthContext);
 	const {colors, styles} = useContext(ThemeContext);
 	const navigation = useNavigation();
 
