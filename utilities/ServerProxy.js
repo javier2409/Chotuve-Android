@@ -422,7 +422,7 @@ export class ServerProxy{
                 "push_token": token
             });
         } catch (e) {
-            return Promise.reject("Error al cambiar la imagen de perfil");
+            return Promise.reject("Error el enviar el token de notificaciones");
         }
     }
 }
