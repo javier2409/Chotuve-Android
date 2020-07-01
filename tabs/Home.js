@@ -16,11 +16,11 @@ export default function Home({navigation}) {
         });
     }
 
-    useFocusEffect(useCallback(() => {
+    useEffect(() => {
         if (videoList.length < 1){
             fetchVideos();
         }
-    }, []));
+    }, [navigation]);
 
     return (
         <View style={styles.flexContainer}>

@@ -4,17 +4,19 @@ import {useNavigation} from '@react-navigation/native';
 import {Image} from 'react-native-elements';
 import {ThemeContext} from "../Styles";
 import * as firebase from "firebase";
+import {AuthContext} from "../utilities/AuthContext";
 
 export default function VideoItem(props) {
     const {styles} = useContext(ThemeContext);
+    const [user, server] = useContext(AuthContext);
     const [thumbnail, setThumbnail] = useState(null);
     const navigation = useNavigation();
 
     useEffect(() => {
-        firebase.storage().ref().child(props.videoData.thumbnail_url).getDownloadURL().then(result => {
+        server.getFirebaseDirectURL(props.videoData.thumbnail_url).then(result => {
             setThumbnail(result);
         })
-    }, [props.videoData.thumbnail_url]);
+    }, []);
 
     function isToday(date){
         const today = new Date()

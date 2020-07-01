@@ -112,7 +112,7 @@ function Main() {
             const loginMethod = await AsyncStorage.getItem('LOGIN_METHOD');
             console.log("Trying " + loginMethod + " login");
             switch (loginMethod) {
-                case "firebase":
+                case "password":
                     const username = await AsyncStorage.getItem('USERNAME');
                     const password = await AsyncStorage.getItem('PASSWORD');
                     console.log("Using credentials: " + username + " , " + password);

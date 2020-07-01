@@ -58,8 +58,8 @@ export class ServerProxy{
             const response = await this._request('/auth', 'GET', null);
             console.log("User ID: " + response.id);
             credential.user.uuid = response.id;
-            console.log("Saving login method: " + credential.user.providerId);
-            await AsyncStorage.setItem("LOGIN_METHOD", credential.user.providerId);
+            console.log("Saving login method: " + credential.additionalUserInfo.providerId);
+            await AsyncStorage.setItem("LOGIN_METHOD", credential.additionalUserInfo.providerId);
             this.updateGlobalUserData(credential.user);
         } catch(error) {
             this.updateGlobalUserData(null);
