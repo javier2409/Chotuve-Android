@@ -51,11 +51,11 @@ export default function ChatScreen({route, navigation}){
     useEffect(() => {
        const subscription = Notifications.addListener(async (notification) => {
            const data = notification.data;
-           if (data.type === 'message' && data.sender_id === uid){
+           if (data.type === 'message' && data.uuid === uid){
                Notifications.dismissNotificationAsync(notification.notificationId).then(null);
                const newMessage = {
                    id: data.id,
-                   uid: data.sender_id,
+                   uid: data.uuid,
                    msg: data.text
                }
                setMessages(messages.concat([newMessage]));
