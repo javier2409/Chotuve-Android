@@ -260,7 +260,7 @@ export class ServerProxy{
     //get messages between me and a friend
     async getChatInfo(uid){
         try {
-            const messages = await this._request(`/messages?chat_with=${uid}&page=1&per_page=50`, 'GET');
+            const messages = await this._request(`/messages/${uid}?page=1&per_page=50`, 'GET');
             return messages;
         } catch (e) {
             return Promise.reject("No se pudieron obtener los mensajes del chat.");
@@ -319,8 +319,7 @@ export class ServerProxy{
     //send a message to another user
     async sendMessage(message, destination_uid){
         try {
-            return await this._request('/messages', 'POST', {
-                chat_with: destination_uid,
+            return await this._request(`/messages/${destination_uid}`, 'POST', {
                 text: message
             })
         } catch (e) {
