@@ -20,18 +20,18 @@ export default function ChatScreen({route, navigation}){
     const flatlist = useRef();
 
     function sendMessage(){
+        const sendableMessage = myMessage;
+        setMyMessage('');
         if (myMessage.length < 1){
             return;
         }
-        server.sendMessage(myMessage, uid).then(() => {
-            const newMessage = {
-                id: hash(email+myMessage+messages.length),
-                sender_id: userData.uuid,
-                text: myMessage
-            }
-            setMessages(messages.concat([newMessage]));
-            setMyMessage('');
-        });
+        const newMessage = {
+            id: hash(email+sendableMessage+messages.length),
+            sender_id: userData.uuid,
+            text: sendableMessage
+        }
+        setMessages(messages.concat([newMessage]));
+        server.sendMessage(sendableMessage, uid).then(null);
     }
 
     function fetchMessages(){
