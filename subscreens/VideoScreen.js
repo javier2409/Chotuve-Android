@@ -67,20 +67,40 @@ function VideoInfo(props){
 
 	const [myReaction, setMyReaction] = useState(initialReaction);
 
+	function updateReaction(reaction){
+		if (reaction === 'like'){
+			setDislikes(videoDislikes - (myReaction === 'dislike'))
+			setLikes(videoLikes + (myReaction !== 'like'));
+			setMyReaction('like');
+		} else {
+			setLikes(videoLikes - (myReaction === 'like'))
+			setDislikes(videoDislikes + (myReaction !== 'dislike'));
+			setMyReaction('dislike');
+		}
+	}
+
 	function react(reaction){
-		server.reactToVideo(reaction, video_id).then(
-			() => {
-				if (reaction === 'like'){
-					setDislikes(videoDislikes - (myReaction === 'dislike'))
-					setLikes(videoLikes + (myReaction !== 'like'));
-					setMyReaction('like');
-				} else {
-					setLikes(videoLikes - (myReaction === 'like'))
-					setDislikes(videoDislikes + (myReaction !== 'dislike'));
-					setMyReaction('dislike');
+		const oldReaction = myReaction;
+		setMyReaction(reaction);
+		if (oldReaction === 'none'){
+			server.reactToVideo(reaction, video_id).then(
+				() => {
+					updateReaction(reaction);
+				},
+				() => {
+					setMyReaction(oldReaction);
 				}
-			}
-		)
+			)	
+		} else {
+			server.changeVideoReaction(reaction, video_id).then(
+				() => {
+					updateReaction(reaction);
+				},
+				() => {
+					setMyReaction(oldReaction);
+				}
+			)
+		}
 	}
 
 	return (

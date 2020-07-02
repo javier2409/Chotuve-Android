@@ -338,6 +338,17 @@ export class ServerProxy{
         }
     }
 
+    //change the reaction of a video
+    async changeVideoReaction(reaction, id){
+        try {
+            await this._request(`/videos/${id}/reactions`, 'PATCH', {
+                likes_video: (reaction === 'like')
+            });
+        } catch (e) {
+            return Promise.reject("Error al modificar reaccion del video");
+        }
+    }
+
     //get a list of my friends
     async getFriendList(){
         try {
