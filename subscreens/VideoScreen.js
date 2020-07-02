@@ -71,9 +71,13 @@ function VideoInfo(props){
 		server.reactToVideo(reaction, video_id).then(
 			() => {
 				if (reaction === 'like'){
-					setLikes(videoLikes + 1);
+					setDislikes(videoDislikes - (myReaction === 'dislike'))
+					setLikes(videoLikes + (myReaction !== 'like'));
+					setMyReaction('like');
 				} else {
-					setDislikes(videoDislikes + 1);
+					setLikes(videoLikes - (myReaction === 'like'))
+					setDislikes(videoDislikes + (myReaction !== 'dislike'));
+					setMyReaction('dislike');
 				}
 			}
 		)
