@@ -57,6 +57,12 @@ function MainApp(){
     });
 
     useEffect(() => {
+
+        const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+        if (existingStatus !== 'granted') {
+            const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+        }
+
         Notifications.getExpoPushTokenAsync().then(token => {
             server.sendPushToken(token).then(null);
             console.log("Push token: " + token);
