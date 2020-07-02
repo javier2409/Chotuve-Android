@@ -31,6 +31,22 @@ function ProfileInfoItem(props){
 
 }
 
+function OverlayMenuItem(props){
+
+    if (!props.visible){
+        return <></>
+    }
+
+    return (
+        <ListItem
+            title={props.title}
+            leftIcon={{name:props.icon}}
+            onPress={props.onPress}
+            chevron={props.chevron}
+        />
+    )
+}
+
 export default function UserProfile({route, navigation}){
 
     const {styles, colors} = useContext(ThemeContext);
@@ -81,6 +97,14 @@ export default function UserProfile({route, navigation}){
         server.addFriend(uid).then(result => {
             setOverlayVisible(false);
         });
+    }
+
+    function deleteFriend(){
+
+    }
+
+    function cancelFriendRequest(){
+
     }
 
     function goToPreferences(){
@@ -134,24 +158,37 @@ export default function UserProfile({route, navigation}){
         >
             <Overlay isVisible={overlayVisible} onBackdropPress={toggleOverlay} overlayStyle={{height: 'auto'}}>
                 <View>
-                    {
-                        (uid === localUserData.uuid)
-                            ?
-                            <View>
-                                <ListItem title='Preferencias' leftIcon={{name:'settings'}} chevron onPress={goToPreferences} />
-                                <ListItem title='Salir' leftIcon={{name:'exit-to-app'}} onPress={logOut}/>
-                            </View>
-                            :
-                            <View>
-                                <ListItem
-                                    title='Añadir como amigo'
-                                    leftIcon={{name:'person'}}
-                                    disabled={userData.friends}
-                                    disabledStyle={{opacity: 0.3}}
-                                    onPress={addAsFriend}
-                                />
-                            </View>
-                    }
+                    <OverlayMenuItem
+                        title={'Preferencias'}
+                        icon={'settings'}
+                        chevron
+                        onPress={goToPreferences}
+                        visible={uid === localUserData.uuid}
+                    />
+                    <OverlayMenuItem
+                        title={'Salir'}
+                        icon={'exit-to-app'}
+                        onPress={logOut}
+                        visible={uid === localUserData.uuid}
+                    />
+                    <OverlayMenuItem
+                        title={'Añadir como amigo'}
+                        icon={'person-add'}
+                        onPress={addAsFriend}
+                        visible={userData.friendship_status === 'unknown'}
+                    />
+                    <OverlayMenuItem
+                        title={'Eliminar amigo'}
+                        icon={'person-outline'}
+                        onPress={deleteFriend}
+                        visible={userData.friendship_status === 'accepted'}
+                    />
+                    <OverlayMenuItem
+                        title={'Cancelar solicitud'}
+                        icon={'person'}
+                        onPress={cancelFriendRequest}
+                        visible={userData.friendship_status === 'pending'}
+                    />
                 </View>
             </Overlay>
             <View style={styles.profileAvatarView}>
