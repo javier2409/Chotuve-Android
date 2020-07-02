@@ -86,7 +86,7 @@ function VideoInfo(props){
 	return (
 		<View style={styles.videoInfo}>
 			<View style={styles.videoTitle}>
-				<Text style={{color:colors.title}}>
+				<Text style={{color:colors.title, width:'65%'}}>
 					<Text style={{fontSize: 20, fontWeight: 'bold'}}>{title}</Text>
 					<Text onPress={() => {
 						navigation.navigate("UserProfile", {uid: uuid});
@@ -100,7 +100,7 @@ function VideoInfo(props){
 					<Text style={{marginHorizontal: 7, color: colors.title}}>{videoDislikes}</Text>
 				</View>
 			</View>
-			<Text style={{color:colors.title}}>{description}</Text>
+			<Text style={{color:colors.title, marginTop: 10}}>{description}</Text>
 		</View>
 	)
 }
