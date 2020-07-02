@@ -58,15 +58,11 @@ function MainApp(){
     });
 
     useEffect(() => {
-        Permissions.getAsync(Permissions.NOTIFICATIONS).then(status => {
-            if (status !== 'granted'){
-                return Permissions.askAsync(Permissions.NOTIFICATIONS);
-            }
-        }).then(status => {
+        Permissions.askAsync(Permissions.NOTIFICATIONS).then(({status}) => {
             if (status !== 'granted'){
                 alert('No se pudo obtener permiso para mostrar notificaciones');
             }
-        })
+        });
 
         Notifications.getExpoPushTokenAsync().then(token => {
             server.sendPushToken(token).then(null);
