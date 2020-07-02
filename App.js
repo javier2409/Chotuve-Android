@@ -17,6 +17,7 @@ import {ThemeContext, ThemeContextProvider} from "./Styles";
 import ignoreWarnings from 'react-native-ignore-warnings';
 import {Notifications} from "expo";
 import {navigate, navigationRef} from "./utilities/RootNavigation";
+import * as Permissions from "expo-permissions";
 
 ignoreWarnings('Setting a timer');
 
@@ -57,11 +58,15 @@ function MainApp(){
     });
 
     useEffect(() => {
-
-        const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
-        if (existingStatus !== 'granted') {
-            const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-        }
+        Permissions.getAsync(Permissions.NOTIFICATIONS).then(status => {
+            if (status !== 'granted'){
+                return Permissions.askAsync(Permissions.NOTIFICATIONS);
+            }
+        }).then(status => {
+            if (status !== 'granted'){
+                alert('No se pudo obtener permiso para mostrar notificaciones');
+            }
+        })
 
         Notifications.getExpoPushTokenAsync().then(token => {
             server.sendPushToken(token).then(null);
