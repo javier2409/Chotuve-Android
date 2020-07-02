@@ -59,6 +59,8 @@ export default function UserProfile({route, navigation}){
     const [uploading, setUploading] = useState(false);
     const [avatar, setAvatar] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
+    const [friendship, setFriendship] = useState('');
+
 
     function fetchUserData(force = false){
         setRefreshing(true);
@@ -72,6 +74,7 @@ export default function UserProfile({route, navigation}){
                 setUserVideos(result);
             })
             setUserData(result);
+            setFriendship(result.friendship_status);
             setRefreshing(false);
             navigation.setOptions({
                 headerTitle: 'Perfil de ' + result.display_name
@@ -96,6 +99,7 @@ export default function UserProfile({route, navigation}){
     function addAsFriend(){
         server.addFriend(uid).then(result => {
             setOverlayVisible(false);
+            setFriendship("pending");
         });
     }
 
@@ -175,19 +179,22 @@ export default function UserProfile({route, navigation}){
                         title={'Añadir como amigo'}
                         icon={'person-add'}
                         onPress={addAsFriend}
-                        visible={userData.friendship_status === 'unknown'}
+                        visible={
+                            (friendship === 'unknown') && 
+                            (uid !== localUserData.uuid)
+                        }
                     />
                     <OverlayMenuItem
                         title={'Eliminar amigo'}
                         icon={'person-outline'}
                         onPress={deleteFriend}
-                        visible={userData.friendship_status === 'accepted'}
+                        visible={friendship === 'accepted'}
                     />
                     <OverlayMenuItem
                         title={'Cancelar solicitud'}
                         icon={'person'}
                         onPress={cancelFriendRequest}
-                        visible={userData.friendship_status === 'pending'}
+                        visible={friendship === 'pending'}
                     />
                 </View>
             </Overlay>
