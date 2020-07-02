@@ -26,7 +26,15 @@ export default function Upload() {
     const previewRef = useRef({});
 
     function checkVideo(){
-        return (file && (title.length > 0) && (desc.length > 0))
+        return (
+            file && 
+            (title.length > 0) && 
+            (title.length < 100) &&
+            (desc.length > 0) &&
+            (desc.length < 500) &&
+            (location.length > 0) &&
+            (location.length < 200)
+        )
     }
 
     function reset(){
