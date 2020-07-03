@@ -47,10 +47,15 @@ function MainApp(){
             console.log("Notification info:");
             console.log(notification);
             if (notification.origin === 'selected'){
-                if (notification.data.type === 'message'){
-                    navigate("Chat", notification.data.uuid);
-                } else {
-                    navigate("Notificaciones");
+                switch (notification.data.type){
+                    case 'message':
+                        navigate("Chat", notification.data.uuid);
+                        break;
+                    case 'comment':
+                        navigate("Video", notification.data.vid_id);
+                        break;
+                    default:
+                        navigate("Notificaciones");
                 }
             }
         })
@@ -79,7 +84,6 @@ function MainApp(){
             style={{
                 backgroundColor: colors.background
             }}
-
         >
             <Stack.Screen name="Chotuve" component={Tabs} />
             <Stack.Screen name="Video" component={VideoScreen} />
