@@ -13,8 +13,8 @@ export default function VideoItem(props) {
     const [author, setAuthor] = useState('');
     const [title, setTitle] = useState('');
     const [timestamp, setTimestamp] = useState('');
-    const video_id = props.video_id;
     const [loading, setLoading] = useState(true);
+    const video_id = props.video_id;
 
     useEffect(() => {
         setLoading(true);
@@ -66,7 +66,7 @@ export default function VideoItem(props) {
         <TouchableOpacity
             style={styles.homeVideoItem}
             onPress={() => {
-                navigation.navigate('Video', video_id);
+                navigation.navigate("Video", {video_id});
             }}
         >
             <View style={{flexDirection: 'column'}}>

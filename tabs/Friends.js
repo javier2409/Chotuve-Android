@@ -27,7 +27,7 @@ export default function Friends({navigation}) {
                     const {user_id} = item;
                     return (
                         <FriendItem data={user_id} onPress={() => {
-                            navigation.navigate('Chat', user_id)
+                            navigation.navigate("Chat", {uid: user_id})
                         }}/>
                     );
                 }}

@@ -49,10 +49,10 @@ function MainApp(){
             if (notification.origin === 'selected'){
                 switch (notification.data.type){
                     case 'message':
-                        navigate("Chat", notification.data.uuid);
+                        navigate("Chat", {uid: notification.data.uuid});
                         break;
                     case 'comment':
-                        navigate("Video", notification.data.vid_id);
+                        navigate("Video", {video_id: notification.data.vid_id});
                         break;
                     default:
                         navigate("Notificaciones");

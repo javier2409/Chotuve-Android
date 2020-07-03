@@ -1,5 +1,5 @@
-import { useTheme } from '@react-navigation/native';
-import React, {useContext, useEffect, useState, useRef, useLayoutEffect} from 'react';
+import { useTheme, useFocusEffect } from '@react-navigation/native';
+import React, {useContext, useEffect, useState, useRef, useLayoutEffect, useCallback} from 'react';
 import { FlatList, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Avatar, Icon, Input, Text } from 'react-native-elements';
 import {AuthContext} from "../utilities/AuthContext";
@@ -8,8 +8,9 @@ import {ThemeContext} from "../Styles";
 import {Notifications} from "expo";
 
 export default function ChatScreen({route, navigation}){
+    const uid = route.params.uid;
+    
     const {styles, colors} = useContext(ThemeContext);
-    const uid = route.params;
     const [userData, server] = useContext(AuthContext);
     const [messages, setMessages] = useState([]);
     const [myMessage, setMyMessage] = useState('');
@@ -47,9 +48,9 @@ export default function ChatScreen({route, navigation}){
         })
     }
 
-    useEffect(() => {
+    useFocusEffect(useCallback(() => {
         return navigation.addListener('focus', fetchMessages);
-    }, [navigation])
+    }))
 
     useEffect(() => {
        const subscription = Notifications.addListener(async (notification) => {

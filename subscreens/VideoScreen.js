@@ -1,6 +1,6 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState, useCallback} from 'react';
 import {View, FlatList, ActivityIndicator} from "react-native"
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect, useRoute } from '@react-navigation/native';
 import { Video } from 'expo-av';
 import {Divider, Icon, Input, Text, CheckBox} from 'react-native-elements';
 import {AuthContext} from "../utilities/AuthContext";
@@ -129,6 +129,7 @@ function VideoInfo(props){
 	return (
 		<View style={styles.videoInfo}>
 			<Overlay isVisible={overlayVisible} onBackdropPress={toggleOverlay} overlayStyle={{height: 'auto'}}>
+				<>
 				<OverlayMenuItem 
 					title='Eliminar video'
 					icon='delete'
@@ -139,6 +140,7 @@ function VideoInfo(props){
 					icon='edit'
 					visible={uuid === user.uuid}
 				/>
+				</>
 			</Overlay>
 			<View style={styles.videoTitle}>
 				<Text style={{color:colors.title, width:'65%'}}>
@@ -220,16 +222,16 @@ function CommentInput(props){
 	)
 }
 
-export default function VideoScreen({route, navigation}){
+export default function VideoScreen({route}){
 	const {styles} = useContext(ThemeContext);
-	const vid_id = route.params;
+	const vid_id = route.params.video_id;
 	const [{uuid, video_id, firebase_url, title, author, description, dislikes, likes, reaction}, setVideoData] = useState({});
-    //const {uuid, video_id, firebase_url, title, author, description, dislikes, likes, reaction} = route.params;
 	const [userData, server] = useContext(AuthContext);
 	const [downloadURL, setDownloadURL] = useState(null);
 	const [comments, setComments] = useState([]);
 	const [time, setTime] = useState(0);
 	const [finishedLoading, setFinishedLoading] = useState(false);
+	const navigation = useNavigation();
 
 	function fetchComments(){
         server.getVideoComments(vid_id).then(result => {
@@ -239,7 +241,6 @@ export default function VideoScreen({route, navigation}){
 		        }
         		return (a.time > b.time)? 1 : -1
 	        }));
-			setFinishedLoading(true);
         });
     }
 
@@ -249,6 +250,7 @@ export default function VideoScreen({route, navigation}){
 			return server.getFirebaseDirectURL(result.firebase_url);
 		}).then(result => {
 			setDownloadURL(result);
+			setFinishedLoading(true);
 		});
 	}
 
@@ -257,12 +259,13 @@ export default function VideoScreen({route, navigation}){
 		fetchComments();
 	}
 
-    useEffect(() => {
+	useFocusEffect(useCallback(() => {
         return navigation.addListener('focus', () => {
+			setFinishedLoading(false);
 			fetchData();
         	fetchComments();
-        })
-    }, [navigation])
+        });		
+	}))
 
 	async function setOrientation(event){
 		switch (event.fullscreenUpdate){
