@@ -13,11 +13,15 @@ export default function FriendSearch ({navigation}){
     const {styles} = useContext(ThemeContext);
 
     navigation.setOptions({
-        headerTitle: 'Añadir amigo'
+        headerTitle: 'Búsqueda de Usuarios'
     });
 
     function updateSearch(text){
         setSearch(text);
+        if (text.length < 3){
+            setSearchResult([]);
+            return;
+        }
         server.getUserSearch(text).then(result => {
             setSearchResult(result);
         })
