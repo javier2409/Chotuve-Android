@@ -8,6 +8,7 @@ import {launchImageLibraryAsync, MediaTypeOptions} from "expo-image-picker";
 import * as firebase from "firebase";
 import {ThemeContext} from "../Styles";
 import VideoItem from "../components/VideoItem";
+import OverlayMenuItem from "../components/OverlayMenuItem";
 
 function ProfileInfoItem(props){
 
@@ -29,22 +30,6 @@ function ProfileInfoItem(props){
         )
     }
 
-}
-
-function OverlayMenuItem(props){
-
-    if (!props.visible){
-        return <></>
-    }
-
-    return (
-        <ListItem
-            title={props.title}
-            leftIcon={{name:props.icon}}
-            onPress={props.onPress}
-            chevron={props.chevron}
-        />
-    )
 }
 
 export default function UserProfile({route, navigation}){
