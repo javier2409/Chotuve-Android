@@ -24,7 +24,8 @@ export class ServerProxy{
         this.user = null;
         this.setUserData = setUserData;
         this.userCache = {};
-        this.urlCache = {}
+        this.urlCache = {};
+        this.videoCache = {}
     }
 
     //update user data for the entire app
@@ -194,6 +195,21 @@ export class ServerProxy{
             return (result);
         } catch (e) {
             return Promise.reject("Error al recibir la lista de videos");
+        }
+    }
+
+    //get all the information from a video except comments
+    async getVideoInfo(id, forceFetch = false){
+        if (!forceFetch && this.videoCache[id]){
+            return this.videoCache[id];
+        }
+
+        try {
+            const result = await this._request("/videos/"+id, "GET", null);
+            this.videoCache[id] = result;
+            return result;
+        } catch (e) {
+            return Promise.reject("Error al recibir información del video");
         }
     }
 

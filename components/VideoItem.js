@@ -3,7 +3,6 @@ import {ActivityIndicator, Text, TouchableOpacity, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {Image} from 'react-native-elements';
 import {ThemeContext} from "../Styles";
-import * as firebase from "firebase";
 import {AuthContext} from "../utilities/AuthContext";
 
 export default function VideoItem(props) {
@@ -11,10 +10,22 @@ export default function VideoItem(props) {
     const [user, server] = useContext(AuthContext);
     const [thumbnail, setThumbnail] = useState(null);
     const navigation = useNavigation();
+    const [author, setAuthor] = useState('');
+    const [title, setTitle] = useState('');
+    const [timestamp, setTimestamp] = useState('');
+    const video_id = props.video_id;
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        server.getFirebaseDirectURL(props.videoData.thumbnail_url).then(result => {
+        setLoading(true);
+        server.getVideoInfo(video_id).then(result => {
+            setAuthor(result.author);
+            setTitle(result.title);
+            setTimestamp(result.timestamp);
+            return server.getFirebaseDirectURL(result.thumbnail_url);
+        }).then(result => {
             setThumbnail(result);
+            setLoading(false);
         })
     }, []);
 
@@ -45,11 +56,17 @@ export default function VideoItem(props) {
         return `${year} - ${month} - ${day}`
     }
 
+    if (loading){
+        return (
+            <></>
+        )
+    }
+
     return (
         <TouchableOpacity
             style={styles.homeVideoItem}
             onPress={() => {
-                navigation.navigate('Video', props.videoData);
+                navigation.navigate('Video', video_id);
             }}
         >
             <View style={{flexDirection: 'column'}}>
@@ -58,8 +75,8 @@ export default function VideoItem(props) {
                        PlaceholderContent={<ActivityIndicator/>}
                 />
                 <View style={{flex: 1, padding: 10}}>
-                    <Text style={styles.homeVideoTitle}>{props.videoData.title}</Text>
-                    <Text style={styles.homeVideoSubtitle}>{props.videoData.author} - {getDate(props.videoData.timestamp)}</Text>
+                    <Text style={styles.homeVideoTitle}>{title}</Text>
+                    <Text style={styles.homeVideoSubtitle}>{author} - {getDate(timestamp)}</Text>
                 </View>
             </View>
         </TouchableOpacity>

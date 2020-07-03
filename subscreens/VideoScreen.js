@@ -186,8 +186,10 @@ function CommentInput(props){
 }
 
 export default function VideoScreen({route, navigation}){
-    const {styles} = useContext(ThemeContext);
-    const {uuid, video_id, firebase_url, title, author, description, dislikes, likes, reaction} = route.params;
+	const {styles} = useContext(ThemeContext);
+	const vid_id = route.params;
+	const [{uuid, video_id, firebase_url, title, author, description, dislikes, likes, reaction}, setVideoData] = useState({});
+    //const {uuid, video_id, firebase_url, title, author, description, dislikes, likes, reaction} = route.params;
 	const [userData, server] = useContext(AuthContext);
 	const [downloadURL, setDownloadURL] = useState(null);
 	const [comments, setComments] = useState([]);
@@ -195,7 +197,7 @@ export default function VideoScreen({route, navigation}){
 	const [finishedLoading, setFinishedLoading] = useState(false);
 
 	function fetchComments(){
-        server.getVideoComments(video_id).then(result => {
+        server.getVideoComments(vid_id).then(result => {
         	setComments(result.sort((a, b) => {
         		if (!a.vid_time){
         			return 1
@@ -206,12 +208,24 @@ export default function VideoScreen({route, navigation}){
         });
     }
 
+	function fetchData(force = false){
+		server.getVideoInfo(vid_id, force).then(result => {
+			setVideoData(result);
+			return server.getFirebaseDirectURL(result.firebase_url);
+		}).then(result => {
+			setDownloadURL(result);
+		});
+	}
+
+	function refreshData(){
+		fetchData(true);
+		fetchComments();
+	}
+
     useEffect(() => {
         return navigation.addListener('focus', () => {
+			fetchData();
         	fetchComments();
-	        firebase.storage().ref().child(firebase_url).getDownloadURL().then(url => {
-		        setDownloadURL(url);
-			});
         })
     }, [navigation])
 
@@ -224,6 +238,14 @@ export default function VideoScreen({route, navigation}){
 				await Orientation.lockAsync(Orientation.OrientationLock.PORTRAIT);
 				break;
 		}
+	}
+
+	if (!finishedLoading){
+		return (
+			<View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+				<ActivityIndicator/>
+			</View>
+		)
 	}
 
     return (
@@ -267,7 +289,7 @@ export default function VideoScreen({route, navigation}){
 					}}
 					keyExtractor={item => item.comment_id.toString()}
 					refreshing={false}
-					onRefresh={fetchComments}
+					onRefresh={refreshData}
 				/>
 			</View>
         </View>

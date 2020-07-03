@@ -29,7 +29,7 @@ export default function Home({navigation}) {
                 style={styles.homeFlatList}
                 data={videoList}
                 renderItem={({item}) => {
-                    return <VideoItem videoData={item}/>;
+                    return <VideoItem video_id={item.video_id}/>;
                 }}
                 onRefresh={fetchVideos}
                 keyExtractor={item => item.video_id.toString()}
@@ -37,4 +37,3 @@ export default function Home({navigation}) {
         </View>
     );
 }
-
