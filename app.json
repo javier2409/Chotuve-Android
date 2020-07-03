@@ -26,7 +26,8 @@
     },
     "android": {
       "package": "com.fiuba.chotuveapp",
-      "versionCode": 1
+      "versionCode": 1,
+      "googleServicesFile": "./google-services.json"
     }
   }
 }

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "662757364228",
+    "firebase_url": "https://chotuve-videos.firebaseio.com",
+    "project_id": "chotuve-videos",
+    "storage_bucket": "chotuve-videos.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:662757364228:android:76503e4bc130f958581b51",
+        "android_client_info": {
+          "package_name": "com.fiuba.chotuveapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "662757364228-lmuqhpj72hcavtsjip6u0v3op91fkva4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDPaeP3GeaBQwdySByMuf-IeUoL5HSHsE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "662757364228-lmuqhpj72hcavtsjip6u0v3op91fkva4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
