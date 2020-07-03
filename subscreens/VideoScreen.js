@@ -1,12 +1,13 @@
-import React, {useContext, useEffect, useMemo, useRef, useState} from 'react';
-import {StyleSheet, View, FlatList, ActivityIndicator, TouchableOpacity} from "react-native"
+import React, {useContext, useEffect, useState} from 'react';
+import {View, FlatList, ActivityIndicator} from "react-native"
 import { useNavigation } from '@react-navigation/native';
 import { Video } from 'expo-av';
 import {Divider, Icon, Input, Text, CheckBox} from 'react-native-elements';
 import {AuthContext} from "../utilities/AuthContext";
 import * as Orientation from "expo-screen-orientation";
 import {ThemeContext} from "../Styles";
-import * as firebase from "firebase";
+import { Overlay } from 'react-native-elements';
+import OverlayMenuItem from "../components/OverlayMenuItem";
 
 function getMinute(milliseconds){
 	const seconds = ~~(milliseconds/1000)
@@ -54,6 +55,7 @@ function Comment(props){
 function VideoInfo(props){
 	const [videoLikes, setLikes] = useState(props.likes);
 	const [videoDislikes, setDislikes] = useState(props.dislikes);
+	const [overlayVisible, setOverlayVisible] = useState(false);
 	const [user, server] = useContext(AuthContext);
 	const {colors, styles} = useContext(ThemeContext);
 	const navigation = useNavigation();
@@ -103,8 +105,41 @@ function VideoInfo(props){
 		}
 	}
 
+	function toggleOverlay(){
+		setOverlayVisible(!overlayVisible);
+	}
+
+	navigation.setOptions({
+		headerRight: () => {
+			if (uuid !== user.uuid){
+				return null
+			}
+
+			return (
+				<Icon 
+					name='more-vert' 
+					containerStyle={styles.videoComment} 
+					color={colors.text}
+					onPress={toggleOverlay}
+				/>
+			)
+		}
+	})
+
 	return (
 		<View style={styles.videoInfo}>
+			<Overlay isVisible={overlayVisible} onBackdropPress={toggleOverlay} overlayStyle={{height: 'auto'}}>
+				<OverlayMenuItem 
+					title='Eliminar video'
+					icon='delete'
+					visible={uuid === user.uuid}
+				/>
+				<OverlayMenuItem 
+					title='Editar información'
+					icon='edit'
+					visible={uuid === user.uuid}
+				/>
+			</Overlay>
 			<View style={styles.videoTitle}>
 				<Text style={{color:colors.title, width:'65%'}}>
 					<Text style={{fontSize: 20, fontWeight: 'bold'}}>{title}</Text>
