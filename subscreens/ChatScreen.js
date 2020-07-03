@@ -92,15 +92,15 @@ export default function ChatScreen({route, navigation}){
                         return (
                             <View style={{
                                 alignSelf:
-                                    (item.sender_id === uid)
-                                        ? 'flex-start'
-                                        : 'flex-end',
+                                    (item.sender_id === userData.uuid)
+                                        ? 'flex-end'
+                                        : 'flex-start',
                                 padding: 10,
                                 margin: 10,
                                 backgroundColor:
-                                    (item.sender_id === uid)
-                                        ?   colors.lighterbackground
-                                        :   colors.primary,
+                                    (item.sender_id === userData.uuid)
+                                        ?   colors.primary
+                                        :   colors.lighterbackground,
                                 maxWidth: '70%',
                                 borderRadius: 10
                             }}>
