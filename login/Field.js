@@ -25,6 +25,7 @@ export default function Field(props){
             autoCompleteType={props.type}
             autoCapitalize={props.capitalize? 'words' : 'none'}
             multiline={props.multiline}
+            value={props.value}
         />
     )
 }

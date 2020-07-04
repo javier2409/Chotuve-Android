@@ -223,14 +223,15 @@ export class ServerProxy{
     }
 
     //change video information
-    async modifyVideo(title, desc, location, friendsonly){
+    async modifyVideo(video_id, title, desc, location, friendsonly){
         try {
-            return await this._request(`/videos/${video_id}`, "PATCH", {
-                "title": title,
-                "description": desc,
-                "location": location,
-                "is_private": friendsonly
+            const response = await this._request(`/videos/${video_id}`, 'PATCH', {
+                title: title,
+                description: desc,
+                location: location,
+                is_private: friendsonly
             });
+            this.videoCache[video_id] = response;
         } catch (e) {
             return Promise.reject("Error al modificar video");
         }       

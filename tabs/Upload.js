@@ -10,6 +10,7 @@ import {AuthContext} from "../utilities/AuthContext";
 import * as firebase from "firebase";
 import ProgressCircle from 'react-native-progress-circle';
 import {ThemeContext} from "../Styles";
+import VideoInfoForm from '../components/VideoInfoForm';
 
 export default function Upload() {
     const {styles, colors} = useContext(ThemeContext);
@@ -165,20 +166,16 @@ export default function Upload() {
                         />
                     }
                 </View>
-                <View style={styles.uploadForm}>
-                    <Field label={'Título'} set={setTitle} />
-                    <Field label={'Descripción'} set={setDesc} multiline />
-                    <Field label={'Ubicación'} set={setLocation} />
-                    <CheckBox
-                        checked={privateVideo}
-                        title={'Sólo amigos'}
-                        onPress={togglePrivate}
-                        containerStyle={styles.uploadCheckBox}
-                        titleProps={{style: {color: colors.text}}}
-                        checkedColor={colors.primary}
-                        center={false}
-                    />
-                </View>
+                <VideoInfoForm 
+                    setTitle={setTitle} 
+                    setDesc={setDesc}
+                    setLocation={setLocation}
+                    title={title}
+                    desc={desc}
+                    location={location}
+                    checkBoxChecked={privateVideo}
+                    onTogglePrivate={togglePrivate}
+                />
                 <View style={styles.formButtonView}>
                     <Button
                         title='Publicar video'

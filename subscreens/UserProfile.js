@@ -9,6 +9,7 @@ import * as firebase from "firebase";
 import {ThemeContext} from "../Styles";
 import VideoItem from "../components/VideoItem";
 import OverlayMenuItem from "../components/OverlayMenuItem";
+import { ServerProxy } from '../utilities/ServerProxy';
 
 function ProfileInfoItem(props){
 
@@ -51,7 +52,7 @@ export default function UserProfile({route, navigation}){
         setRefreshing(true);
         server.getUserInfo(uid, force).then(result => {
             if (result.image_location){
-                firebase.storage().ref().child(result.image_location).getDownloadURL().then(url => {
+                server.getFirebaseDirectURL(result.image_location).then(url => {
                     setAvatar(url);
                 });
             }

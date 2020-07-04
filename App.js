@@ -18,6 +18,7 @@ import ignoreWarnings from 'react-native-ignore-warnings';
 import {Notifications} from "expo";
 import {navigate, navigationRef} from "./utilities/RootNavigation";
 import * as Permissions from "expo-permissions";
+import EditVideo from './subscreens/EditVideo';
 
 ignoreWarnings('Setting a timer');
 
@@ -91,6 +92,7 @@ function MainApp(){
             <Stack.Screen name="Friend Search" component={FriendSearch} />
             <Stack.Screen name="UserProfile" component={UserProfile} />
             <Stack.Screen name="Preferencias" component={Preferences} />
+            <Stack.Screen name="Edit Video" component={EditVideo} />
         </Stack.Navigator>
     )
 }

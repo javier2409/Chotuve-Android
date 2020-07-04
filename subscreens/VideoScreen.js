@@ -66,6 +66,7 @@ function VideoInfo(props){
 	const description = props.description;
 	const title = props.title;
 	const initialReaction = props.myReaction;
+	const location = props.location;
 
 	const [myReaction, setMyReaction] = useState(initialReaction);
 
@@ -126,6 +127,15 @@ function VideoInfo(props){
 		}
 	})
 
+	function deleteVideo(){
+		server.deleteVideo(video_id).then(null);
+	}
+
+	function editVideo(){
+		toggleOverlay();
+		navigation.navigate("Edit Video", {video_id});
+	}
+
 	return (
 		<View style={styles.videoInfo}>
 			<Overlay isVisible={overlayVisible} onBackdropPress={toggleOverlay} overlayStyle={{height: 'auto'}}>
@@ -134,11 +144,13 @@ function VideoInfo(props){
 					title='Eliminar video'
 					icon='delete'
 					visible={uuid === user.uuid}
+					onPress={deleteVideo}
 				/>
 				<OverlayMenuItem 
 					title='Editar información'
 					icon='edit'
 					visible={uuid === user.uuid}
+					onPress={editVideo}
 				/>
 				</>
 			</Overlay>
@@ -225,7 +237,7 @@ function CommentInput(props){
 export default function VideoScreen({route}){
 	const {styles} = useContext(ThemeContext);
 	const vid_id = route.params.video_id;
-	const [{uuid, video_id, firebase_url, title, author, description, dislikes, likes, reaction}, setVideoData] = useState({});
+	const [{uuid, video_id, firebase_url, title, author, description, location, dislikes, likes, reaction}, setVideoData] = useState({});
 	const [userData, server] = useContext(AuthContext);
 	const [downloadURL, setDownloadURL] = useState(null);
 	const [comments, setComments] = useState([]);
@@ -312,6 +324,7 @@ export default function VideoScreen({route}){
 								videoId={video_id}
 								authorName={author}
 								myReaction={reaction}
+								location={location}
 							/>
 							<Text style={styles.videoCommentsTitle}>Comentarios</Text>
 							<CommentInput videoId={video_id} videoTime={time}/>
