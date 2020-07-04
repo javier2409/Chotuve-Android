@@ -222,6 +222,20 @@ export class ServerProxy{
         }
     }
 
+    //change video information
+    async modifyVideo(title, desc, location, friendsonly){
+        try {
+            return await this._request(`/videos/${video_id}`, "PATCH", {
+                "title": title,
+                "description": desc,
+                "location": location,
+                "is_private": friendsonly
+            });
+        } catch (e) {
+            return Promise.reject("Error al modificar video");
+        }       
+    } 
+
     //get information to show user profile
     async getUserInfo(uid, forceFetch = false){
         if (this.userCache[uid] && !forceFetch){
