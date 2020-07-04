@@ -213,6 +213,15 @@ export class ServerProxy{
         }
     }
 
+    //request deletion of a video
+    async deleteVideo(video_id){
+        try {
+            return await this._request(`/videos/${video_id}`, "DELETE");
+        } catch (e) {
+            return Promise.reject("Error al eliminar video");
+        }
+    }
+
     //get information to show user profile
     async getUserInfo(uid, forceFetch = false){
         if (this.userCache[uid] && !forceFetch){
