@@ -170,9 +170,9 @@ export default function Upload() {
                     setTitle={setTitle} 
                     setDesc={setDesc}
                     setLocation={setLocation}
-                    title={title}
-                    desc={desc}
-                    location={location}
+                    initialTitle={title}
+                    initialDesc={desc}
+                    initialLocation={location}
                     checkBoxChecked={privateVideo}
                     onTogglePrivate={togglePrivate}
                 />

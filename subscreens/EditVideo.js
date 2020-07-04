@@ -66,9 +66,9 @@ export default function EditVideo({route, navigation}){
                 setTitle={setTitle}
                 setDesc={setDescription}
                 setLocation={setLocation}
-                title={title}
-                desc={description}
-                location={location}
+                initialTitle={title}
+                initialDesc={description}
+                initialLocation={location}
                 checkBoxChecked={isPrivate}
                 onTogglePrivate={togglePrivate}
             />

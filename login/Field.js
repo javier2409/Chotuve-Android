@@ -7,6 +7,7 @@ import {ThemeContext} from "../Styles";
 
 export default function Field(props){
     const {styles, colors} = useContext(ThemeContext);
+
     return(
         <Input
             leftIcon={{name:props.icon, color:colors.grey}}
@@ -25,7 +26,7 @@ export default function Field(props){
             autoCompleteType={props.type}
             autoCapitalize={props.capitalize? 'words' : 'none'}
             multiline={props.multiline}
-            value={props.value}
+            defaultValue={props.initialValue}
         />
     )
 }

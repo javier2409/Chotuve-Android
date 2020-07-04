@@ -128,7 +128,9 @@ function VideoInfo(props){
 	})
 
 	function deleteVideo(){
-		server.deleteVideo(video_id).then(null);
+		server.deleteVideo(video_id).then(() => {
+			navigation.goBack();
+		});
 	}
 
 	function editVideo(){

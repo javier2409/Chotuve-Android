@@ -216,7 +216,8 @@ export class ServerProxy{
     //request deletion of a video
     async deleteVideo(video_id){
         try {
-            return await this._request(`/videos/${video_id}`, "DELETE");
+            const response = await this._request(`/videos/${video_id}`, "DELETE");
+            this.videoCache[video_id] = null;
         } catch (e) {
             return Promise.reject("Error al eliminar video");
         }

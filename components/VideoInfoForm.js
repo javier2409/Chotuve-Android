@@ -11,17 +11,17 @@ export default function VideoInfoForm(props){
     const setTitle = props.setTitle;
     const setDesc = props.setDesc;
     const setLocation = props.setLocation;
-    const title = props.title;
-    const desc = props.desc;
-    const location = props.location;
+    const title = props.initialTitle;
+    const desc = props.initialDesc;
+    const location = props.initialLocation;
     const privateVideo = props.checkBoxChecked;
     const togglePrivate = props.onTogglePrivate;
 
     return (
         <View style={styles.uploadForm}>
-            <Field label={'Título'} set={setTitle} value={title} />
-            <Field label={'Descripción'} set={setDesc} multiline value={desc} />
-            <Field label={'Ubicación'} set={setLocation} value={location} />
+            <Field label={'Título'} set={setTitle} initialValue={title} />
+            <Field label={'Descripción'} set={setDesc} multiline initialValue={desc} />
+            <Field label={'Ubicación'} set={setLocation} initialValue={location} />
             <CheckBox
                 checked={privateVideo}
                 title={'Sólo amigos'}
