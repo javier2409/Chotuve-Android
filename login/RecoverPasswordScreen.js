@@ -42,7 +42,7 @@ export default function RecoverPasswordScreen({navigation}){
             return
         }
 
-        server.sendCodeAndNewPassword(code, pwd1).then(() => {
+        server.sendCodeAndNewPassword(email, code, pwd1).then(() => {
             alert("Contraseña actualizada con éxito");
             navigation.navigate("Ingreso");
         }, () => {

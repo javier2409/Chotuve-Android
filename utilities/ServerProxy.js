@@ -76,8 +76,8 @@ export class ServerProxy{
     }
 
     //send a request to appserver
-    async _request(path, method, body = undefined, headers = undefined){
-        const token = await this.user.getIdToken();
+    async _request(path, method, body = undefined, headers = undefined, useToken = true){
+        const token = useToken? await this.user.getIdToken(): null;
         console.log("Requesting using token: " + token.substring(0,50));
         const json_body = body ? JSON.stringify(body) : null;
         console.log("Fetching " + method + " " + apiUrl + path + " with body:");
@@ -431,22 +431,13 @@ export class ServerProxy{
         }
     }
 
-    //send a request to get a reset password code
-    async requestResetPasswordEmail(email){
-        
-    }
-
-    //send reset password code with new password
-    async sendCodeAndNewPassword(code, newPassword){
-
-    }
-
+    
     //send new profile picture
     async changeProfilePicture(url){
         if (this.userCache[this.user.uuid] && (this.userCache[this.user.uuid].image_location != url)){
             this.userCache[this.user.uuid] = null;
         }
-
+        
         try {
             await this._request(`/users/${this.user.uuid}`, 'PUT', {
                 "image_location": url
@@ -456,12 +447,12 @@ export class ServerProxy{
             return Promise.reject("Error al cambiar la imagen de perfil");
         }
     }
-
+    
     //send new user information
     async changeMyUserData(user_data){
-
+        
         this.userCache[this.user.uuid] = null;
-
+        
         try {
             await this._request(`/users/${this.user.uuid}`, 'PUT', {
                 display_name: user_data.full_name,
@@ -471,7 +462,7 @@ export class ServerProxy{
             return Promise.reject("Error al actualizar la información");
         }
     }
-
+    
     //send push token to appserver to receive notifications
     async sendPushToken(token){
         try {
@@ -480,6 +471,39 @@ export class ServerProxy{
             });
         } catch (e) {
             return Promise.reject("Error el enviar el token de notificaciones");
+        }
+    }
+    
+    //send a request to get a reset password code
+    async requestResetPasswordEmail(email){
+        try{
+            return await this._request(`/reset-codes`, 'POST', {
+                email: email
+            }, useToken = false);
+        } catch (e) {
+            return Promise.reject("Hubo un error al solicitar el codigo");
+        }
+    }
+    
+    //send reset password code with new password
+    async sendCodeAndNewPassword(email, code, newPassword){
+        try {
+            return await this._request(`/auth`, 'PUT', {
+                email: email,
+                reset_code: code,
+                password: newPassword
+            });
+        } catch (e) {
+            return Promise.reject("Hubo un error al actualizar la contraseña");
+        }
+    }
+
+    //search videos
+    async searchVideos(query){
+        try {
+            return await this._request(`/videos?search=${query}`, 'GET');
+        } catch (e) {
+            return Promise.reject("Error al buscar videos");
         }
     }
 }
