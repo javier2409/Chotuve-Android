@@ -189,7 +189,12 @@ export class ServerProxy{
     }
 
     //get video feed
-    async getVideos(){
+    async getVideos(invalidateCache = false){
+        
+        if (invalidateCache){
+            this.videoCache = {}
+        }
+        
         try {
             const result = await this._request("/videos", "GET", null);
             return (result);
