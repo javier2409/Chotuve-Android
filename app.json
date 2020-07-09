@@ -30,7 +30,7 @@
     "notification": {
       "icon": "./assets/notification.png",
       "androidMode": "collapse",
-      "androidCollapsedTitle": "Tienes notificaciones"
+      "androidCollapsedTitle": "Notificaciones"
     }
   }
 }
