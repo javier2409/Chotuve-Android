@@ -43,6 +43,7 @@ export default function Upload() {
         setTitle('');
         setDesc('');
         setProgress(0);
+        setLocation('');
         setUploading(false);
     }
 
