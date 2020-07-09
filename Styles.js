@@ -13,9 +13,9 @@ export function ThemeContextProvider(props){
         card: 'rgb(255, 255, 255)',
         text: 'rgb(240,245,240)',
         border: 'rgb(0,100,0)',
-        lighterbackground: 'rgb(25,25,25)',
+        lighterbackground: 'rgb(17,21,26)',
         highlight: 'rgb(200,255,200)',
-        grey: 'rgb(100,100,100)'
+        grey: 'rgb(90,100,115)'
     };
 
     const lightColors = {
