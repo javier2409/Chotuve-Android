@@ -249,6 +249,10 @@ export class ServerProxy{
             return this.userCache[uid];
         }
 
+        if (forceFetch){
+            this.videoCache = {}
+        }
+
         try {
             const response = await this._request('/users/' + uid, 'GET', null);
             this.userCache[uid] = response;
@@ -443,6 +447,8 @@ export class ServerProxy{
             this.userCache[this.user.uuid] = null;
         }
         
+        this.urlCache[url] == null;
+
         try {
             await this._request(`/users/${this.user.uuid}`, 'PUT', {
                 "image_location": url
