@@ -8,6 +8,7 @@ import * as Orientation from "expo-screen-orientation";
 import {ThemeContext} from "../Styles";
 import { Overlay } from 'react-native-elements';
 import OverlayMenuItem from "../components/OverlayMenuItem";
+import LoadingView from '../components/LoadingView';
 
 function getMinute(milliseconds){
 	const seconds = ~~(milliseconds/1000)
@@ -294,9 +295,7 @@ export default function VideoScreen({route}){
 
 	if (!finishedLoading){
 		return (
-			<View style={styles.loadingStyle}>
-				<ActivityIndicator/>
-			</View>
+			<LoadingView/>
 		)
 	}
 
