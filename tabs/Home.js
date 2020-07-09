@@ -4,22 +4,31 @@ import {AuthContext} from '../utilities/AuthContext';
 import {ThemeContext} from "../Styles";
 import VideoItem from "../components/VideoItem";
 import { SearchBar } from 'react-native-elements';
-import LoadingView from '../components/LoadingView';
 
 export default function Home({navigation}) {
     const {styles, colors} = useContext(ThemeContext);
     const [userData, server] = useContext(AuthContext);
     const [videoList, setVideoList] = useState([]);
     const [search, setSearch] = useState("");
+    const [refreshing, setRefreshing] = useState(false);
 
     function fetchVideos(forceRefresh = false){
-
         if (forceRefresh){
+            setRefreshing(true)
             setVideoList([])
         }
-
         server.getVideos(forceRefresh).then(result => {
             setVideoList(result)
+            setRefreshing(false);
+        });
+    }
+
+    function searchVideos(){
+        if (search.length < 1){
+            return
+        }
+        server.searchVideos(search).then(result => {
+            setVideoList(result);
         });
     }
 
@@ -28,15 +37,6 @@ export default function Home({navigation}) {
             fetchVideos();
         }
     }, [navigation]);
-
-    function searchVideos(){
-        if (search.length < 5){
-            return
-        }
-        server.searchVideos(search).then(result => {
-            setVideoList(result);
-        });
-    }
 
     return (
         <View style={styles.flexContainer}>
@@ -51,10 +51,9 @@ export default function Home({navigation}) {
                 inputStyle={{color: colors.text}}
                 style={{backgroundColor: colors.background}}
                 lightTheme={colors.themeName == 'Light'}
-            />  
+            />
             <FlatList
-                ListEmptyComponent={<LoadingView/>}
-                refreshing={false}
+                refreshing={refreshing}
                 style={styles.homeFlatList}
                 data={videoList}
                 renderItem={({item}) => {
@@ -62,7 +61,7 @@ export default function Home({navigation}) {
                 }}
                 onRefresh={() => {fetchVideos(true)}}
                 keyExtractor={item => item.video_id.toString()}
-            />          
+            />         
         </View>
     );
 }
