@@ -1,6 +1,5 @@
 import {AsyncStorage, StyleSheet} from "react-native";
 import React, {createContext, useState} from "react";
-import {colors} from "react-native-elements";
 
 export const ThemeContext = createContext({});
 
@@ -35,6 +34,12 @@ export function ThemeContextProvider(props){
     const [colors, setColors] = useState(darkColors);
 
     const styles = StyleSheet.create({
+        loadingStyle: {
+            flex: 1, 
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            backgroundColor: colors.background
+        },
         container: {
             backgroundColor: colors.background,
             alignItems: 'stretch',
