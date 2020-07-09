@@ -76,7 +76,12 @@ export default function VideoItem(props) {
                 />
                 <View style={{flex: 1, padding: 10}}>
                     <Text style={styles.homeVideoTitle}>{title}</Text>
-                    <Text style={styles.homeVideoSubtitle}>{author} - {getDate(timestamp)}</Text>
+                    <Text style={styles.homeVideoSubtitle}>
+                        {props.hideAuthor? <></> :
+                            <Text>{author} - </Text>
+                        }
+                        <Text>{getDate(timestamp)}</Text>
+                    </Text>
                 </View>
             </View>
         </TouchableOpacity>

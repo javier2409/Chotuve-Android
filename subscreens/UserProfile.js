@@ -49,6 +49,9 @@ export default function UserProfile({route, navigation}){
 
 
     function fetchUserData(force = false){
+        if (force){
+            setUserVideos([]);
+        }
         setRefreshing(true);
         server.getUserInfo(uid, force).then(result => {
             if (result.image_location){
@@ -56,7 +59,7 @@ export default function UserProfile({route, navigation}){
                     setAvatar(url);
                 });
             }
-            server.getUserVideos(uid).then(result => {
+            server.getUserVideos(uid, force).then(result => {
                 setUserVideos(result);
             })
             setUserData(result);
@@ -220,7 +223,7 @@ export default function UserProfile({route, navigation}){
                     renderItem={({item}) => {
                         return (
                             <View style={{width: 200, height:'auto', marginHorizontal: 20}}>
-                                <VideoItem video_id={item.video_id}/>
+                                <VideoItem video_id={item.video_id} hideAuthor/>
                             </View>
                         );
                     }}
