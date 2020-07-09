@@ -190,11 +190,7 @@ export class ServerProxy{
 
     //get video feed
     async getVideos(invalidateCache = false){
-        
-        if (invalidateCache){
-            this.videoCache = {}
-        }
-        
+        invalidateCache? this.videoCache = {}:{};
         try {
             const result = await this._request("/videos", "GET", null);
             return (result);
@@ -205,17 +201,14 @@ export class ServerProxy{
 
     //get all the information from a video except comments
     async getVideoInfo(id, forceFetch = false){
-        if (!forceFetch && this.videoCache[id]){
-            return this.videoCache[id];
+        if (forceFetch || !this.videoCache[id]){
+            try {
+                this.videoCache[id] = await this._request("/videos/"+id, "GET", null);
+            } catch (e) {
+                return Promise.reject("Error al recibir información del video");
+            }        
         }
-
-        try {
-            const result = await this._request("/videos/"+id, "GET", null);
-            this.videoCache[id] = result;
-            return result;
-        } catch (e) {
-            return Promise.reject("Error al recibir información del video");
-        }
+        return this.videoCache[id];
     }
 
     //request deletion of a video
@@ -230,6 +223,7 @@ export class ServerProxy{
 
     //change video information
     async modifyVideo(video_id, title, desc, location, friendsonly){
+        this.videoCache[video_id] = null;
         try {
             const response = await this._request(`/videos/${video_id}`, 'PATCH', {
                 title: title,
@@ -237,7 +231,6 @@ export class ServerProxy{
                 location: location,
                 is_private: friendsonly
             });
-            this.videoCache[video_id] = response;
         } catch (e) {
             return Promise.reject("Error al modificar video");
         }       
@@ -245,25 +238,19 @@ export class ServerProxy{
 
     //get information to show user profile
     async getUserInfo(uid, forceFetch = false){
-        if (this.userCache[uid] && !forceFetch){
-            return this.userCache[uid];
+        if (forceFetch || !this.userCache[uid]){
+            try {
+                this.userCache[uid] = await this._request('/users/' + uid, 'GET', null);
+            } catch (e) {
+                return Promise.reject("Error el obtener información del usuario");
+            }
         }
-
-        if (forceFetch){
-            this.videoCache = {}
-        }
-
-        try {
-            const response = await this._request('/users/' + uid, 'GET', null);
-            this.userCache[uid] = response;
-            return response;
-        } catch (e) {
-            return Promise.reject("Error el obtener información del usuario");
-        }
+        return this.userCache[uid];
     }
 
     //get videos from one user
-    async getUserVideos(uid){
+    async getUserVideos(uid, invalidateCache = false){
+        invalidateCache? this.videoCache = {}:{};
         try {
             const response = await this._request('/users/' + uid + '/videos', 'GET', null);
             return response;
@@ -274,32 +261,26 @@ export class ServerProxy{
 
     //get the username from user id
     async getUserName(uid, forceFetch = false){
-        if (this.userCache[uid] && !forceFetch){
-            return this.userCache[uid].display_name
+        if (forceFetch || !this.userCache[uid]){
+            try {
+                this.userCache[uid] = await this._request(`/users/${uid}`, 'GET', null);
+            } catch (e) {
+                return Promise.reject("Error al obtener nombre de usuario");
+            }
         }
-
-        try {
-            const response = await this._request(`/users/${uid}`, 'GET', null);
-            this.userCache[uid] = response;
-            return response.display_name;
-        } catch (e) {
-            return Promise.reject("Error al obtener nombre de usuario");
-        }
+        return this.userCache[uid].display_name;
     }
 
     //get direct url from firebase path
     async getFirebaseDirectURL(path){
-        if (this.urlCache[path]){
-            return this.urlCache[path];
+        if (!this.urlCache[path]){
+            try {
+                this.urlCache[path] = await firebase.storage().ref().child(path).getDownloadURL();
+            } catch (e) {
+                return Promise.reject("El archivo no existe en el servidor");
+            }
         }
-
-        try {
-            const url = await firebase.storage().ref().child(path).getDownloadURL();
-            this.urlCache[path] = url;
-            return url;
-        } catch (e) {
-            return Promise.reject("El archivo no existe en el servidor");
-        }
+        return this.urlCache[path];
     }
 
     //get information to show my own profile
@@ -443,12 +424,7 @@ export class ServerProxy{
     
     //send new profile picture
     async changeProfilePicture(url){
-        if (this.userCache[this.user.uuid] && (this.userCache[this.user.uuid].image_location != url)){
-            this.userCache[this.user.uuid] = null;
-        }
-        
-        this.urlCache[url] == null;
-
+        this.urlCache[url] = null;
         try {
             await this._request(`/users/${this.user.uuid}`, 'PUT', {
                 "image_location": url
@@ -461,14 +437,17 @@ export class ServerProxy{
     
     //send new user information
     async changeMyUserData(user_data){
-        
-        this.userCache[this.user.uuid] = null;
-        
         try {
             await this._request(`/users/${this.user.uuid}`, 'PUT', {
                 display_name: user_data.full_name,
                 phone_number: user_data.phone_number
             })
+            
+            if (this.userCache[this.user.uuid]){
+                this.userCache[this.user.uuid]["display_name"] = user_data.full_name;
+                this.userCache[this.user.uuid]["phone_number"] = user_data.phone_number;
+            }
+
         } catch (e) {
             return Promise.reject("Error al actualizar la información");
         }
