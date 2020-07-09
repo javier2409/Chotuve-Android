@@ -381,7 +381,10 @@ export class ServerProxy{
     }
 
     //get a list of my friends
-    async getFriendList(){
+    async getFriendList(invalidateCache = false){
+        if (invalidateCache){
+            this.userCache = {}
+        }
         try {
             const response = await this._request(`/users/${this.user.uuid}/friends`, 'GET');
             return response.friends;

@@ -10,18 +10,30 @@ export default function Friends({navigation}) {
     const {styles, colors} = useContext(ThemeContext);
     const [friends, setFriends] = useState([]);
     const [userData, server] = useContext(AuthContext);
+    const [refreshing, setRefreshing] = useState(false);
+
+    function getFriends(force = false){
+        if (force){
+            setFriends([]);
+            setRefreshing(true);
+        }
+        server.getFriendList(invalidateCache = force).then(result => {
+            setFriends(result);
+            setRefreshing(false);
+        })
+    }
 
     useEffect(() => {
         return navigation.addListener('focus', () => {
-            server.getFriendList().then(result => {
-                setFriends(result);
-            })
+            getFriends();
         })
     }, [navigation])
 
     return (
         <View style={styles.flexContainer}>
             <FlatList
+                refreshing={refreshing}
+                onRefresh={() => {getFriends(force = true)}}
                 data={friends}
                 renderItem={({item}) => {
                     const {user_id} = item;
