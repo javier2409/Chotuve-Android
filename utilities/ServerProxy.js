@@ -3,6 +3,7 @@ import * as facebook from 'expo-facebook';
 import * as google from 'expo-google-app-auth';
 import getEnv from "../environment";
 import {AsyncStorage} from "react-native";
+import {codes} from "ErrorCodes";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDlBeowWP8UPWsvk9kXj9JDaN5_xsuNu4I",
@@ -77,25 +78,39 @@ export class ServerProxy{
 
     //send a request to appserver
     async _request(path, method, body = undefined, headers = undefined, useToken = true){
-        const token = useToken? await this.user.getIdToken(): null;
+        let token;
+        let json_body;
+        let response;
+        
+        try {
+            token = useToken? await this.user.getIdToken(): null;
+        } catch (error) {
+            return Promise.reject(codes.AUTH_ERROR);
+        }
+        
         console.log("Requesting using token: " + token.substring(0,50));
-        const json_body = body ? JSON.stringify(body) : null;
+        json_body = body ? JSON.stringify(body) : null;
         console.log("Fetching " + method + " " + apiUrl + path + " with body:");
         console.log((typeof json_body) + " " + json_body);
-        const response = await fetch(apiUrl+path, {
-            method: method,
-            headers: {
-                "x-access-token": token,
-                "Content-Type": 'application/json',
-                "Connection": 'keep-alive',
-                ...headers
-            },
-            body: json_body
-        });
+        
+        try {
+            response = await fetch(apiUrl+path, {
+                method: method,
+                headers: {
+                    "x-access-token": token,
+                    "Content-Type": 'application/json',
+                    "Connection": 'keep-alive',
+                    ...headers
+                },
+                body: json_body
+            });
+        } catch (error) {
+            return Promise.reject(codes.FETCH_ERROR);
+        }
 
         if (!response.ok){
             console.log("Response not OK: " + response.status);
-            return Promise.reject("Response not OK");
+            return Promise.reject(response.status);
         }
         const response_json = await response.json();
         console.log("Response:");
@@ -194,8 +209,8 @@ export class ServerProxy{
         try {
             const result = await this._request("/videos", "GET", null);
             return (result);
-        } catch (e) {
-            return Promise.reject("Error al recibir la lista de videos");
+        } catch (errno) {
+            return Promise.reject(`Error al obtener el feed de videos (Error ${errno})`);
         }
     }
 
@@ -204,8 +219,8 @@ export class ServerProxy{
         if (forceFetch || !this.videoCache[id]){
             try {
                 this.videoCache[id] = await this._request("/videos/"+id, "GET", null);
-            } catch (e) {
-                return Promise.reject("Error al recibir información del video");
+            } catch (errno) {
+                return Promise.reject(`Error al recibir información del video (Error ${errno})`);
             }        
         }
         return this.videoCache[id];
@@ -216,8 +231,8 @@ export class ServerProxy{
         try {
             const response = await this._request(`/videos/${video_id}`, "DELETE");
             this.videoCache[video_id] = null;
-        } catch (e) {
-            return Promise.reject("Error al eliminar video");
+        } catch (errno) {
+            return Promise.reject(`Error al eliminar video `+`(Error ${errno})`);
         }
     }
 
@@ -231,8 +246,8 @@ export class ServerProxy{
                 location: location,
                 is_private: friendsonly
             });
-        } catch (e) {
-            return Promise.reject("Error al modificar video");
+        } catch (errno) {
+            return Promise.reject("Error al modificar video" +` (Error ${errno})`);
         }       
     } 
 
@@ -241,8 +256,8 @@ export class ServerProxy{
         if (forceFetch || !this.userCache[uid]){
             try {
                 this.userCache[uid] = await this._request('/users/' + uid, 'GET', null);
-            } catch (e) {
-                return Promise.reject("Error el obtener información del usuario");
+            } catch (errno) {
+                return Promise.reject("Error el obtener información del usuario" + ` (Error ${errno})`);
             }
         }
         return this.userCache[uid];
@@ -254,8 +269,8 @@ export class ServerProxy{
         try {
             const response = await this._request('/users/' + uid + '/videos', 'GET', null);
             return response;
-        } catch (e) {
-            return Promise.reject("Error el obtener videos del usuario");
+        } catch (errno) {
+            return Promise.reject("Error el obtener videos del usuario" + ` (Error ${errno})`);
         }
     }
 
@@ -264,8 +279,8 @@ export class ServerProxy{
         if (forceFetch || !this.userCache[uid]){
             try {
                 this.userCache[uid] = await this._request(`/users/${uid}`, 'GET', null);
-            } catch (e) {
-                return Promise.reject("Error al obtener nombre de usuario");
+            } catch (errno) {
+                return Promise.reject("Error al obtener nombre de usuario" + ` (Error ${errno})`);
             }
         }
         return this.userCache[uid].display_name;
@@ -276,8 +291,8 @@ export class ServerProxy{
         if (!this.urlCache[path]){
             try {
                 this.urlCache[path] = await firebase.storage().ref().child(path).getDownloadURL();
-            } catch (e) {
-                return Promise.reject("El archivo no existe en el servidor");
+            } catch (errno) {
+                return Promise.reject("El archivo no existe en el servidor" + ` (Error ${errno})`);
             }
         }
         return this.urlCache[path];
@@ -293,8 +308,8 @@ export class ServerProxy{
         try {
             const messages = await this._request(`/messages/${uid}?page=1&per_page=50`, 'GET');
             return messages;
-        } catch (e) {
-            return Promise.reject("No se pudieron obtener los mensajes del chat.");
+        } catch (errno) {
+            return Promise.reject("No se pudieron obtener los mensajes del chat" + ` (Error ${errno})`);
         }
     }
 
@@ -303,8 +318,8 @@ export class ServerProxy{
         try {
             const response = await this._request("/videos/" + video_id + "/comments", 'GET', null);
             return (response);
-        } catch (e) {
-            return Promise.reject("Error al obtener los comentarios");
+        } catch (errno) {
+            return Promise.reject("Error al obtener los comentarios" + ` (Error ${errno})`);
         }
     }
 
@@ -313,8 +328,8 @@ export class ServerProxy{
         try {
             const users = await this._request(`/users?name=${search}&per_page=20&page=1`, 'GET', null);
             return (users.users);
-        } catch (e) {
-            return Promise.reject("Error al realizar la búsqueda");
+        } catch (errno) {
+            return Promise.reject("Error al realizar la búsqueda" + ` (Error ${errno})`);
         }
     }
 
@@ -330,8 +345,8 @@ export class ServerProxy{
                 is_private: video_data.is_private
             });
             return "ok";
-        } catch (e) {
-            return Promise.reject("Error al enviar video al servidor")
+        } catch (errno) {
+            return Promise.reject("Error al enviar video al servidor" + ` (Error ${errno})`)
         }
     }
 
@@ -342,8 +357,8 @@ export class ServerProxy{
                 text: comment_data.text,
                 vid_time: comment_data.vid_time
             })
-        } catch (e) {
-            return Promise.reject("Error al publicar comentario");
+        } catch (errno) {
+            return Promise.reject("Error al publicar comentario" + ` (Error ${errno})`);
         }
     }
 
@@ -353,8 +368,8 @@ export class ServerProxy{
             return await this._request(`/messages/${destination_uid}`, 'POST', {
                 text: message
             })
-        } catch (e) {
-            return Promise.reject("No se pudo enviar el mensaje");
+        } catch (errno) {
+            return Promise.reject("No se pudo enviar el mensaje" + ` (Error ${errno})`);
         }
     }
 
@@ -364,8 +379,8 @@ export class ServerProxy{
             await this._request(`/videos/${id}/reactions`, 'POST', {
                 likes_video: (reaction === 'like')
             });
-        } catch (e) {
-            return Promise.reject("Error al reaccionar al video");
+        } catch (errno) {
+            return Promise.reject("Error al reaccionar al video" + ` (Error ${errno})`);
         }
     }
 
@@ -375,8 +390,8 @@ export class ServerProxy{
             await this._request(`/videos/${id}/reactions`, 'PATCH', {
                 likes_video: (reaction === 'like')
             });
-        } catch (e) {
-            return Promise.reject("Error al modificar reaccion del video");
+        } catch (errno) {
+            return Promise.reject("Error al modificar reaccion del video" + ` (Error ${errno})`);
         }
     }
 
@@ -388,8 +403,8 @@ export class ServerProxy{
         try {
             const response = await this._request(`/users/${this.user.uuid}/friends`, 'GET');
             return response.friends;
-        } catch (e) {
-            return Promise.reject("Error al obtener la lista de amigos");
+        } catch (errno) {
+            return Promise.reject("Error al obtener la lista de amigos" + ` (Error ${errno})`);
         }
     }
     
@@ -398,8 +413,8 @@ export class ServerProxy{
         try {
             const response = await this._request(`/users/${this.user.uuid}/friends/requests`, 'GET', null);
             return response.pending_reqs;
-        } catch (e) {
-            return Promise.reject("Error al obtener las solicitudes de amistad");
+        } catch (errno) {
+            return Promise.reject("Error al obtener las solicitudes de amistad" + ` (Error ${errno})`);
         }
     }
 
@@ -409,8 +424,8 @@ export class ServerProxy{
             await this._request(`/users/${this.user.uuid}/friends/requests/${uuid}`, 'POST', {
                "accept": answer
             });
-        } catch (e) {
-            return Promise.reject("No se pudo completar la solicitud");
+        } catch (errno) {
+            return Promise.reject("No se pudo completar la solicitud" + ` (Error ${errno})`);
         }
     }
     
@@ -419,8 +434,8 @@ export class ServerProxy{
         try {
             await this._request(`/users/${uid}/friends/requests`, 'POST', null);
             return "ok";
-        } catch (e) {
-            return Promise.reject("Error al enviar solicitud de amistad");
+        } catch (errno) {
+            return Promise.reject("Error al enviar solicitud de amistad" + ` (Error ${errno})`);
         }
     }
 
@@ -433,8 +448,8 @@ export class ServerProxy{
                 "image_location": url
             });
             return "ok"
-        } catch (e) {
-            return Promise.reject("Error al cambiar la imagen de perfil");
+        } catch (errno) {
+            return Promise.reject("Error al cambiar la imagen de perfil" + ` (Error ${errno})`);
         }
     }
     
@@ -451,8 +466,8 @@ export class ServerProxy{
                 this.userCache[this.user.uuid]["phone_number"] = user_data.phone_number;
             }
 
-        } catch (e) {
-            return Promise.reject("Error al actualizar la información");
+        } catch (errno) {
+            return Promise.reject("Error al actualizar la información" + ` (Error ${errno})`);
         }
     }
     
@@ -462,8 +477,8 @@ export class ServerProxy{
             return await this._request(`/tokens`, 'POST', {
                 "push_token": token
             });
-        } catch (e) {
-            return Promise.reject("Error el enviar el token de notificaciones");
+        } catch (errno) {
+            return Promise.reject("Error el enviar el token de notificaciones" + ` (Error ${errno})`);
         }
     }
     
@@ -473,8 +488,8 @@ export class ServerProxy{
             return await this._request(`/reset-codes`, 'POST', {
                 email: email
             }, useToken = false);
-        } catch (e) {
-            return Promise.reject("Hubo un error al solicitar el codigo");
+        } catch (errno) {
+            return Promise.reject("Hubo un error al solicitar el codigo" + ` (Error ${errno})`);
         }
     }
     
@@ -486,8 +501,8 @@ export class ServerProxy{
                 reset_code: code,
                 password: newPassword
             });
-        } catch (e) {
-            return Promise.reject("Hubo un error al actualizar la contraseña");
+        } catch (errno) {
+            return Promise.reject("Hubo un error al actualizar la contraseña" + ` (Error ${errno})`);
         }
     }
 
@@ -495,8 +510,8 @@ export class ServerProxy{
     async searchVideos(query){
         try {
             return await this._request(`/videos?search=${query}`, 'GET');
-        } catch (e) {
-            return Promise.reject("Error al buscar videos");
+        } catch (errno) {
+            return Promise.reject("Error realizar la búsqueda" + ` (Error ${errno})`);
         }
     }
 }
