@@ -10,7 +10,7 @@ export default function FriendSearch ({navigation}){
     const [search, setSearch] = useState('');
     const [searchResult, setSearchResult] = useState([]);
     const [userData, server] = useContext(AuthContext);
-    const {styles} = useContext(ThemeContext);
+    const {styles, colors} = useContext(ThemeContext);
 
     navigation.setOptions({
         headerTitle: 'Búsqueda de Usuarios'
@@ -29,7 +29,17 @@ export default function FriendSearch ({navigation}){
 
     return (
         <View style={styles.flexContainer}>
-            <SearchBar placeholder='Buscar...' onChangeText={updateSearch} value={search} />
+            <SearchBar 
+                placeholder='Buscar...' 
+                onChangeText={updateSearch} 
+                value={search}
+                round
+                containerStyle={{backgroundColor: colors.background}}
+                inputContainerStyle={{backgroundColor: colors.lighterbackground}}
+                inputStyle={{color: colors.text}}
+                style={{backgroundColor: colors.background}}
+                lightTheme={colors.themeName == 'Light'}
+            />
             <FlatList
                 data={searchResult}
                 renderItem={({item}) => {
