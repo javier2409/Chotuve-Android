@@ -19,6 +19,7 @@ import {Notifications} from "expo";
 import {navigate, navigationRef} from "./utilities/RootNavigation";
 import * as Permissions from "expo-permissions";
 import EditVideo from './subscreens/EditVideo';
+import { ToastAndroid } from 'react-native';
 
 ignoreWarnings('Setting a timer');
 
@@ -66,7 +67,7 @@ function MainApp(){
     useEffect(() => {
         Permissions.askAsync(Permissions.NOTIFICATIONS).then(({status}) => {
             if (status !== 'granted'){
-                alert('No se pudo obtener permiso para mostrar notificaciones');
+                ToastAndroid.show('No se pudo obtener permiso para mostrar notificaciones', ToastAndroid.LONG);
             }
         });
 
