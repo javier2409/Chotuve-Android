@@ -1,5 +1,5 @@
 import React, {useCallback, useContext, useRef, useState} from 'react';
-import { View, StyleSheet, FlatList, Image, ScrollView, TouchableOpacity, ActivityIndicator, RefreshControl } from "react-native";
+import { View, ToastAndroid, FlatList, Image, ScrollView, TouchableOpacity, ActivityIndicator, RefreshControl } from "react-native";
 import {Avatar, Divider, ListItem, colors, Text, Icon, Overlay} from 'react-native-elements';
 import { useTheme } from '@react-navigation/native';
 import { useFocusEffect } from "@react-navigation/native";
@@ -10,6 +10,8 @@ import {ThemeContext} from "../Styles";
 import VideoItem from "../components/VideoItem";
 import OverlayMenuItem from "../components/OverlayMenuItem";
 import { ServerProxy } from '../utilities/ServerProxy';
+
+const alert = msg => {ToastAndroid.show(msg, ToastAndroid.LONG)};
 
 function ProfileInfoItem(props){
 
@@ -137,7 +139,7 @@ export default function UserProfile({route, navigation}){
             const uri = await server.getFirebaseDirectURL(path);
             setUserData(Object.assign(userData, {avatar_uri: uri}));
         } catch(error){
-            alert('Hubo un error al cambiar la foto');
+            alert(error);
         }
         setUploading(false);
     }

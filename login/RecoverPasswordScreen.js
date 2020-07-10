@@ -1,11 +1,13 @@
 import { useTheme } from '@react-navigation/native';
 import * as React from 'react';
 import { useContext, useState } from 'react';
-import {StyleSheet, View, ActivityIndicator, ScrollView} from 'react-native';
+import {ToastAndroid, View, ActivityIndicator, ScrollView} from 'react-native';
 import {Button, Text} from 'react-native-elements';
 import { AuthContext } from '../utilities/AuthContext';
 import Field from "./Field";
 import {ThemeContext} from "../Styles";
+
+const alert = msg => {ToastAndroid.show(msg, ToastAndroid.LONG)};
 
 export default function RecoverPasswordScreen({navigation}){
     const {styles, colors} = useContext(ThemeContext);
@@ -21,8 +23,8 @@ export default function RecoverPasswordScreen({navigation}){
         server.requestResetPasswordEmail(email).then(() => {
             alert("Hemos enviado el correo, revisa tu bandeja de entrada");
             setLoading(false);
-        }, () => {
-            alert("Hubo un error, revisa la dirección ingresada o intenta más tarde");
+        }, (errmsg) => {
+            alert(errmsg);
             setLoading(false);
         })
     }
@@ -45,8 +47,8 @@ export default function RecoverPasswordScreen({navigation}){
         server.sendCodeAndNewPassword(email, code, pwd1).then(() => {
             alert("Contraseña actualizada con éxito");
             navigation.navigate("Ingreso");
-        }, () => {
-            alert("Hubo un error");
+        }, (errmsg) => {
+            alert(errmsg);
             setLoading(false);
         })
     }

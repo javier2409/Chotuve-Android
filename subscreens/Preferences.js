@@ -1,9 +1,11 @@
 import React, {useCallback, useContext, useState} from "react";
-import {View, StyleSheet, ScrollView} from "react-native";
+import {View, ToastAndroid, ScrollView} from "react-native";
 import {Button, Divider, Input, ListItem, Overlay, Text} from "react-native-elements";
 import {useFocusEffect, useTheme} from "@react-navigation/native";
 import {AuthContext} from "../utilities/AuthContext";
 import {ThemeContext} from "../Styles";
+
+const alert = msg => {ToastAndroid.show(msg, ToastAndroid.LONG)}
 
 function Setting(props){
     const {styles, colors} = useContext(ThemeContext);
@@ -69,7 +71,7 @@ export default function Preferences(){
             })
         } catch(error) {
             console.log(error);
-            alert("Hubo un error al actualizar la información.")
+            alert(error)
         }
         setSending(false);
     }
