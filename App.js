@@ -19,7 +19,7 @@ import {Notifications} from "expo";
 import {navigate, navigationRef} from "./utilities/RootNavigation";
 import * as Permissions from "expo-permissions";
 import EditVideo from './subscreens/EditVideo';
-import { ToastAndroid } from 'react-native';
+import { ToastError } from './utilities/ToastError';
 
 ignoreWarnings('Setting a timer');
 
@@ -42,7 +42,7 @@ const Theme = {
 
 function MainApp(){
     const {colors} = useContext(ThemeContext);
-    const [user, server] = useContext(AuthContext);
+    const [, server] = useContext(AuthContext);
 
     useEffect(() => {
         const subscription = Notifications.addListener(notification => {
@@ -67,12 +67,12 @@ function MainApp(){
     useEffect(() => {
         Permissions.askAsync(Permissions.NOTIFICATIONS).then(({status}) => {
             if (status !== 'granted'){
-                ToastAndroid.show('No se pudo obtener permiso para mostrar notificaciones', ToastAndroid.LONG);
+                ToastError("No se pudo obtener permiso para mostrar notificaciones");
             }
         });
 
         Notifications.getExpoPushTokenAsync().then(token => {
-            server.sendPushToken(token).then(null);
+            server.sendPushToken(token).then(null, ToastError);
             console.log("Push token: " + token);
         });
     });

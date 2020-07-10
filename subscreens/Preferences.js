@@ -4,6 +4,7 @@ import {Button, Divider, Input, ListItem, Overlay, Text} from "react-native-elem
 import {useFocusEffect, useTheme} from "@react-navigation/native";
 import {AuthContext} from "../utilities/AuthContext";
 import {ThemeContext} from "../Styles";
+import { ToastError } from "../utilities/ToastError";
 
 const alert = msg => {ToastAndroid.show(msg, ToastAndroid.LONG)}
 
@@ -30,7 +31,7 @@ function SettingOverlay(props){
     )
 }
 
-export default function Preferences(){
+export default function Preferences({navigation}){
     const {styles, colors, setLightMode, setDarkMode} = useContext(ThemeContext);
     const [user, server] = useContext(AuthContext);
     const [themeOverlayVisible, setThemeOverlayVisible] = useState(false);
@@ -51,6 +52,8 @@ export default function Preferences(){
             },
             error => {
                 console.log(error);
+                ToastError(error);
+                navigation.goBack();
             }
         )
     }
@@ -71,7 +74,7 @@ export default function Preferences(){
             })
         } catch(error) {
             console.log(error);
-            alert(error)
+            ToastError(error)
         }
         setSending(false);
     }

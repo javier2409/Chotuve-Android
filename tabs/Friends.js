@@ -1,15 +1,15 @@
-import { useTheme } from '@react-navigation/native';
 import React, {useContext, useEffect, useState} from 'react';
-import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { Icon } from 'react-native-elements';
 import FriendItem from './../components/FriendItem';
 import {AuthContext} from "../utilities/AuthContext";
 import {ThemeContext} from "../Styles";
+import {ToastError} from '../utilities/ToastError';
 
 export default function Friends({navigation}) {
     const {styles, colors} = useContext(ThemeContext);
     const [friends, setFriends] = useState([]);
-    const [userData, server] = useContext(AuthContext);
+    const [, server] = useContext(AuthContext);
     const [refreshing, setRefreshing] = useState(false);
 
     function getFriends(force = false){
@@ -20,7 +20,7 @@ export default function Friends({navigation}) {
         server.getFriendList(invalidateCache = force).then(result => {
             setFriends(result);
             setRefreshing(false);
-        })
+        }, ToastError);
     }
 
     useEffect(() => {

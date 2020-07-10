@@ -5,6 +5,7 @@ import { Button } from 'react-native-elements';
 import { AuthContext } from '../utilities/AuthContext';
 import { useFocusEffect } from '@react-navigation/native';
 import { View, ActivityIndicator } from 'react-native';
+import { ToastError } from '../utilities/ToastError';
 
 export default function EditVideo({route, navigation}){
     const {video_id} = route.params;
@@ -23,7 +24,7 @@ export default function EditVideo({route, navigation}){
     
     function saveChanges(){
         setUploading(true);
-        server.modifyVideo(video_id, title, description, location, isPrivate).then(reset);
+        server.modifyVideo(video_id, title, description, location, isPrivate).then(reset, ToastError);
     }
 
     function checkVideo(){
@@ -44,7 +45,10 @@ export default function EditVideo({route, navigation}){
             setLocation(result.location);
             setPrivate(result.is_private);
             setLoading(false);
-        })
+        }, msg => {
+            ToastError(msg);
+            navigation.goBack();
+        });
     }, []));
 
     function reset(){

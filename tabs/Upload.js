@@ -11,6 +11,7 @@ import * as firebase from "firebase";
 import ProgressCircle from 'react-native-progress-circle';
 import {ThemeContext} from "../Styles";
 import VideoInfoForm from '../components/VideoInfoForm';
+import { ToastError } from '../utilities/ToastError';
 
 export default function Upload() {
     const {styles, colors} = useContext(ThemeContext);
@@ -84,7 +85,7 @@ export default function Upload() {
                 is_private: privateVideo
             });
         } catch (error) {
-
+            ToastError(error);
         }
         reset();
     }
@@ -111,7 +112,7 @@ export default function Upload() {
             uploadTask_video.on(firebase.storage.TaskEvent.STATE_CHANGED, next, errorHandler, complete);
 
         } catch (error) {
-            alert(error);
+            ToastError(error);
             reset();
         }
     }

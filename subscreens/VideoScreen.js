@@ -9,6 +9,7 @@ import {ThemeContext} from "../Styles";
 import { Overlay } from 'react-native-elements';
 import OverlayMenuItem from "../components/OverlayMenuItem";
 import LoadingView from '../components/LoadingView';
+import {ToastError} from '../utilities/ToastError';
 
 function getMinute(milliseconds){
 	const seconds = ~~(milliseconds/1000)
@@ -131,7 +132,7 @@ function VideoInfo(props){
 	function deleteVideo(){
 		server.deleteVideo(video_id).then(() => {
 			navigation.goBack();
-		});
+		}, ToastError);
 	}
 
 	function editVideo(){
@@ -197,7 +198,7 @@ function CommentInput(props){
 			vid_time: checked? video_time : null
 		}).then(() => {
 			setSending(false);
-		})
+		}, ToastError);
 		setMyComment('');
 	}
 
@@ -256,17 +257,17 @@ export default function VideoScreen({route}){
 		        }
         		return (a.time > b.time)? 1 : -1
 	        }));
-        });
+        }, ToastError);
     }
 
 	function fetchData(force = false){
 		server.getVideoInfo(vid_id, force).then(result => {
 			setVideoData(result);
 			return server.getFirebaseDirectURL(result.firebase_url);
-		}).then(result => {
+		}, ToastError).then(result => {
 			setDownloadURL(result);
 			setFinishedLoading(true);
-		});
+		}, ToastError);
 	}
 
 	function refreshData(){

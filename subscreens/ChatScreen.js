@@ -1,11 +1,12 @@
-import { useTheme, useFocusEffect } from '@react-navigation/native';
-import React, {useContext, useEffect, useState, useRef, useLayoutEffect, useCallback} from 'react';
-import { FlatList, StyleSheet, View, TouchableOpacity } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+import React, {useContext, useEffect, useState, useRef, useCallback} from 'react';
+import { FlatList, View, TouchableOpacity } from 'react-native';
 import { Avatar, Icon, Input, Text } from 'react-native-elements';
 import {AuthContext} from "../utilities/AuthContext";
 import hash from "react-native-web/dist/vendor/hash";
 import {ThemeContext} from "../Styles";
 import {Notifications} from "expo";
+import { ToastError } from '../utilities/ToastError';
 
 export default function ChatScreen({route, navigation}){
     const uid = route.params.uid;
@@ -31,21 +32,22 @@ export default function ChatScreen({route, navigation}){
             sender_id: userData.uuid,
             text: sendableMessage
         }
-        setMessages(messages.concat([newMessage]));
-        server.sendMessage(sendableMessage, uid).then(null);
+        server.sendMessage(sendableMessage, uid).then(() => {
+            setMessages(messages.concat([newMessage]));
+        }, ToastError);
     }
 
     function fetchMessages(){
         server.getChatInfo(uid).then(result => {
             setMessages(result)
-        })
+        }, ToastError);
         server.getUserInfo(uid).then(result => {
             setFullName(result.display_name);
             setEmail(result.email);
             if (result.image_location){
                 server.getFirebaseDirectURL(result.image_location).then(setAvatarURL, null);
             }
-        })
+        }, ToastError); 
     }
 
     useFocusEffect(useCallback(() => {

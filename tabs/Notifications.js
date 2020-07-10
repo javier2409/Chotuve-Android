@@ -4,6 +4,7 @@ import {ListItem, Text, Button, Icon} from "react-native-elements";
 import {ThemeContext} from "../Styles";
 import {AuthContext} from "../utilities/AuthContext";
 import {useFocusEffect} from "@react-navigation/native";
+import { ToastError } from "../utilities/ToastError";
 
 function FriendRequest(props){
     const [userData, setUserData] = useState({});
@@ -23,14 +24,9 @@ function FriendRequest(props){
     }
 
     function answerRequest(answer){
-        server.answerFriendRequest(uuid, answer).then(
-            () => {
+        server.answerFriendRequest(uuid, answer).then(() => {
                 setFinished(true);
-            },
-            () => {
-
-            }
-        );
+        }, ToastError);
     }
 
     useEffect(() => {
@@ -73,7 +69,7 @@ export default function Notifications(){
     function fetchFriendRequests(){
         server.getFriendRequests().then(result => {
             setFriendRequests(result);
-        })
+        }, ToastError);
     }
 
     function fetchMessages(){

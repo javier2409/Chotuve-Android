@@ -5,6 +5,7 @@ import { SearchBar } from 'react-native-elements';
 import FriendItem from './../components/FriendItem';
 import {AuthContext} from "../utilities/AuthContext";
 import {ThemeContext} from "../Styles";
+import { ToastError } from '../utilities/ToastError';
 
 export default function FriendSearch ({navigation}){
     const [search, setSearch] = useState('');
@@ -24,7 +25,7 @@ export default function FriendSearch ({navigation}){
         }
         server.getUserSearch(text).then(result => {
             setSearchResult(result);
-        })
+        }, ToastError);
     }
 
     return (

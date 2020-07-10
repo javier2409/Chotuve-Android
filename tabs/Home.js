@@ -1,13 +1,14 @@
-import React, {useCallback, useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {FlatList, View} from 'react-native';
 import {AuthContext} from '../utilities/AuthContext';
 import {ThemeContext} from "../Styles";
 import VideoItem from "../components/VideoItem";
 import { SearchBar } from 'react-native-elements';
+import {ToastError} from '../utilities/ToastError';
 
 export default function Home({navigation}) {
     const {styles, colors} = useContext(ThemeContext);
-    const [userData, server] = useContext(AuthContext);
+    const [, server] = useContext(AuthContext);
     const [videoList, setVideoList] = useState([]);
     const [search, setSearch] = useState("");
     const [refreshing, setRefreshing] = useState(false);
@@ -20,7 +21,7 @@ export default function Home({navigation}) {
         server.getVideos(forceRefresh).then(result => {
             setVideoList(result)
             setRefreshing(false);
-        });
+        }, ToastError);
     }
 
     function searchVideos(){
@@ -29,7 +30,7 @@ export default function Home({navigation}) {
         }
         server.searchVideos(search).then(result => {
             setVideoList(result);
-        });
+        }, ToastError);
     }
 
     useEffect(() => {

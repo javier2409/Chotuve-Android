@@ -10,6 +10,7 @@ import {ThemeContext} from "../Styles";
 import VideoItem from "../components/VideoItem";
 import OverlayMenuItem from "../components/OverlayMenuItem";
 import { ServerProxy } from '../utilities/ServerProxy';
+import { ToastError } from '../utilities/ToastError';
 
 const alert = msg => {ToastAndroid.show(msg, ToastAndroid.LONG)};
 
@@ -63,16 +64,17 @@ export default function UserProfile({route, navigation}){
             }
             server.getUserVideos(uid, force).then(result => {
                 setUserVideos(result);
-            })
+            }, ToastError);
             setUserData(result);
             setFriendship(result.friendship_status);
             setRefreshing(false);
             navigation.setOptions({
                 headerTitle: 'Perfil de ' + result.display_name
             });
-        }, () => {
+        }, errmsg => {
             navigation.goBack();
-        })
+            ToastError(errmsg);
+        });
     }
 
     useFocusEffect(
@@ -91,7 +93,7 @@ export default function UserProfile({route, navigation}){
         server.addFriend(uid).then(result => {
             setOverlayVisible(false);
             setFriendship("pending");
-        });
+        }, ToastError);
     }
 
     function deleteFriend(){
@@ -137,9 +139,9 @@ export default function UserProfile({route, navigation}){
             const path = profilePicture.current.fullPath;
             await server.changeProfilePicture(path);
             const uri = await server.getFirebaseDirectURL(path);
-            setUserData(Object.assign(userData, {avatar_uri: uri}));
+            setAvatar(uri);
         } catch(error){
-            alert(error);
+            ToastError(error);
         }
         setUploading(false);
     }
@@ -148,7 +150,7 @@ export default function UserProfile({route, navigation}){
         <ScrollView 
             style={styles.flexContainer}
             refreshControl={
-                <RefreshControl onRefresh={() => {fetchUserData(force=true)}} refreshing={refreshing}/>
+                <RefreshControl onRefresh={() => {fetchUserData(true)}} refreshing={refreshing}/>
             }
         >
             <Overlay isVisible={overlayVisible} onBackdropPress={toggleOverlay} overlayStyle={{height: 'auto'}}>
