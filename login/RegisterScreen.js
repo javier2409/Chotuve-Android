@@ -1,12 +1,13 @@
 import * as React from 'react';
-import { useTheme } from '@react-navigation/native';
-import {StyleSheet, View, ActivityIndicator} from 'react-native';
+import {ToastAndroid, View, ActivityIndicator} from 'react-native';
 import { Button, Text } from 'react-native-elements';
 import { AuthContext } from '../utilities/AuthContext';
 import {useContext, useState} from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import Field from './Field';
 import {ThemeContext} from "../Styles";
+
+const alert = msg => {ToastAndroid.show(msg, ToastAndroid.LONG)};
 
 export default function RegisterScreen({navigation}){
     const {styles, colors} = useContext(ThemeContext);
@@ -16,6 +17,13 @@ export default function RegisterScreen({navigation}){
     const [fullname, setFullname] = React.useState(null);
     const [userData, server] = useContext(AuthContext);
     const [loading, setLoading] = useState(false);
+
+    function resetFields(){
+        setPwd1("");
+        setPwd2("");
+        setEmail("");
+        setFullname("");
+    }
 
     async function tryRegisterUser(){
         if (pwd1 !== pwd2){
@@ -31,10 +39,12 @@ export default function RegisterScreen({navigation}){
             full_name: fullname
         }).then(
             () => {
+                alert("La cuenta se ha creado exitosamente");
                 navigation.goBack();
             },
             reason => {
                 alert(reason);
+                resetFields();
                 setLoading(false);
             }
         )

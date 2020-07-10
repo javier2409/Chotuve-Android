@@ -1,11 +1,13 @@
 import { useTheme } from '@react-navigation/native';
 import * as React from 'react';
 import { useContext, useRef, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View, ActivityIndicator } from 'react-native';
+import { ToastAndroid, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import { Image, Input, SocialIcon, Text } from 'react-native-elements';
 import { AuthContext } from '../utilities/AuthContext';
 import {ThemeContext} from "../Styles";
 import Field from "./Field";
+
+const alert = msg => {ToastAndroid.show(msg, ToastAndroid.LONG)};
 
 export default function LoginScreen({navigation}){
     navigation.setOptions({
@@ -20,21 +22,24 @@ export default function LoginScreen({navigation}){
 
     function tryLoginWithUserAndPass(){
         setLoading(true);
-        server.tryLogin(user, pass).then(null, () => {
+        server.tryLogin(user, pass).then(null, (error) => {
+            alert(error);
             setLoading(false);
         });
     }
 
     function tryFacebookLogin(){
         setLoading(true);
-        server.tryFacebookLogin().then(null, () => {
+        server.tryFacebookLogin().then(null, (error) => {
+            alert(error);
             setLoading(false);
         });
     }
 
     function tryGoogleLogin() {
         setLoading(true);
-        server.tryGoogleLogin().then(null, () => {
+        server.tryGoogleLogin().then(null, (error) => {
+            alert(error);
             setLoading(false);
         });
     }

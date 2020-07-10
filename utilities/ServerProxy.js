@@ -3,7 +3,7 @@ import * as facebook from 'expo-facebook';
 import * as google from 'expo-google-app-auth';
 import getEnv from "../environment";
 import {AsyncStorage} from "react-native";
-import {codes} from "ErrorCodes";
+import {codes} from "./ErrorCodes";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDlBeowWP8UPWsvk9kXj9JDaN5_xsuNu4I",
@@ -42,32 +42,49 @@ export class ServerProxy{
 
     //manage login success
     manageCredential = async credential => {
+        let token;
+        let response;
+        console.log('Trying to get token ID');
         try {
-            console.log('Trying to get token ID');
-            const token = await credential.user.getIdToken();
-            console.log(`Obtained token ID from firebase: ${token}`);
-            console.log(credential.user.displayName);
-            console.log(credential.user.email);
-            this.updateLocalUserData(credential.user);
-            if (credential.additionalUserInfo.isNewUser) {
-                console.log("The user is new, sending to AppServer");
+            token = await credential.user.getIdToken();
+        } catch (error) {
+            this.updateGlobalUserData(null);
+            return Promise.reject("Error de autenticación" + ` (Error ${codes.AUTH_ERROR})`);
+        }
+        console.log(`Obtained token ID from firebase: ${token}`);
+        console.log(credential.user.displayName);
+        console.log(credential.user.email);
+        this.updateLocalUserData(credential.user);
+        if (credential.additionalUserInfo.isNewUser) {
+            console.log("The user is new, sending to AppServer");
+            try {
                 await this._request('/users', 'POST', {
                     display_name: credential.user.displayName,
                     email: credential.user.email,
                     phone_number: credential.user.phoneNumber
                 });
+            } catch (errno) {
+                this.updateGlobalUserData(null);
+                return Promise.reject("Error al registrar la cuenta en nuestros servidores" + ` (Error ${errno})`)
             }
-            console.log("Requesting user ID");
-            const response = await this._request('/auth', 'GET', null);
-            console.log("User ID: " + response.id);
-            credential.user.uuid = response.id;
-            console.log("Saving login method: " + credential.additionalUserInfo.providerId);
-            await AsyncStorage.setItem("LOGIN_METHOD", credential.additionalUserInfo.providerId);
-            this.updateGlobalUserData(credential.user);
-        } catch(error) {
-            this.updateGlobalUserData(null);
-            return Promise.reject("Error enviando datos al servidor");
         }
+        console.log("Requesting user ID");
+        try {
+            response = await this._request('/auth', 'GET', null);
+        } catch (errno) {
+            this.updateGlobalUserData(null);
+            return Promise.reject("Error al obtener ID de usuario " + ` (Error ${errno})`);
+        }
+        console.log("User ID: " + response.id);
+        credential.user.uuid = response.id;
+        console.log("Saving login method: " + credential.additionalUserInfo.providerId);
+        try {
+            await AsyncStorage.setItem("LOGIN_METHOD", credential.additionalUserInfo.providerId);
+        } catch (error) {
+            this.updateGlobalUserData(null);
+            return Promise.reject("Error al guardar el método de ingreso");
+        }
+        this.updateGlobalUserData(credential.user);
     }
 
     //manage login failure
@@ -127,59 +144,95 @@ export class ServerProxy{
     //get auth token from username and password
     async tryLogin(user, pass){
         if (user && pass) {
+            let loginResult;
             try {
-                const loginResult = await firebase.auth().signInWithEmailAndPassword(user, pass);
+                loginResult = await firebase.auth().signInWithEmailAndPassword(user, pass);
+            } catch (error) {
+                return Promise.reject("No se ha podido iniciar sesión, intente nuevamente");
+            }
+            try {
                 await AsyncStorage.setItem("USERNAME", user);
                 await AsyncStorage.setItem("PASSWORD", pass);
+            } catch (error) {
+                return Promise.reject("Error al guardar tus credenciales, intente nuevamente");
+            }
+            try {
                 await this.manageCredential(loginResult);
             } catch (error) {
-                this.manageFailure(error);
-                return Promise.reject();
+                return Promise.reject(error);
             }
         } else {
-            return Promise.reject();
+            return Promise.reject("No se ha especificado usuario/contraseña");
         }
     }
 
     //get auth token using facebook
     async tryFacebookLogin(){
         const appId = "591659228371489";
-
+        let facebookLoginResult;
+        let loginResult;
         try {
             await facebook.initializeAsync(appId);
-            const facebookLoginResult = await facebook.logInWithReadPermissionsAsync({
+            facebookLoginResult = await facebook.logInWithReadPermissionsAsync({
                 permissions: ['public_profile', 'email']
-            })
-
-            if (facebookLoginResult.type === 'success') {
+            });
+        } catch (errno) {
+            return Promise.reject("No se ha podido iniciar sesión en Facebook");
+        }
+        if (facebookLoginResult.type === 'success') {
+            try {
                 await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-                const credential = firebase.auth.FacebookAuthProvider.credential(facebookLoginResult.token);
-                const loginResult = await firebase.auth().signInWithCredential(credential);
-                await this.manageCredential(loginResult);
-            } else {
-                return Promise.reject('No se ha podido iniciar sesión');
+            } catch(error) {
+                return Promise.reject("Hubo un error inesperado, intente nuevamente");
             }
-        } catch(error){
-            this.manageFailure(error);
-            return Promise.reject();
+            const credential = firebase.auth.FacebookAuthProvider.credential(facebookLoginResult.token);
+            try {
+                loginResult = await firebase.auth().signInWithCredential(credential);
+            } catch(error) {
+                return Promise.reject("Error al procesar la credencial");
+            }
+            try {
+                await this.manageCredential(loginResult);
+            } catch(error) {
+                return Promise.reject(error)
+            }
+        } else {
+            return Promise.reject('No se ha iniciado sesión en Facebook');
         }
     }
 
     //get auth token using google
     async tryGoogleLogin() {
+        let googleLoginResult;
+        let loginResult;
         try {
-            const googleLoginResult = await google.logInAsync({
-                androidClientId: `662757364228-7cm7fs8d3e5r22tdbk0mandpqhsm3876.apps.googleusercontent.com`,
-                androidStandaloneAppClientId: `662757364228-7cm7fs8d3e5r22tdbk0mandpqhsm3876.apps.googleusercontent.com`,
-            });
-
+            try {
+                googleLoginResult = await google.logInAsync({
+                    androidClientId: `662757364228-7cm7fs8d3e5r22tdbk0mandpqhsm3876.apps.googleusercontent.com`,
+                    androidStandaloneAppClientId: `662757364228-7cm7fs8d3e5r22tdbk0mandpqhsm3876.apps.googleusercontent.com`,
+                });
+            } catch (error) {
+                return Promise.reject("No se ha podido iniciar sesion con Google");
+            }
             if (googleLoginResult.type === 'success') {
-                await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+                try {
+                    await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+                } catch (error) {
+                    return Promise.reject("Hubo un error inesperado");
+                }
                 const credential = firebase.auth.GoogleAuthProvider.credential(googleLoginResult.idToken);
-                const loginResult = await firebase.auth().signInWithCredential(credential);
-                await this.manageCredential(loginResult);
+                try {
+                    loginResult = await firebase.auth().signInWithCredential(credential);
+                } catch(error) {
+                    return Promise.reject("Error al procesar la credencial");
+                }
+                try {
+                    await this.manageCredential(loginResult);
+                } catch(error) {
+                    return Promise.reject(error)
+                }
             } else {
-                return Promise.reject('No se ha podido iniciar sesión');
+                return Promise.reject('No se ha iniciado sesión en Google');
             }
         } catch (error){
             this.manageFailure(error);
@@ -190,16 +243,24 @@ export class ServerProxy{
     //send new user and get auth token from firebase
     async registerNewUser(user_data){
         const {email, password, full_name} = user_data;
-        try{
-            const registerResult = await firebase.auth().createUserWithEmailAndPassword(email, password);
+        let registerResult;
+        try {
+            registerResult = await firebase.auth().createUserWithEmailAndPassword(email, password);
+        } catch (error) {
+            return Promise.reject("Hubo un error al crear el usuario" + ` \n(${error})`);
+        }
+        try {
             await registerResult.user.updateProfile({
                 displayName: full_name
             });
             await registerResult.user.reload();
+        } catch (_) {
+            return Promise.reject("Hubo un error inesperado");
+        }
+        try {
             await this.manageCredential(registerResult);
-        } catch (error){
-            console.log(error);
-            return Promise.reject('Hubo un error al crear la cuenta');
+        } catch (error) {
+            return Promise.reject(error);
         }
     }
 
@@ -292,7 +353,7 @@ export class ServerProxy{
             try {
                 this.urlCache[path] = await firebase.storage().ref().child(path).getDownloadURL();
             } catch (errno) {
-                return Promise.reject("El archivo no existe en el servidor" + ` (Error ${errno})`);
+                return Promise.reject("El archivo no existe en el servidor");
             }
         }
         return this.urlCache[path];
