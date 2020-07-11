@@ -23,6 +23,6 @@ export default function getEnv(env = Constants.manifest.releaseChannel){
     } else if (env === 'prod'){
         return ENV.prod;
     } else {
-        return ENV.prod;
+        return ENV.staging;
     }
 }
