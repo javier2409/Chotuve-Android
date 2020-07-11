@@ -5,6 +5,7 @@ import {ThemeContext} from "../Styles";
 import VideoItem from "../components/VideoItem";
 import { SearchBar } from 'react-native-elements';
 import {ToastError} from '../utilities/ToastError';
+import { useRef } from 'react';
 
 export default function Home({navigation}) {
     const {styles, colors} = useContext(ThemeContext);
@@ -12,6 +13,7 @@ export default function Home({navigation}) {
     const [videoList, setVideoList] = useState([]);
     const [search, setSearch] = useState("");
     const [refreshing, setRefreshing] = useState(false);
+    const [currentPreviewId, setCurrentPreviewId] = useState(0);
 
     function fetchVideos(forceRefresh = false){
         if (forceRefresh){
@@ -39,6 +41,29 @@ export default function Home({navigation}) {
         }
     }, [navigation]);
 
+    function disablePreviews(){
+        setCurrentPreviewId(0);
+        console.log("Setting visible preview to null");
+    }
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('blur', disablePreviews);
+        return unsubscribe;
+    }, [navigation]);
+
+    onViewableItemsChanged = useRef(({viewableItems}) => {
+        if (viewableItems.length > 0){
+            setCurrentPreviewId(viewableItems[0].item.video_id);
+        } else {
+            setCurrentPreviewId(0);
+        }
+    });
+
+    viewConf = {
+        minimumViewTime: 2000,
+        itemVisiblePercentThreshold: 100
+    };
+
     return (
         <View style={styles.flexContainer}>
             <SearchBar
@@ -58,10 +83,12 @@ export default function Home({navigation}) {
                 style={styles.homeFlatList}
                 data={videoList}
                 renderItem={({item}) => {
-                    return <VideoItem video_id={item.video_id}/>;
+                    return <VideoItem video_id={item.video_id} shouldHavePreview={currentPreviewId === item.video_id} />;
                 }}
                 onRefresh={() => {fetchVideos(true)}}
                 keyExtractor={item => item.video_id.toString()}
+                onViewableItemsChanged={onViewableItemsChanged.current}
+                viewabilityConfig={viewConf}
             />         
         </View>
     );

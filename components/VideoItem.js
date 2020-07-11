@@ -1,20 +1,22 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {ActivityIndicator, Text, TouchableOpacity, View} from 'react-native';
+import {Text, TouchableOpacity, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {Image} from 'react-native-elements';
 import {ThemeContext} from "../Styles";
 import {AuthContext} from "../utilities/AuthContext";
+import VideoPreview from './VideoPreview';
 
-export default function VideoItem(props) {
+export default function VideoItem({video_id, shouldHavePreview, hideAuthor}) {
+    
     const {styles} = useContext(ThemeContext);
-    const [user, server] = useContext(AuthContext);
-    const [thumbnail, setThumbnail] = useState(null);
+    const [, server] = useContext(AuthContext);
     const navigation = useNavigation();
     const [author, setAuthor] = useState('');
     const [title, setTitle] = useState('');
     const [timestamp, setTimestamp] = useState('');
     const [loading, setLoading] = useState(true);
-    const video_id = props.video_id;
+    const [thumbnail, setThumbnail] = useState(null);
+    const [firebaseURL, setFirebaseURL] = useState(null);
 
     useEffect(() => {
         setLoading(true);
@@ -22,11 +24,12 @@ export default function VideoItem(props) {
             setAuthor(result.author);
             setTitle(result.title);
             setTimestamp(result.timestamp);
-            return server.getFirebaseDirectURL(result.thumbnail_url);
-        }).then(result => {
-            setThumbnail(result);
-            setLoading(false);
-        })
+            setFirebaseURL(result.firebase_url);
+            server.getFirebaseDirectURL(result.thumbnail_url).then(thumbnail => {
+                setThumbnail(thumbnail);
+                setLoading(false);
+            });
+        });
     }, []);
 
     function isToday(date){
@@ -39,7 +42,6 @@ export default function VideoItem(props) {
     }
 
     function isYesterday(date){
-        const today = new Date();
         date.setDate(date.getDate() + 1);
         return isToday(date);
     }
@@ -69,15 +71,14 @@ export default function VideoItem(props) {
                 navigation.navigate("Video", {video_id});
             }}
         >
-            <View style={{flexDirection: 'column'}}>
-                <Image source={{uri: thumbnail}}
-                       style={{width: '100%', aspectRatio: 16/9}}
-                       PlaceholderContent={<ActivityIndicator/>}
-                />
+            <View style={{flexDirection: 'column'}}>               
+                {shouldHavePreview? 
+                <VideoPreview firebase_url={firebaseURL} thumbnail_url={thumbnail} />:
+                <Image source={{uri: thumbnail}} style={{width: '100%', aspectRatio: 16/9}} />}
                 <View style={{flex: 1, padding: 10}}>
                     <Text style={styles.homeVideoTitle}>{title}</Text>
                     <Text style={styles.homeVideoSubtitle}>
-                        {props.hideAuthor? <></> :
+                        {hideAuthor? <></> :
                             <Text>{author} - </Text>
                         }
                         <Text>{getDate(timestamp)}</Text>

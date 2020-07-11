@@ -350,11 +350,14 @@ export class ServerProxy{
     //get direct url from firebase path
     async getFirebaseDirectURL(path){
         if (!this.urlCache[path]){
+            console.log("Url not in cache");
             try {
                 this.urlCache[path] = await firebase.storage().ref().child(path).getDownloadURL();
             } catch (errno) {
                 return Promise.reject("El archivo no existe en el servidor");
             }
+        } else {
+            console.log("Using cache");
         }
         return this.urlCache[path];
     }

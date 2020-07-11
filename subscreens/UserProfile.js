@@ -227,7 +227,7 @@ export default function UserProfile({route, navigation}){
                     renderItem={({item}) => {
                         return (
                             <View style={{width: 200, height:'auto', marginHorizontal: 20}}>
-                                <VideoItem video_id={item.video_id} hideAuthor/>
+                                <VideoItem video_id={item.video_id} hideAuthor shouldHavePreview={false}/>
                             </View>
                         );
                     }}
