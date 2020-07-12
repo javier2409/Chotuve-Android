@@ -10,10 +10,14 @@ export default function VideoPreview({firebase_url, thumbnail_url}){
     const [videourl, setVideourl] = useState(null);
 
     useEffect(() => {
+        let isMounted = true;
         server.getFirebaseDirectURL(firebase_url).then(url => {
-            setVideourl(url);
+            if (isMounted){
+                setVideourl(url);
+            }
         });
         return () => {
+            isMounted = false;
             setVideourl(null);
         }
     }, []);
