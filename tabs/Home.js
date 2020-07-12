@@ -6,6 +6,7 @@ import VideoItem from "../components/VideoItem";
 import { SearchBar } from 'react-native-elements';
 import {ToastError} from '../utilities/ToastError';
 import { useRef } from 'react';
+import { log } from '../utilities/Logger';
 
 export default function Home({navigation}) {
     const {styles, colors} = useContext(ThemeContext);
@@ -43,7 +44,7 @@ export default function Home({navigation}) {
 
     function disablePreviews(){
         setCurrentPreviewId(0);
-        console.log("Setting visible preview to null");
+        log("Setting visible preview to null");
     }
 
     useEffect(() => {

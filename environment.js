@@ -1,4 +1,5 @@
 import Constants from 'expo-constants';
+import { log } from './utilities/Logger';
 
 const localhost = "192.168.0.7:5000";
 
@@ -16,7 +17,7 @@ const ENV = {
 
 export default function getEnv(env = Constants.manifest.releaseChannel){
     if (__DEV__){
-        console.log("Using dev environment");
+        log("Using dev environment");
         return ENV.dev;
     } else if (env === 'staging'){
         return ENV.staging;

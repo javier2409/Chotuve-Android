@@ -12,6 +12,7 @@ import ProgressCircle from 'react-native-progress-circle';
 import {ThemeContext} from "../Styles";
 import VideoInfoForm from '../components/VideoInfoForm';
 import { ToastError } from '../utilities/ToastError';
+import { log } from '../utilities/Logger';
 
 export default function Upload() {
     const {styles, colors} = useContext(ThemeContext);
@@ -61,7 +62,7 @@ export default function Upload() {
                 setFile(result);
             }
         } catch (E) {
-            console.log(E);
+            log(E);
         }
     }
 

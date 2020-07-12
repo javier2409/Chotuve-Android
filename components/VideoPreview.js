@@ -2,6 +2,7 @@ import React, { useEffect, useContext } from "react";
 import { Video } from "expo-av";
 import { AuthContext } from "../utilities/AuthContext";
 import { useState } from "react";
+import { log } from "../utilities/Logger";
 
 export default function VideoPreview({firebase_url, thumbnail_url}){
 
@@ -10,11 +11,9 @@ export default function VideoPreview({firebase_url, thumbnail_url}){
 
     useEffect(() => {
         server.getFirebaseDirectURL(firebase_url).then(url => {
-            console.log("Fetching url for preview")
             setVideourl(url);
         });
         return () => {
-            console.log("Cleaning preview");
             setVideourl(null);
         }
     }, []);

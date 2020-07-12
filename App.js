@@ -20,6 +20,7 @@ import {navigate, navigationRef} from "./utilities/RootNavigation";
 import * as Permissions from "expo-permissions";
 import EditVideo from './subscreens/EditVideo';
 import { ToastError } from './utilities/ToastError';
+import { log } from './utilities/Logger';
 
 ignoreWarnings('Setting a timer');
 
@@ -46,8 +47,7 @@ function MainApp(){
 
     useEffect(() => {
         const subscription = Notifications.addListener(notification => {
-            console.log("Notification info:");
-            console.log(notification);
+            log('Received notification: ', notification);
             if (notification.origin === 'selected'){
                 switch (notification.data.type){
                     case 'message':
@@ -73,7 +73,7 @@ function MainApp(){
 
         Notifications.getExpoPushTokenAsync().then(token => {
             server.sendPushToken(token).then(null, ToastError);
-            console.log("Push token: " + token);
+            log("Push token: ", token);
         });
     });
 
@@ -124,12 +124,12 @@ function Main() {
         }
         try {
             const loginMethod = await AsyncStorage.getItem('LOGIN_METHOD');
-            console.log("Trying " + loginMethod + " login");
+            log("Trying " + loginMethod + " login");
             switch (loginMethod) {
                 case "password":
                     const username = await AsyncStorage.getItem('USERNAME');
                     const password = await AsyncStorage.getItem('PASSWORD');
-                    console.log("Using credentials: " + username + " , " + password);
+                    log("Using credentials: " + username + " , " + password);
                     await serverProxy.tryLogin(username, password);
                     break;
                 case "facebook.com":

@@ -4,6 +4,7 @@ import * as google from 'expo-google-app-auth';
 import getEnv from "../environment";
 import {AsyncStorage} from "react-native";
 import {codes} from "./ErrorCodes";
+import { log } from './Logger';
 
 const firebaseConfig = {
     apiKey: "AIzaSyDlBeowWP8UPWsvk9kXj9JDaN5_xsuNu4I",
@@ -44,19 +45,19 @@ export class ServerProxy{
     manageCredential = async credential => {
         let token;
         let response;
-        console.log('Trying to get token ID');
+        log('Trying to get token ID');
         try {
             token = await credential.user.getIdToken();
         } catch (error) {
             this.updateGlobalUserData(null);
             return Promise.reject("Error de autenticación" + ` (Error ${codes.AUTH_ERROR})`);
         }
-        console.log(`Obtained token ID from firebase: ${token}`);
-        console.log(credential.user.displayName);
-        console.log(credential.user.email);
+        log(`Obtained token ID from firebase:`, token);
+        log(credential.user.displayName);
+        log(credential.user.email);
         this.updateLocalUserData(credential.user);
         if (credential.additionalUserInfo.isNewUser) {
-            console.log("The user is new, sending to AppServer");
+            log("The user is new, sending to AppServer");
             try {
                 await this._request('/users', 'POST', {
                     display_name: credential.user.displayName,
@@ -68,16 +69,16 @@ export class ServerProxy{
                 return Promise.reject("Error al registrar la cuenta en nuestros servidores" + ` (Error ${errno})`)
             }
         }
-        console.log("Requesting user ID");
+        log("Requesting user ID");
         try {
             response = await this._request('/auth', 'GET', null);
         } catch (errno) {
             this.updateGlobalUserData(null);
             return Promise.reject("Error al obtener ID de usuario " + ` (Error ${errno})`);
         }
-        console.log("User ID: " + response.id);
+        log("User ID: " + response.id);
         credential.user.uuid = response.id;
-        console.log("Saving login method: " + credential.additionalUserInfo.providerId);
+        log("Saving login method: " + credential.additionalUserInfo.providerId);
         try {
             await AsyncStorage.setItem("LOGIN_METHOD", credential.additionalUserInfo.providerId);
         } catch (error) {
@@ -89,7 +90,7 @@ export class ServerProxy{
 
     //manage login failure
     manageFailure = reason => {
-        console.log("Login failed: " + reason);
+        log("Login failed: " + reason);
         alert(reason);
     }
 
@@ -105,10 +106,8 @@ export class ServerProxy{
             return Promise.reject(codes.AUTH_ERROR);
         }
         
-        console.log("Requesting using token: " + token.substring(0,50));
         json_body = body ? JSON.stringify(body) : null;
-        console.log("Fetching " + method + " " + apiUrl + path + " with body:");
-        console.log((typeof json_body) + " " + json_body);
+        log(`Fetching ${method} ${path} ${body? `with body: ` : ""}`, body);
         
         try {
             response = await fetch(apiUrl+path, {
@@ -126,12 +125,11 @@ export class ServerProxy{
         }
 
         if (!response.ok){
-            console.log("Response not OK: " + response.status);
+            log("Response not OK: " + response.status);
             return Promise.reject(response.status);
         }
         const response_json = await response.json();
-        console.log("Response:");
-        console.log(response_json);
+        log(`Response from: ${method} ${path}`, response_json);
         return response_json;
     }
 
@@ -350,14 +348,14 @@ export class ServerProxy{
     //get direct url from firebase path
     async getFirebaseDirectURL(path){
         if (!this.urlCache[path]){
-            console.log("Url not in cache");
+            log("URL not in cache: " + path);
             try {
                 this.urlCache[path] = await firebase.storage().ref().child(path).getDownloadURL();
             } catch (errno) {
                 return Promise.reject("El archivo no existe en el servidor");
             }
         } else {
-            console.log("Using cache");
+            log("Using cache: " + path);
         }
         return this.urlCache[path];
     }

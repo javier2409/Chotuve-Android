@@ -5,6 +5,7 @@ import {useFocusEffect, useTheme} from "@react-navigation/native";
 import {AuthContext} from "../utilities/AuthContext";
 import {ThemeContext} from "../Styles";
 import { ToastError } from "../utilities/ToastError";
+import { log } from "../utilities/Logger";
 
 const alert = msg => {ToastAndroid.show(msg, ToastAndroid.LONG)}
 
@@ -51,7 +52,7 @@ export default function Preferences({navigation}){
                 setAddress(info.address);
             },
             error => {
-                console.log(error);
+                log(error);
                 ToastError(error);
                 navigation.goBack();
             }
@@ -73,7 +74,7 @@ export default function Preferences({navigation}){
                 address: address
             })
         } catch(error) {
-            console.log(error);
+            log(error);
             ToastError(error)
         }
         setSending(false);
