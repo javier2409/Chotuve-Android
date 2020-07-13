@@ -48,22 +48,19 @@ export default function Home({navigation}) {
         return navigation.addListener('focus', () => {
             AsyncStorage.getItem("previews").then(enabled => {
                 log(`Previews setting saved: ${enabled}`);
-                if (enabled === 'true'){
+                if (enabled === 'true' || enabled === null){
                     log("Previews enabled");
                     previews.current = true;
                 } else if (enabled === "false") {
                     log("Previews disabled");
                     previews.current = false;
-                } else {
-                    log("Previews enabled");
-                    previews.current = true;
                 }
             }).catch(() => {
                 log("Previews disabled");
                 previews.current = false;
-            })    
-        })
-    })
+            });    
+        });
+    });
 
     function disablePreviews(){
         setCurrentPreviewId(0);
