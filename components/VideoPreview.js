@@ -2,7 +2,6 @@ import React, { useEffect, useContext } from "react";
 import { Video } from "expo-av";
 import { AuthContext } from "../utilities/AuthContext";
 import { useState } from "react";
-import { log } from "../utilities/Logger";
 
 export default function VideoPreview({firebase_url, thumbnail_url}){
 

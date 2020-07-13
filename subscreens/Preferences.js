@@ -1,13 +1,12 @@
 import React, {useCallback, useContext, useState} from "react";
-import {View, ToastAndroid, ScrollView} from "react-native";
-import {Button, Divider, Input, ListItem, Overlay, Text} from "react-native-elements";
-import {useFocusEffect, useTheme} from "@react-navigation/native";
+import {View, ScrollView, AsyncStorage} from "react-native";
+import {Button, Input, ListItem, Overlay, Text} from "react-native-elements";
+import {useFocusEffect} from "@react-navigation/native";
 import {AuthContext} from "../utilities/AuthContext";
 import {ThemeContext} from "../Styles";
 import { ToastError } from "../utilities/ToastError";
 import { log } from "../utilities/Logger";
-
-const alert = msg => {ToastAndroid.show(msg, ToastAndroid.LONG)}
+import { Switch } from "react-native-paper";
 
 function Setting(props){
     const {styles, colors} = useContext(ThemeContext);
@@ -16,10 +15,11 @@ function Setting(props){
             containerStyle={styles.settingItemStyle}
             title={props.title}
             subtitle={props.subtitle}
-            chevron
+            chevron={props.rightComponent === undefined}
             titleStyle={{color: colors.text}}
             subtitleStyle={{color: colors.grey}}
             onPress={props.onPress}
+            rightElement={props.rightComponent}
         />
     )
 }
@@ -34,7 +34,7 @@ function SettingOverlay(props){
 
 export default function Preferences({navigation}){
     const {styles, colors, setLightMode, setDarkMode} = useContext(ThemeContext);
-    const [user, server] = useContext(AuthContext);
+    const [, server] = useContext(AuthContext);
     const [themeOverlayVisible, setThemeOverlayVisible] = useState(false);
     const [nameOverlayVisible, setNameOverlayVisible] = useState(false);
     const [numberOverlayVisible, setNumberOverlayVisible] = useState(false);
@@ -43,6 +43,7 @@ export default function Preferences({navigation}){
     const [number, setNumber] = useState(null);
     const [address, setAddress] = useState(null);
     const [sending, setSending] = useState(false);
+    const [previewsEnabled, setPreviewsEnabled] = useState(false);
 
     function fetchUserData(){
         server.getMyInfo().then(
@@ -56,7 +57,16 @@ export default function Preferences({navigation}){
                 ToastError(error);
                 navigation.goBack();
             }
-        )
+        );
+        AsyncStorage.getItem("previews").then(enabled => {
+            if (enabled === "true" || enabled === null){
+                setPreviewsEnabled(true);
+            } else {
+                setPreviewsEnabled(false);
+            }
+        }).catch(() => {
+            setPreviewsEnabled(true);
+        });
     }
 
     useFocusEffect(
@@ -96,6 +106,12 @@ export default function Preferences({navigation}){
         setThemeOverlayVisible(!themeOverlayVisible);
     }
 
+    function togglePreviews(newValue){
+        setPreviewsEnabled(newValue);
+        const enabled = newValue? "true" : "false";
+        AsyncStorage.setItem("previews", enabled);
+    }
+
     return (
         <View style={styles.flexContainer}>
             <ScrollView>
@@ -125,6 +141,19 @@ export default function Preferences({navigation}){
                 </View>
                 <Text style={styles.preferencesTitleView}>Aplicación</Text>
                 <Setting title={'Tema'} subtitle={colors.themeName} onPress={toggleThemeOverlay}/>
+                <Setting 
+                    title={'Previsualización'} 
+                    subtitle={'Activar o desactivar la previsualización de videos en el feed'} 
+                    onPress={togglePreviews} 
+                    rightComponent={
+                        <Switch 
+                            onValueChange={togglePreviews} 
+                            value={previewsEnabled} 
+                            thumbColor={previewsEnabled? colors.primary : colors.grey} 
+                            trackColor={{true: colors.highlight}} 
+                        />
+                    } 
+                />
             </ScrollView>
         </View>
     )

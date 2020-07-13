@@ -7,6 +7,7 @@ import { SearchBar } from 'react-native-elements';
 import {ToastError} from '../utilities/ToastError';
 import { useRef } from 'react';
 import { log } from '../utilities/Logger';
+import { AsyncStorage } from 'react-native';
 
 export default function Home({navigation}) {
     const {styles, colors} = useContext(ThemeContext);
@@ -15,6 +16,7 @@ export default function Home({navigation}) {
     const [search, setSearch] = useState("");
     const [refreshing, setRefreshing] = useState(false);
     const [currentPreviewId, setCurrentPreviewId] = useState(0);
+    const previews = useRef(false);
 
     function fetchVideos(forceRefresh = false){
         if (forceRefresh){
@@ -42,6 +44,27 @@ export default function Home({navigation}) {
         }
     }, [navigation]);
 
+    useEffect(() => {
+        return navigation.addListener('focus', () => {
+            AsyncStorage.getItem("previews").then(enabled => {
+                log(`Previews setting saved: ${enabled}`);
+                if (enabled === 'true'){
+                    log("Previews enabled");
+                    previews.current = true;
+                } else if (enabled === "false") {
+                    log("Previews disabled");
+                    previews.current = false;
+                } else {
+                    log("Previews enabled");
+                    previews.current = true;
+                }
+            }).catch(() => {
+                log("Previews disabled");
+                previews.current = false;
+            })    
+        })
+    })
+
     function disablePreviews(){
         setCurrentPreviewId(0);
         log("Setting visible preview to null");
@@ -53,7 +76,7 @@ export default function Home({navigation}) {
     }, [navigation]);
 
     onViewableItemsChanged = useRef(({viewableItems}) => {
-        if (viewableItems.length > 0){
+        if (viewableItems.length > 0 && previews.current){
             setCurrentPreviewId(viewableItems[0].item.video_id);
         } else {
             setCurrentPreviewId(0);
