@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 import { StyleSheet } from 'react-native';
 import UserProfile from './../subscreens/UserProfile';
-import {AuthContext} from "../login/AuthContext";
+import {AuthContext} from "../utilities/AuthContext";
 
 export default function MyProfile({navigation}) {
 
@@ -11,7 +11,7 @@ export default function MyProfile({navigation}) {
         <UserProfile
             route={{
                 params: {
-                    email: userData.email
+                    uid: userData.uuid
                 }
             }}
             navigation={navigation}

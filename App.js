@@ -1,19 +1,28 @@
 import { createStackNavigator } from '@react-navigation/stack';
-import React, { useState, useContext } from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import Tabs from './tabs/Tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import {StyleSheet, StatusBar, AsyncStorage} from 'react-native';
+import {StatusBar, AsyncStorage} from 'react-native';
 import VideoScreen from './subscreens/VideoScreen';
 import ChatScreen from './subscreens/ChatScreen';
 import FriendSearch from './subscreens/FriendSearch';
 import UserProfile from './subscreens/UserProfile';
 import { AppLoading } from 'expo';
 import LoginScreen from './login/LoginScreen';
-import { AuthContext, AuthContextProvider } from './login/AuthContext';
+import { AuthContext, AuthContextProvider } from './utilities/AuthContext';
 import RegisterScreen from './login/RegisterScreen';
 import RecoverPasswordScreen from './login/RecoverPasswordScreen';
 import Preferences from "./subscreens/Preferences";
 import {ThemeContext, ThemeContextProvider} from "./Styles";
+import ignoreWarnings from 'react-native-ignore-warnings';
+import {Notifications} from "expo";
+import {navigate, navigationRef} from "./utilities/RootNavigation";
+import * as Permissions from "expo-permissions";
+import EditVideo from './subscreens/EditVideo';
+import { ToastError } from './utilities/ToastError';
+import { log } from './utilities/Logger';
+
+ignoreWarnings('Setting a timer');
 
 const Stack = createStackNavigator();
 
@@ -34,6 +43,40 @@ const Theme = {
 
 function MainApp(){
     const {colors} = useContext(ThemeContext);
+    const [, server] = useContext(AuthContext);
+
+    useEffect(() => {
+        const subscription = Notifications.addListener(notification => {
+            log('Received notification: ', notification);
+            if (notification.origin === 'selected'){
+                switch (notification.data.type){
+                    case 'message':
+                        navigate("Chat", {uid: notification.data.uuid});
+                        break;
+                    case 'comment':
+                        navigate("Video", {video_id: notification.data.vid_id});
+                        break;
+                    default:
+                        navigate("Notificaciones");
+                }
+            }
+        })
+        return (() => subscription.remove());
+    });
+
+    useEffect(() => {
+        Permissions.askAsync(Permissions.NOTIFICATIONS).then(({status}) => {
+            if (status !== 'granted'){
+                ToastError("No se pudo obtener permiso para mostrar notificaciones");
+            }
+        });
+
+        Notifications.getExpoPushTokenAsync().then(token => {
+            server.sendPushToken(token).then(null, ToastError);
+            log("Push token: ", token);
+        });
+    });
+
     return (
         <Stack.Navigator
             screenOptions={{
@@ -50,6 +93,7 @@ function MainApp(){
             <Stack.Screen name="Friend Search" component={FriendSearch} />
             <Stack.Screen name="UserProfile" component={UserProfile} />
             <Stack.Screen name="Preferencias" component={Preferences} />
+            <Stack.Screen name="Edit Video" component={EditVideo} />
         </Stack.Navigator>
     )
 }
@@ -74,17 +118,33 @@ function Main() {
     const [ready, setReady] = useState(false);
 
     async function fetchStorage(){
-        try {
-            const username = await AsyncStorage.getItem('USERNAME');
-            const password = await AsyncStorage.getItem('PASSWORD');
-            console.log(`Credentials saved in async storage: ${username}, ${password}`);
-            await serverProxy.tryLogin(username, password);
-        } catch(e) {
-            serverProxy.updateUserData(null);
-        }
         const saved_theme = await AsyncStorage.getItem('THEME');
         if (saved_theme === 'light'){
             setLightMode();
+        }
+        try {
+            const loginMethod = await AsyncStorage.getItem('LOGIN_METHOD');
+            log("Trying " + loginMethod + " login");
+            switch (loginMethod) {
+                case "password":
+                    const username = await AsyncStorage.getItem('USERNAME');
+                    const password = await AsyncStorage.getItem('PASSWORD');
+                    log("Using credentials: " + username + " , " + password);
+                    await serverProxy.tryLogin(username, password);
+                    break;
+                case "facebook.com":
+                    //await serverProxy.tryFacebookLogin();
+                    serverProxy.updateGlobalUserData(null);
+                    break;
+                case "google.com":
+                    //await serverProxy.tryGoogleLogin();
+                    serverProxy.updateGlobalUserData(null);
+                    break;
+                default:
+                    serverProxy.updateGlobalUserData(null);
+            }
+        } catch(e) {
+            serverProxy.updateGlobalUserData(null);
         }
     }
 
@@ -98,7 +158,7 @@ function Main() {
     }
 
     return (
-        <NavigationContainer theme={Theme}>
+        <NavigationContainer theme={Theme} ref={navigationRef}>
             <StatusBar/>
             {userData ? (
                 <MainApp/>

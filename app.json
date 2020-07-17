@@ -3,9 +3,7 @@
     "name": "Chotuve",
     "slug": "Chotuve",
     "platforms": [
-      "ios",
-      "android",
-      "web"
+      "android"
     ],
     "version": "0.0.1",
     "orientation": "portrait",
@@ -13,7 +11,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#11151a"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -26,7 +24,13 @@
     },
     "android": {
       "package": "com.fiuba.chotuveapp",
-      "versionCode": 1
+      "versionCode": 1,
+      "googleServicesFile": "./google-services.json"
+    },
+    "notification": {
+      "icon": "./assets/notification.png",
+      "androidMode": "collapse",
+      "androidCollapsedTitle": "Notificaciones"
     }
   }
 }

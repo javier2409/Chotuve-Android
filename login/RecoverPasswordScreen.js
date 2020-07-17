@@ -1,15 +1,15 @@
-import { useTheme } from '@react-navigation/native';
 import * as React from 'react';
 import { useContext, useState } from 'react';
-import {StyleSheet, View, ActivityIndicator, ScrollView} from 'react-native';
+import {ToastAndroid, View, ActivityIndicator, ScrollView} from 'react-native';
 import {Button, Text} from 'react-native-elements';
-import { AuthContext } from './AuthContext';
+import { AuthContext } from '../utilities/AuthContext';
 import Field from "./Field";
 import {ThemeContext} from "../Styles";
+import {ToastError} from "../utilities/ToastError";
 
 export default function RecoverPasswordScreen({navigation}){
     const {styles, colors} = useContext(ThemeContext);
-    const [userData, server] = useContext(AuthContext);
+    const [, server] = useContext(AuthContext);
     const [email, setEmail] = useState('');
     const [code, setCode] = useState('');
     const [pwd1, setPwd1] = useState('');
@@ -19,10 +19,10 @@ export default function RecoverPasswordScreen({navigation}){
     function requestReset(){
         setLoading(true);
         server.requestResetPasswordEmail(email).then(() => {
-            alert("Hemos enviado el correo, revisa tu bandeja de entrada");
+            ToastError("Hemos enviado el correo, revisa tu bandeja de entrada");
             setLoading(false);
-        }, () => {
-            alert("Hubo un error, revisa la dirección ingresada o intenta más tarde");
+        }, (errmsg) => {
+            ToastError(errmsg);
             setLoading(false);
         })
     }
@@ -31,22 +31,22 @@ export default function RecoverPasswordScreen({navigation}){
         setLoading(true);
 
         if (pwd1 !== pwd2){
-            alert("Las contraseñas no coinciden");
+            ToastError("Las contraseñas no coinciden");
             setLoading(false);
             return
         }
 
         if (pwd1.length < 6){
-            alert("La contraseña no puede tener menos de 6 caracteres");
+            ToastError("La contraseña no puede tener menos de 6 caracteres");
             setLoading(false);
             return
         }
 
-        server.sendCodeAndNewPassword(code, pwd1).then(() => {
-            alert("Contraseña actualizada con éxito");
+        server.sendCodeAndNewPassword(email, code, pwd1).then(() => {
+            ToastError("Contraseña actualizada con éxito");
             navigation.navigate("Ingreso");
-        }, () => {
-            alert("Hubo un error");
+        }, (errmsg) => {
+            ToastError(errmsg);
             setLoading(false);
         })
     }

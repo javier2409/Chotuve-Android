@@ -1,6 +1,5 @@
 import {AsyncStorage, StyleSheet} from "react-native";
 import React, {createContext, useState} from "react";
-import {colors} from "react-native-elements";
 
 export const ThemeContext = createContext({});
 
@@ -14,9 +13,9 @@ export function ThemeContextProvider(props){
         card: 'rgb(255, 255, 255)',
         text: 'rgb(240,245,240)',
         border: 'rgb(0,100,0)',
-        lighterbackground: 'rgb(20,20,20)',
+        lighterbackground: 'rgb(17,21,26)',
         highlight: 'rgb(200,255,200)',
-        grey: 'rgb(100,100,100)'
+        grey: 'rgb(90,100,115)'
     };
 
     const lightColors = {
@@ -35,6 +34,12 @@ export function ThemeContextProvider(props){
     const [colors, setColors] = useState(darkColors);
 
     const styles = StyleSheet.create({
+        loadingStyle: {
+            flex: 1, 
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            backgroundColor: colors.background
+        },
         container: {
             backgroundColor: colors.background,
             alignItems: 'stretch',
@@ -82,6 +87,11 @@ export function ThemeContextProvider(props){
             alignItems: 'center',
             backgroundColor: colors.lighterbackground
         },
+        uploadCheckBox: {
+            backgroundColor: colors.lighterbackground,
+            borderColor: colors.lighterbackground,
+            alignSelf: 'flex-start'
+        },
         formButtonView: {
             alignItems: 'stretch',
             justifyContent: 'center',
@@ -103,8 +113,16 @@ export function ThemeContextProvider(props){
         },
         videoInfo: {
             padding: 10,
+            justifyContent: 'center',
+            backgroundColor: colors.lighterbackground,
+        },
+        videoTitle: {
             justifyContent: 'space-between',
-            backgroundColor: colors.lighterbackground
+            flexDirection: 'row'
+        },
+        videoReactions: {
+            flexDirection: 'row',
+            alignItems: 'center'
         },
         video: {
             width: '100%',
@@ -116,6 +134,12 @@ export function ThemeContextProvider(props){
         videoCommentInput: {
             marginRight: 10,
             color: colors.text
+        },
+        videoCommentsTitle: {
+            color:colors.title,
+            fontSize: 18,
+            fontWeight: 'bold',
+            marginTop: 15,
         },
         inputContainer: {
             margin: 10,

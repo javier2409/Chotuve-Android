@@ -1,26 +1,29 @@
 import Constants from 'expo-constants';
+import { log } from './utilities/Logger';
 
-const localhost = "localhost:5000";
+const localhost = "192.168.0.7:5000";
 
 const ENV = {
     dev: {
-        apiUrl: localhost,
+        apiUrl: "http://chotuve-appserver-staging.herokuapp.com",
     },
     staging: {
-        apiUrl: "chotuve-appserver-staging.herokuapp.com"
+        apiUrl: "http://chotuve-appserver-staging.herokuapp.com"
     },
     prod: {
-        apiUrl: "chotuve-appserver.herokuapp.com"
+        apiUrl: "http://chotuve-appserver.herokuapp.com"
     }
 };
 
 export default function getEnv(env = Constants.manifest.releaseChannel){
     if (__DEV__){
-        console.log("Using dev environment");
+        log("Using dev environment");
         return ENV.dev;
     } else if (env === 'staging'){
         return ENV.staging;
     } else if (env === 'prod'){
         return ENV.prod;
+    } else {
+        return ENV.staging;
     }
 }

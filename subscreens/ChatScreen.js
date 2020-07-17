@@ -1,38 +1,74 @@
-import { useTheme } from '@react-navigation/native';
-import React, {useContext, useEffect, useState, useRef, useLayoutEffect} from 'react';
-import { FlatList, StyleSheet, View, TouchableOpacity } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+import React, {useContext, useEffect, useState, useRef, useCallback} from 'react';
+import { FlatList, View, TouchableOpacity } from 'react-native';
 import { Avatar, Icon, Input, Text } from 'react-native-elements';
-import {AuthContext} from "../login/AuthContext";
+import {AuthContext} from "../utilities/AuthContext";
 import hash from "react-native-web/dist/vendor/hash";
 import {ThemeContext} from "../Styles";
+import {Notifications} from "expo";
+import { ToastError } from '../utilities/ToastError';
 
 export default function ChatScreen({route, navigation}){
+    const uid = route.params.uid;
+    
     const {styles, colors} = useContext(ThemeContext);
-    const {email, full_name, avatar_url} = route.params;
     const [userData, server] = useContext(AuthContext);
     const [messages, setMessages] = useState([]);
     const [myMessage, setMyMessage] = useState('');
+    const [fullName, setFullName] = useState(null);
+    const [email, setEmail] = useState(null);
+    const [avatarURL, setAvatarURL] = useState(null);
+
     const flatlist = useRef();
 
     function sendMessage(){
-        const newMessage = {
-            id: hash(email+myMessage+messages.length),
-            email: userData.email,
-            msg: myMessage
-        }
-        setMessages(messages.concat([newMessage]));
+        const sendableMessage = myMessage;
         setMyMessage('');
+        if (myMessage.length < 1){
+            return;
+        }
+        const newMessage = {
+            id: hash(email+sendableMessage+messages.length),
+            sender_id: userData.uuid,
+            text: sendableMessage
+        }
+        server.sendMessage(sendableMessage, uid).then(() => {
+            setMessages(messages.concat([newMessage]));
+        }, ToastError);
     }
 
     function fetchMessages(){
-        server.getChatInfo(email).then(result => {
+        server.getChatInfo(uid).then(result => {
             setMessages(result)
-        })
+        }, ToastError);
+        server.getUserInfo(uid).then(result => {
+            setFullName(result.display_name);
+            setEmail(result.email);
+            if (result.image_location){
+                server.getFirebaseDirectURL(result.image_location).then(setAvatarURL, null);
+            }
+        }, ToastError); 
     }
 
-    useEffect(() => {
+    useFocusEffect(useCallback(() => {
         return navigation.addListener('focus', fetchMessages);
-    }, [navigation])
+    }))
+
+    useEffect(() => {
+       const subscription = Notifications.addListener(async (notification) => {
+           const data = notification.data;
+           if (data.type === 'message' && data.uuid === uid){
+               Notifications.dismissNotificationAsync(notification.notificationId).then(null);
+               const newMessage = {
+                   id: data.id,
+                   sender_id: data.uuid,
+                   text: data.msg
+               }
+               setMessages(messages.concat([newMessage]));
+           }
+       });
+       return () => subscription.remove();
+    });
 
     navigation.setOptions({
         headerTitle: () => {
@@ -40,11 +76,11 @@ export default function ChatScreen({route, navigation}){
                 <TouchableOpacity 
                     style={styles.chatHeaderView}
                     onPress={() => {
-                        navigation.navigate("UserProfile", {email});
+                        navigation.navigate("UserProfile", {uid});
                     }}
                 >
-                    <Avatar source={{uri: avatar_url}} rounded/>
-                    <Text style={styles.chatHeaderTitle}>{full_name}</Text>
+                    <Avatar source={{uri: avatarURL}} rounded/>
+                    <Text style={styles.chatHeaderTitle}>{fullName}</Text>
                 </TouchableOpacity>
             );
         }
@@ -59,21 +95,25 @@ export default function ChatScreen({route, navigation}){
                         return (
                             <View style={{
                                 alignSelf:
-                                    (item.email === email)
-                                        ? 'flex-start'
-                                        : 'flex-end',
+                                    (item.sender_id === userData.uuid)
+                                        ? 'flex-end'
+                                        : 'flex-start',
                                 padding: 10,
                                 margin: 10,
-                                backgroundColor: colors.lighterbackground,
-                                maxWidth: '70%'
+                                backgroundColor:
+                                    (item.sender_id === userData.uuid)
+                                        ?   colors.primary
+                                        :   colors.lighterbackground,
+                                maxWidth: '70%',
+                                borderRadius: 10
                             }}>
                                 <Text style={styles.chatMessage}>
-                                    {item.msg}
+                                    {item.text}
                                 </Text>
                             </View>
                         );
                     }}
-                    keyExtractor={item => item.id}
+                    keyExtractor={item => item.id.toString()}
                     ref={flatlist}
                     onContentSizeChange={() => {
                         flatlist.current.scrollToEnd()

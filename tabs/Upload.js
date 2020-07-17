@@ -1,29 +1,43 @@
 import { useTheme } from '@react-navigation/native';
 import React, {useContext, useRef, useState} from 'react';
 import {StyleSheet, View, ScrollView} from 'react-native';
-import { Button, Icon, Text } from 'react-native-elements';
+import {Button, CheckBox, Icon, Text} from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
 import * as Thumbnails from 'expo-video-thumbnails';
 import { Video } from 'expo-av';
 import Field from "../login/Field";
-import {AuthContext} from "../login/AuthContext";
+import {AuthContext} from "../utilities/AuthContext";
 import * as firebase from "firebase";
 import ProgressCircle from 'react-native-progress-circle';
 import {ThemeContext} from "../Styles";
+import VideoInfoForm from '../components/VideoInfoForm';
+import { ToastError } from '../utilities/ToastError';
+import { log } from '../utilities/Logger';
 
 export default function Upload() {
     const {styles, colors} = useContext(ThemeContext);
     const [file, setFile] = useState(null);
     const [title, setTitle] = useState('');
     const [desc, setDesc] = useState('');
+    const [location, setLocation] = useState('');
+    const [privateVideo, setPrivate] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [user, server] = useContext(AuthContext);
     const [progress, setProgress] = useState(0);
     const video_ref = useRef({});
     const thumb_ref = useRef({});
+    const previewRef = useRef({});
 
     function checkVideo(){
-        return (file && (title.length > 0) && (desc.length > 0))
+        return (
+            file && 
+            (title.length > 0) && 
+            (title.length < 100) &&
+            (desc.length > 0) &&
+            (desc.length < 500) &&
+            (location.length > 0) &&
+            (location.length < 200)
+        )
     }
 
     function reset(){
@@ -31,12 +45,14 @@ export default function Upload() {
         setTitle('');
         setDesc('');
         setProgress(0);
+        setLocation('');
         setUploading(false);
     }
 
     async function pickImage(){
         try {
-            let result = await ImagePicker.launchImageLibraryAsync({
+            setFile(null);
+            const result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Videos,
                 allowsEditing: false,
                 aspect: [16, 9],
@@ -46,7 +62,7 @@ export default function Upload() {
                 setFile(result);
             }
         } catch (E) {
-            console.log(E);
+            log(E);
         }
     }
 
@@ -60,12 +76,18 @@ export default function Upload() {
     }
 
     async function complete(){
-        await server.publishVideo({
-            title: title,
-            description: desc,
-            thumbnail_uri: await thumb_ref.current.getDownloadURL(),
-            video_uri: await video_ref.current.getDownloadURL()
-        });
+        try {
+            await server.publishVideo({
+                title: title,
+                description: desc,
+                thumbnail_uri: thumb_ref.current.fullPath,
+                video_uri: video_ref.current.fullPath,
+                location: location,
+                is_private: privateVideo
+            });
+        } catch (error) {
+            ToastError(error);
+        }
         reset();
     }
 
@@ -91,13 +113,17 @@ export default function Upload() {
             uploadTask_video.on(firebase.storage.TaskEvent.STATE_CHANGED, next, errorHandler, complete);
 
         } catch (error) {
-            alert(error);
+            ToastError(error);
             reset();
         }
     }
 
-    return (uploading
-            ?
+    function togglePrivate(){
+        setPrivate(!privateVideo);
+    }
+
+    if (uploading) {
+        return (
             <View style={styles.uploadContainer}>
                 <Text h4 style={{color: colors.text}}>{'Tu video se está subiendo\n'}</Text>
                 <ProgressCircle
@@ -112,40 +138,57 @@ export default function Upload() {
                     </Text>
                 </ProgressCircle>
             </View>
-            :
-            <View style={styles.flexContainer}>
-                <ScrollView contentContainerStyle={styles.container}>
-                    <View style={styles.uploadBlock}>
-                        <Icon name='attach-file' containerStyle={styles.icon} color={colors.primary} size={40} onPress={pickImage} reverse />
-                        <Text style={{...styles.filename, ...{color: colors.text}}}>
-                            {file? file.uri : 'Ningún archivo seleccionado'}
-                        </Text>
-                    </View>
-                    <View style={styles.uploadVideoPreview} >
-                        {file &&
+        );
+    }
+
+    return (
+        <View style={styles.flexContainer}>
+            <ScrollView contentContainerStyle={styles.container}>
+                <View style={styles.uploadBlock}>
+                    <Icon
+                        name='attach-file'
+                        containerStyle={styles.icon}
+                        color={colors.primary}
+                        size={40}
+                        onPress={pickImage}
+                        reverse
+                    />
+                    <Text style={{...styles.filename, ...{color: colors.text}}}>
+                        {file? file.uri : 'Ningún archivo seleccionado'}
+                    </Text>
+                </View>
+                <View style={styles.uploadVideoPreview}>
+                    {file &&
                         <Video
                             style={{width: '90%', aspectRatio: file.width/file.height}}
                             resizeMode={Video.RESIZE_MODE_CONTAIN}
                             source={{uri: file.uri}}
                             shouldPlay
                             useNativeControls
+                            ref={previewRef}
                         />
-                        }
-                    </View>
-                    <View style={styles.uploadForm}>
-                        <Field label={'Título'} set={setTitle} />
-                        <Field label={'Descripción'} set={setDesc} multiline/>
-                    </View>
-                    <View style={styles.formButtonView}>
-                        <Button
-                            title='Publicar video'
-                            buttonStyle={styles.formButton}
-                            icon={{name:'file-upload', color: colors.highlight}}
-                            disabled={uploading || !checkVideo()}
-                            onPress={uploadVideo}
-                        />
-                    </View>
-                </ScrollView>
-            </View>
+                    }
+                </View>
+                <VideoInfoForm 
+                    setTitle={setTitle} 
+                    setDesc={setDesc}
+                    setLocation={setLocation}
+                    initialTitle={title}
+                    initialDesc={desc}
+                    initialLocation={location}
+                    checkBoxChecked={privateVideo}
+                    onTogglePrivate={togglePrivate}
+                />
+                <View style={styles.formButtonView}>
+                    <Button
+                        title='Publicar video'
+                        buttonStyle={styles.formButton}
+                        icon={{name:'file-upload', color: colors.text}}
+                        disabled={uploading || !checkVideo()}
+                        onPress={uploadVideo}
+                    />
+                </View>
+            </ScrollView>
+        </View>
     );
 }

@@ -1,37 +1,49 @@
-import { useTheme } from '@react-navigation/native';
 import React, {useContext, useEffect, useState} from 'react';
-import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { Icon } from 'react-native-elements';
 import FriendItem from './../components/FriendItem';
-import {AuthContext} from "../login/AuthContext";
+import {AuthContext} from "../utilities/AuthContext";
 import {ThemeContext} from "../Styles";
+import {ToastError} from '../utilities/ToastError';
 
 export default function Friends({navigation}) {
     const {styles, colors} = useContext(ThemeContext);
     const [friends, setFriends] = useState([]);
-    const [userData, server] = useContext(AuthContext);
+    const [, server] = useContext(AuthContext);
+    const [refreshing, setRefreshing] = useState(false);
+
+    function getFriends(force = false){
+        if (force){
+            setFriends([]);
+            setRefreshing(true);
+        }
+        server.getFriendList(invalidateCache = force).then(result => {
+            setFriends(result);
+            setRefreshing(false);
+        }, ToastError);
+    }
 
     useEffect(() => {
         return navigation.addListener('focus', () => {
-            server.getFriendList().then(result => {
-                setFriends(result);
-            })
+            getFriends();
         })
     }, [navigation])
 
     return (
         <View style={styles.flexContainer}>
             <FlatList
+                refreshing={refreshing}
+                onRefresh={() => {getFriends(force = true)}}
                 data={friends}
                 renderItem={({item}) => {
-                    const {email, full_name, avatar_url} = item;
+                    const {user_id} = item;
                     return (
-                        <FriendItem data={item} onPress={() => {
-                            navigation.navigate('Chat', {email, full_name, avatar_url})
+                        <FriendItem data={user_id} onPress={() => {
+                            navigation.navigate("Chat", {uid: user_id})
                         }}/>
                     );
                 }}
-                keyExtractor={item => item.email}
+                keyExtractor={item => item.user_id.toString()}
             />
             <Icon
                 name='person-add'
