@@ -184,9 +184,9 @@ export default function UserProfile({route, navigation}){
                         visible={friendship === 'accepted'}
                     />
                     <OverlayMenuItem
-                        title={'Cancelar solicitud'}
+                        title={'Solicitud enviada'}
                         icon={'person'}
-                        onPress={cancelFriendRequest}
+                        onPress={() => {}}
                         visible={friendship === 'pending'}
                     />
                 </View>
