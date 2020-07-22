@@ -97,11 +97,14 @@ export default function UserProfile({route, navigation}){
     }
 
     function deleteFriend(){
-
+        server.deleteFriend(uid).then(result => {
+            setOverlayVisible(false);
+            setFriendship("unknown");
+        })
     }
 
     function cancelFriendRequest(){
-
+        //NOT IMPLEMENTED IN APPSERVER
     }
 
     function goToPreferences(){
@@ -184,10 +187,11 @@ export default function UserProfile({route, navigation}){
                         visible={friendship === 'accepted'}
                     />
                     <OverlayMenuItem
-                        title={'Solicitud enviada'}
-                        icon={'person'}
+                        title={'Solicitud de amistad enviada'}
+                        icon={'person-add'}
                         onPress={() => {}}
                         visible={friendship === 'pending'}
+                        disabled
                     />
                 </View>
             </Overlay>

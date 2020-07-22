@@ -503,12 +503,19 @@ export class ServerProxy{
         }
     }
 
-    
+    async deleteFriend(uid){
+        try{
+            await this._request(`/users/${this.user.uuid}/friends/${uid}`, 'DELETE');
+        } catch (errno) {
+            return Promise.reject("Error al eliminar amistad" + ` (Error ${errno})`);
+        }
+    }
+
     //send new profile picture
     async changeProfilePicture(url){
         this.urlCache[url] = null;
         try {
-            await this._request(`/users/${this.user.uuid}`, 'PATCH', {
+            await th._request(`/users/${this.user.uuid}`, 'PATCH', {
                 "image_location": url
             });
             return "ok"
