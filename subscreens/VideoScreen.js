@@ -253,9 +253,12 @@ export default function VideoScreen({route}){
         server.getVideoComments(vid_id).then(result => {
         	setComments(result.sort((a, b) => {
         		if (!a.vid_time){
-        			return 1
-		        }
-        		return (a.time > b.time)? 1 : -1
+        			return 1;
+				}
+				if (!b.vid_time){
+					return -1;
+				}
+        		return (parseInt(a.vid_time) < parseInt(b.vid_time))? 1 : -1
 	        }));
         }, ToastError);
     }
