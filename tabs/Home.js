@@ -26,7 +26,10 @@ export default function Home({navigation}) {
         server.getVideos(forceRefresh).then(result => {
             setVideoList(result)
             setRefreshing(false);
-        }, ToastError);
+        }, error => {
+            ToastError(error);
+            setRefreshing(false);
+        });
     }
 
     function searchVideos(){
