@@ -13,6 +13,8 @@ export default function OverlayMenuItem(props){
             leftIcon={{name:props.icon}}
             onPress={props.onPress}
             chevron={props.chevron}
+            disabled={props.disabled}
+            disabledStyle={{opacity: 0.5}}
         />
     )
 }
