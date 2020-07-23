@@ -206,7 +206,7 @@ export class ServerProxy{
         try {
             try {
                 googleLoginResult = await google.logInAsync({
-                    androidClientId: `662757364228-7cm7fs8d3e5r22tdbk0mandpqhsm3876.apps.googleusercontent.com`,
+                    androidClientId: `662757364228-m15ds1tuf8ueb24gohagmg5mrhcpk8ls.apps.googleusercontent.com`,
                     androidStandaloneAppClientId: `662757364228-7cm7fs8d3e5r22tdbk0mandpqhsm3876.apps.googleusercontent.com`,
                 });
             } catch (error) {
