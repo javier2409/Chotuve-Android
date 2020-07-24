@@ -93,12 +93,15 @@ function MainApp(){
     }
 
     function _handleCustom(hostname, path) {
+        if (!hostname || !path) {
+            return;
+        }
         const id = path.split('/')[0];
         console.log("Datos de scheme custom: ", hostname, path);
         if (hostname == 'videos') {
             navigate("Video", {video_id: parseInt(id)});
         }
-        if (hostname == 'users') {
+        else if (hostname == 'users') {
             navigate("UserProfile", {uid: parseInt(id)});
         }
         else {
