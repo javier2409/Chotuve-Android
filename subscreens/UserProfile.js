@@ -1,5 +1,5 @@
 import React, {useCallback, useContext, useRef, useState} from 'react';
-import { View, ToastAndroid, FlatList, Image, ScrollView, TouchableOpacity, ActivityIndicator, RefreshControl } from "react-native";
+import { View, ToastAndroid, FlatList, Image, ScrollView, TouchableOpacity, ActivityIndicator, RefreshControl, Share } from "react-native";
 import {Avatar, Divider, ListItem, colors, Text, Icon, Overlay} from 'react-native-elements';
 import { useTheme } from '@react-navigation/native';
 import { useFocusEffect } from "@react-navigation/native";
@@ -116,6 +116,27 @@ export default function UserProfile({route, navigation}){
         server.logOut().then();
     }
 
+    async function shareScreen() {
+		try {
+			const url = "https://chotuve.video/users/" + uid;
+		  	const result = await Share.share({
+				message:
+			  	"Mira este usuario! " + url,
+		  	});
+		  	// if (result.action === Share.sharedAction) {
+			// 	if (result.activityType) {
+			//   	// shared with activity type of result.activityType
+			// 	} else {
+			//   	// shared
+			// 	}
+		  	// } else if (result.action === Share.dismissedAction) {
+			// 	// dismissed
+		  	// }
+		} catch (error) {
+		  	alert(error.message);
+		}
+	};
+
     async function changeProfilePicture(){
         try {
             const {cancelled, uri} = await launchImageLibraryAsync({
@@ -196,17 +217,26 @@ export default function UserProfile({route, navigation}){
                 </View>
             </Overlay>
             <View style={styles.profileAvatarView}>
-                <Icon
-                    name='more-vert'
-                    color={colors.text}
-                    containerStyle={{alignSelf: 'flex-end'}}
-                    onPress={toggleOverlay}
-                />
+                <View style={{ flexDirection: 'row', alignItems: "flex-start", justifyContent: "space-between" }}>
+                    <Icon
+                        name="share"
+                        color={colors.text}
+                        containerStyle={{alignSelf: 'flex-start'}}
+                        onPress={shareScreen}
+                    />
+                    <Icon
+                        name='more-vert'
+                        color={colors.text}
+                        containerStyle={{alignSelf: 'flex-end'}}
+                        onPress={toggleOverlay}
+                    />
+                </View>
                 {uploading? <ActivityIndicator/> :
                     <Avatar
                         rounded
                         size={150}
                         source={{uri: avatar}}
+                        containerStyle={{ alignSelf: 'center' }}
                         onPress={
                             (uid === localUserData.uuid)?
                                 changeProfilePicture

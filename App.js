@@ -83,16 +83,17 @@ function MainApp(){
         log("Llego la URL: ", url);
         log("Parseada URL como: ", Linking.parse(url));
         let { hostname, path } = Linking.parse(url);
-        
+
         // por algun motivo, cuando abris la app sola, se abre con URL chotuve://
-        if (!hostname) {
+        if (hostname !== 'chotuve.video' || !path) {
             return;
         }
-        if (hostname == 'videos' && path) {
-            navigate("Video", {video_id: parseInt(path)});
+        let resources = path.split('/');
+        if (resources[0] == 'videos' && resources[1]) {
+            navigate("Video", {video_id: parseInt(resources[1])});
         }
-        else if (hostname == 'users' && path) {
-            navigate("UserProfile", {uid: parseInt(path)});
+        else if (resources[0] == 'users' && resources[1]) {
+            navigate("UserProfile", {uid: parseInt(resources[1])});
         }
         else {
             ToastError("URL no reconocida");
