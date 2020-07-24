@@ -22,6 +22,8 @@ import EditVideo from './subscreens/EditVideo';
 import { ToastError } from './utilities/ToastError';
 import { log } from './utilities/Logger';
 
+import * as Linking from 'expo-linking';
+
 ignoreWarnings('Setting a timer');
 
 const Stack = createStackNavigator();
@@ -74,6 +76,30 @@ function MainApp(){
         Notifications.getExpoPushTokenAsync().then(token => {
             server.sendPushToken(token).then(null, ToastError);
             log("Push token: ", token);
+        });
+    });
+
+    function _handleDeepLink(url){
+        log("Llego la URL: ", url);
+        log("Parseada URL como: ", Linking.parse(url));
+        let { path, queryParams } = Linking.parse(url);
+        if (queryParams.video) {
+            navigate("Video", {video_id: parseInt(queryParams.video)});
+        }
+        else if (queryParams.user) {
+            navigate("UserProfile", {uid: parseInt(queryParams.user)});
+        }
+    }
+
+    useEffect(() => {
+        Linking.addEventListener('url', (event) => {
+            _handleDeepLink(event.url);
+        });
+        
+        Linking.getInitialURL().then((initialUrl) => {
+            if (initialUrl) {
+                _handleDeepLink(initialUrl);
+              }
         });
     });
 
