@@ -82,8 +82,32 @@ function MainApp(){
     function _handleDeepLink(url){
         log("Llego la URL: ", url);
         log("Parseada URL como: ", Linking.parse(url));
-        let { hostname, path } = Linking.parse(url);
+        let { scheme, hostname, path } = Linking.parse(url);
 
+        if (scheme == 'chotuve') {
+            _handleCustom(hostname, path);
+        }
+        else if (scheme == 'https' || scheme == 'http') {
+            _handleHTTPS(hostname, path);
+        }
+    }
+
+    function _handleCustom(hostname, path) {
+        const id = path.split('/')[0];
+        console.log("Datos de scheme custom: ", hostname, path);
+        if (hostname == 'videos') {
+            navigate("Video", {video_id: parseInt(id)});
+        }
+        if (hostname == 'users') {
+            navigate("UserProfile", {uid: parseInt(id)});
+        }
+        else {
+            ToastError("URL no reconocida");
+        }
+    }
+
+    function _handleHTTPS(hostname, path) {
+        console.log("Datos de scheme http: ", hostname, path);
         // por algun motivo, cuando abris la app sola, se abre con URL chotuve://
         if (hostname !== 'chotuve.video' || !path) {
             return;
