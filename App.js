@@ -82,12 +82,20 @@ function MainApp(){
     function _handleDeepLink(url){
         log("Llego la URL: ", url);
         log("Parseada URL como: ", Linking.parse(url));
-        let { path, queryParams } = Linking.parse(url);
-        if (queryParams.video) {
-            navigate("Video", {video_id: parseInt(queryParams.video)});
+        let { hostname, path } = Linking.parse(url);
+        
+        // por algun motivo, cuando abris la app sola, se abre con URL chotuve://
+        if (!hostname) {
+            return;
         }
-        else if (queryParams.user) {
-            navigate("UserProfile", {uid: parseInt(queryParams.user)});
+        if (hostname == 'videos' && path) {
+            navigate("Video", {video_id: parseInt(path)});
+        }
+        else if (hostname == 'users' && path) {
+            navigate("UserProfile", {uid: parseInt(path)});
+        }
+        else {
+            ToastError("URL no reconocida");
         }
     }
 
@@ -96,11 +104,14 @@ function MainApp(){
             _handleDeepLink(event.url);
         });
         
+        // a veces falla en obtener la URL, no se por que. Ver https://github.com/facebook/react-native/issues/25675
         Linking.getInitialURL().then((initialUrl) => {
             if (initialUrl) {
                 _handleDeepLink(initialUrl);
               }
         });
+
+        return (() => Linking.removeEventListener('url'));
     });
 
     return (
