@@ -71,7 +71,7 @@ export class ServerProxy{
         }
         log("Requesting user ID");
         try {
-            response = await this._request('/auth', 'GET', null);
+            response = await this._request('/users/auth', 'GET', null);
         } catch (errno) {
             this.updateGlobalUserData(null);
             return Promise.reject("Error al obtener ID de usuario " + ` (Error ${errno})`);
@@ -206,7 +206,7 @@ export class ServerProxy{
         try {
             try {
                 googleLoginResult = await google.logInAsync({
-                    androidClientId: `662757364228-7cm7fs8d3e5r22tdbk0mandpqhsm3876.apps.googleusercontent.com`,
+                    androidClientId: `662757364228-m15ds1tuf8ueb24gohagmg5mrhcpk8ls.apps.googleusercontent.com`,
                     androidStandaloneAppClientId: `662757364228-7cm7fs8d3e5r22tdbk0mandpqhsm3876.apps.googleusercontent.com`,
                 });
             } catch (error) {
@@ -473,7 +473,7 @@ export class ServerProxy{
     //get friend requests
     async getFriendRequests(){
         try {
-            const response = await this._request(`/users/${this.user.uuid}/friends/requests`, 'GET', null);
+            const response = await this._request(`/friend-requests`, 'GET', null);
             return response.pending_reqs;
         } catch (errno) {
             return Promise.reject("Error al obtener las solicitudes de amistad" + ` (Error ${errno})`);
@@ -483,7 +483,7 @@ export class ServerProxy{
     //answer a friend request, true = accept, false = deny
     async answerFriendRequest(uuid, answer){
         try {
-            await this._request(`/users/${this.user.uuid}/friends/requests/${uuid}`, 'POST', {
+            await this._request(`/friend-requests/${uuid}`, 'POST', {
                "accept": answer
             });
         } catch (errno) {
@@ -494,19 +494,28 @@ export class ServerProxy{
     //send a friend request
     async addFriend(uid){
         try {
-            await this._request(`/users/${uid}/friends/requests`, 'POST', null);
+            await this._request(`/friend-requests`, 'POST', {
+                to: uid
+            });
             return "ok";
         } catch (errno) {
             return Promise.reject("Error al enviar solicitud de amistad" + ` (Error ${errno})`);
         }
     }
 
-    
+    async deleteFriend(uid){
+        try{
+            await this._request(`/users/${this.user.uuid}/friends/${uid}`, 'DELETE');
+        } catch (errno) {
+            return Promise.reject("Error al eliminar amistad" + ` (Error ${errno})`);
+        }
+    }
+
     //send new profile picture
     async changeProfilePicture(url){
         this.urlCache[url] = null;
         try {
-            await this._request(`/users/${this.user.uuid}`, 'PUT', {
+            await th._request(`/users/${this.user.uuid}`, 'PATCH', {
                 "image_location": url
             });
             return "ok"
@@ -518,7 +527,7 @@ export class ServerProxy{
     //send new user information
     async changeMyUserData(user_data){
         try {
-            await this._request(`/users/${this.user.uuid}`, 'PUT', {
+            await this._request(`/users/${this.user.uuid}`, 'PATCH', {
                 display_name: user_data.full_name,
                 phone_number: user_data.phone_number
             })
@@ -547,7 +556,7 @@ export class ServerProxy{
     //send a request to get a reset password code
     async requestResetPasswordEmail(email){
         try{
-            return await this._request(`/reset-codes`, 'POST', {
+            return await this._request(`/users/reset-codes`, 'POST', {
                 email: email
             }, useToken = false);
         } catch (errno) {
@@ -558,7 +567,7 @@ export class ServerProxy{
     //send reset password code with new password
     async sendCodeAndNewPassword(email, code, newPassword){
         try {
-            return await this._request(`/auth`, 'PUT', {
+            return await this._request(`/users/change-password`, 'POST', {
                 email: email,
                 reset_code: code,
                 password: newPassword

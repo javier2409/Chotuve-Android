@@ -22,6 +22,8 @@ import EditVideo from './subscreens/EditVideo';
 import { ToastError } from './utilities/ToastError';
 import { log } from './utilities/Logger';
 
+import * as Linking from 'expo-linking';
+
 ignoreWarnings('Setting a timer');
 
 const Stack = createStackNavigator();
@@ -75,6 +77,69 @@ function MainApp(){
             server.sendPushToken(token).then(null, ToastError);
             log("Push token: ", token);
         });
+    });
+
+    function _handleDeepLink(url){
+        log("Llego la URL: ", url);
+        log("Parseada URL como: ", Linking.parse(url));
+        let { scheme, hostname, path } = Linking.parse(url);
+
+        if (scheme == 'chotuve') {
+            _handleCustom(hostname, path);
+        }
+        else if (scheme == 'https' || scheme == 'http') {
+            _handleHTTPS(hostname, path);
+        }
+    }
+
+    function _handleCustom(hostname, path) {
+        if (!hostname || !path) {
+            return;
+        }
+        const id = path.split('/')[0];
+        console.log("Datos de scheme custom: ", hostname, path);
+        if (hostname == 'videos') {
+            navigate("Video", {video_id: parseInt(id)});
+        }
+        else if (hostname == 'users') {
+            navigate("UserProfile", {uid: parseInt(id)});
+        }
+        else {
+            ToastError("URL no reconocida");
+        }
+    }
+
+    function _handleHTTPS(hostname, path) {
+        console.log("Datos de scheme http: ", hostname, path);
+        // por algun motivo, cuando abris la app sola, se abre con URL chotuve://
+        if (hostname !== 'chotuve.video' || !path) {
+            return;
+        }
+        let resources = path.split('/');
+        if (resources[0] == 'videos' && resources[1]) {
+            navigate("Video", {video_id: parseInt(resources[1])});
+        }
+        else if (resources[0] == 'users' && resources[1]) {
+            navigate("UserProfile", {uid: parseInt(resources[1])});
+        }
+        else {
+            ToastError("URL no reconocida");
+        }
+    }
+
+    useEffect(() => {
+        Linking.addEventListener('url', (event) => {
+            _handleDeepLink(event.url);
+        });
+        
+        // a veces falla en obtener la URL, no se por que. Ver https://github.com/facebook/react-native/issues/25675
+        Linking.getInitialURL().then((initialUrl) => {
+            if (initialUrl) {
+                _handleDeepLink(initialUrl);
+              }
+        });
+
+        return (() => Linking.removeEventListener('url'));
     });
 
     return (
