@@ -25,12 +25,40 @@
     "android": {
       "package": "com.fiuba.chotuveapp",
       "versionCode": 1,
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "http",
+              "host": "*.chotuve.video"
+            },
+            {
+              "scheme": "https",
+              "host": "*.chotuve.video"
+            },
+            {
+              "scheme": "http",
+              "host": "chotuve.video"
+            },
+            {
+              "scheme": "https",
+              "host": "chotuve.video"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
     },
     "notification": {
       "icon": "./assets/notification.png",
       "androidMode": "collapse",
       "androidCollapsedTitle": "Notificaciones"
-    }
+    },
+    "scheme":"chotuve"
   }
 }

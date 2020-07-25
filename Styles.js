@@ -155,7 +155,7 @@ export function ThemeContextProvider(props){
             padding: 10
         },
         profileAvatarView: {
-            alignItems: 'center',
+            // alignItems: 'center',
             justifyContent: 'center',
             padding: 20
         },

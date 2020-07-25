@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState, useCallback} from 'react';
-import {View, FlatList, ActivityIndicator} from "react-native"
+import {View, FlatList, ActivityIndicator, Share} from "react-native"
 import { useNavigation, useFocusEffect, useRoute } from '@react-navigation/native';
 import { Video } from 'expo-av';
 import {Divider, Icon, Input, Text, CheckBox} from 'react-native-elements';
@@ -115,16 +115,31 @@ function VideoInfo(props){
 	navigation.setOptions({
 		headerRight: () => {
 			if (uuid !== user.uuid){
-				return null
+				return (
+					<Icon
+					name="share"
+					containerStyle={styles.videoComment}
+					color={colors.text}
+					onPress={shareScreen}
+					/>
+				)
 			}
 
 			return (
+				<View style={{ flexDirection: 'row' }}>
+				<Icon
+					name="share"
+					containerStyle={styles.videoComment}
+					color={colors.text}
+					onPress={shareScreen}
+				/>
 				<Icon 
 					name='more-vert' 
 					containerStyle={styles.videoComment} 
 					color={colors.text}
 					onPress={toggleOverlay}
 				/>
+				</View>
 			)
 		}
 	})
@@ -139,6 +154,27 @@ function VideoInfo(props){
 		toggleOverlay();
 		navigation.navigate("Edit Video", {video_id});
 	}
+
+	async function shareScreen() {
+		try {
+			const url = "https://chotuve.video/videos/" + video_id;
+		  	const result = await Share.share({
+				message:
+			  	"Mira este video! " + url,
+		  	});
+		  	// if (result.action === Share.sharedAction) {
+			// 	if (result.activityType) {
+			//   	// shared with activity type of result.activityType
+			// 	} else {
+			//   	// shared
+			// 	}
+		  	// } else if (result.action === Share.dismissedAction) {
+			// 	// dismissed
+		  	// }
+		} catch (error) {
+		  	alert(error.message);
+		}
+	};
 
 	return (
 		<View style={styles.videoInfo}>
