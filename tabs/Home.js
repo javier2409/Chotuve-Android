@@ -24,7 +24,7 @@ export default function Home({navigation}) {
             setVideoList([])
         }
         server.getVideos(forceRefresh).then(result => {
-            setVideoList(result)
+            setVideoList(result.videos)
             setRefreshing(false);
         }, error => {
             ToastError(error);
@@ -37,7 +37,7 @@ export default function Home({navigation}) {
             return
         }
         server.searchVideos(search).then(result => {
-            setVideoList(result);
+            setVideoList(result.videos);
         }, ToastError);
     }
 
