@@ -519,7 +519,7 @@ export class ServerProxy{
     async changeProfilePicture(url){
         this.urlCache[url] = null;
         try {
-            await th._request(`/users/${this.user.uuid}`, 'PATCH', {
+            await this._request(`/users/${this.user.uuid}`, 'PATCH', {
                 "image_location": url
             });
             return "ok"
