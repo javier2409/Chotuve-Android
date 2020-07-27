@@ -101,7 +101,11 @@ export class ServerProxy{
         let response;
         
         try {
-            token = useToken? await this.user.getIdToken(): null;
+            if (useToken){
+                token = await this.user.getIdToken();
+            } else {
+                token = null;
+            }
         } catch (error) {
             return Promise.reject(codes.AUTH_ERROR);
         }
@@ -558,7 +562,7 @@ export class ServerProxy{
         try{
             return await this._request(`/users/reset-codes`, 'POST', {
                 email: email
-            }, useToken = false);
+            }, null, false);
         } catch (errno) {
             return Promise.reject("Hubo un error al solicitar el codigo" + ` (Error ${errno})`);
         }
@@ -571,7 +575,7 @@ export class ServerProxy{
                 email: email,
                 reset_code: code,
                 password: newPassword
-            });
+            }, null, false);
         } catch (errno) {
             return Promise.reject("Hubo un error al actualizar la contraseña" + ` (Error ${errno})`);
         }
