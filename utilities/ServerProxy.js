@@ -271,7 +271,7 @@ export class ServerProxy{
         invalidateCache? this.videoCache = {}:{};
         try {
             const result = await this._request("/videos", "GET", null);
-            return (result);
+            return (result.videos);
         } catch (errno) {
             return Promise.reject(`Error al obtener el feed de videos (Error ${errno})`);
         }
