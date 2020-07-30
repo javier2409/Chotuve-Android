@@ -72,7 +72,6 @@ export default function UserProfile({route, navigation}){
                 headerTitle: 'Perfil de ' + result.display_name
             });
         }, errmsg => {
-            navigation.goBack();
             ToastError(errmsg);
         });
     }
