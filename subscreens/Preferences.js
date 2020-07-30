@@ -81,7 +81,6 @@ export default function Preferences({navigation}){
             await server.changeMyUserData({
                 full_name: name,
                 phone_number: number,
-                address: address
             })
         } catch(error) {
             log(error);
@@ -128,7 +127,6 @@ export default function Preferences({navigation}){
                 <View>
                     <Setting title={"Nombre"} subtitle={name} onPress={toggleNameEdit}/>
                     <Setting title={"Número Telefónico"} subtitle={number} onPress={toggleNumberEdit}/>
-                    <Setting title={"Dirección"} subtitle={address} onPress={toggleAddressEdit}/>
                 </View>
                 <View style={styles.formButtonView}>
                     <Button
