@@ -224,7 +224,6 @@ function VideoInfo(props){
 						<Icon name={'location-on'} color={colors.grey} size={15} />
 						<Text style={{marginHorizontal: 7, color: colors.grey}}>{location}</Text>
 					</View>
-					<Text style={{color:colors.title, marginTop: 10}}>{description}</Text>
 				</View>
 				<View style={{flex: 1, alignItems: 'flex-end'}}>
 					<View style={styles.videoReactions}>
@@ -238,6 +237,7 @@ function VideoInfo(props){
 					</View>					
 				</View>
 			</View>
+			<Text style={{color:colors.title, marginTop: 10}}>{description}</Text>
 		</View>
 	)
 }
