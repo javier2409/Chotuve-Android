@@ -222,17 +222,20 @@ function CommentInput(props){
 	const [checked, setChecked] = useState(false);
 	const video_id = props.videoId;
 	const video_time = props.videoTime;
+	const newCommentCallback = props.onNewComment;
 
 	function sendComment(){
 		if (myComment.length < 1){
 			return
 		}
-		setSending(true);
-		server.publishComment({
+		const newComment = {
 			video_id: video_id,
 			text: myComment,
 			vid_time: checked? video_time : null
-		}).then(() => {
+		};
+		setSending(true);
+		server.publishComment(newComment).then(() => {
+			newCommentCallback(newComment.text, newComment.vid_time);
 			setSending(false);
 		}, ToastError);
 		setMyComment('');
@@ -285,17 +288,19 @@ export default function VideoScreen({route}){
 	const [finishedLoading, setFinishedLoading] = useState(false);
 	const navigation = useNavigation();
 
+	const commentSortRule = (a, b) => {
+		if (!a.vid_time){
+			return 1;
+		}
+		if (!b.vid_time){
+			return -1;
+		}
+		return (parseInt(a.vid_time) < parseInt(b.vid_time))? 1 : -1
+	};
+
 	function fetchComments(){
         server.getVideoComments(vid_id).then(result => {
-        	setComments(result.sort((a, b) => {
-        		if (!a.vid_time){
-        			return 1;
-				}
-				if (!b.vid_time){
-					return -1;
-				}
-        		return (parseInt(a.vid_time) < parseInt(b.vid_time))? 1 : -1
-	        }));
+        	setComments(result.sort(commentSortRule));
         }, ToastError);
     }
 
@@ -333,6 +338,17 @@ export default function VideoScreen({route}){
 		}
 	}
 
+	function addComment(text, vid_time){
+		const newComment = {
+			uuid: userData.uuid,
+			text,
+			vid_time,
+			comment_id: comments.length + 1
+		};
+		const newList = comments.concat([newComment]);
+		setComments(newList.sort(commentSortRule));
+	}
+
 	if (!finishedLoading){
 		return (
 			<LoadingView/>
@@ -368,7 +384,7 @@ export default function VideoScreen({route}){
 								location={location}
 							/>
 							<Text style={styles.videoCommentsTitle}>Comentarios</Text>
-							<CommentInput videoId={video_id} videoTime={time}/>
+							<CommentInput videoId={video_id} videoTime={time} onNewComment={addComment}/>
 						</>
 					}
 					data={comments}
