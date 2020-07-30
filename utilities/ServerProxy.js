@@ -584,7 +584,8 @@ export class ServerProxy{
     //search videos
     async searchVideos(query){
         try {
-            return await this._request(`/videos?search=${query}`, 'GET');
+            const result = await this._request(`/videos?search=${query}`, 'GET');
+            return result.videos
         } catch (errno) {
             return Promise.reject("Error realizar la búsqueda" + ` (Error ${errno})`);
         }

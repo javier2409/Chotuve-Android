@@ -15,6 +15,7 @@ export default function Home({navigation}) {
     const [videoList, setVideoList] = useState([]);
     const [search, setSearch] = useState("");
     const [refreshing, setRefreshing] = useState(false);
+    const [searching, setSearching] = useState(false);
     const [currentPreviewId, setCurrentPreviewId] = useState(0);
     const previews = useRef(false);
 
@@ -33,12 +34,17 @@ export default function Home({navigation}) {
     }
 
     function searchVideos(){
+        setSearching(true);
         if (search.length < 1){
             return
         }
         server.searchVideos(search).then(result => {
             setVideoList(result);
-        }, ToastError);
+            setSearching(false);
+        }, error => {
+            ToastError(error);
+            setSearching(false);
+        });
     }
 
     useEffect(() => {
@@ -92,7 +98,12 @@ export default function Home({navigation}) {
         <View style={styles.flexContainer}>
             <SearchBar
                 placeholder="Buscar videos..."
-                onChangeText={setSearch}
+                onChangeText={text => {
+                    if (text.length < 1){
+                        fetchVideos()
+                    }
+                    setSearch(text)
+                }}
                 onClear={() => {fetchVideos()}}
                 value={search}
                 onSubmitEditing={searchVideos}
@@ -102,6 +113,7 @@ export default function Home({navigation}) {
                 inputStyle={{color: colors.text}}
                 style={{backgroundColor: colors.background}}
                 lightTheme={colors.themeName == 'Light'}
+                showLoading={searching}
             />
             <FlatList
                 refreshing={refreshing}
