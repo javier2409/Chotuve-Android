@@ -93,6 +93,7 @@ export default function Home({navigation}) {
             <SearchBar
                 placeholder="Buscar videos..."
                 onChangeText={setSearch}
+                onClear={() => {fetchVideos()}}
                 value={search}
                 onSubmitEditing={searchVideos}
                 round
