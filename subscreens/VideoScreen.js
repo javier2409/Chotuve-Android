@@ -69,8 +69,21 @@ function VideoInfo(props){
 	const title = props.title;
 	const initialReaction = props.myReaction;
 	const location = props.location;
+	const views = props.views;
 
 	const [myReaction, setMyReaction] = useState(initialReaction);
+
+	function getReactionColor(){
+		let up = colors.grey;
+		let down = colors.grey;
+		if (myReaction === 'like'){
+			up = colors.text;
+		}
+		if (myReaction ==='dislike'){
+			down = colors.text;
+		}
+		return {up,down};
+	}
 
 	function updateReaction(reaction){
 		if (reaction === 'like'){
@@ -176,6 +189,10 @@ function VideoInfo(props){
 		}
 	};
 
+	function goToProfile(){
+		navigation.navigate("UserProfile", {uid: uuid});
+	}
+
 	return (
 		<View style={styles.videoInfo}>
 			<Overlay isVisible={overlayVisible} onBackdropPress={toggleOverlay} overlayStyle={{height: 'auto'}}>
@@ -194,22 +211,33 @@ function VideoInfo(props){
 				/>
 				</>
 			</Overlay>
-			<View style={styles.videoTitle}>
-				<Text style={{color:colors.title, width:'65%'}}>
-					<Text style={{fontSize: 20, fontWeight: 'bold'}}>{title}</Text>
-					<Text onPress={() => {
-						navigation.navigate("UserProfile", {uid: uuid});
-					}}> - {author}
-					</Text>
-				</Text>
-				<View style={styles.videoReactions}>
-					<Icon name={'thumb-up'} color={colors.title} onPress={() => {react('like')}}/>
-					<Text style={{marginHorizontal: 7, color: colors.title}}>{videoLikes}</Text>
-					<Icon name={'thumb-down'} color={colors.title} onPress={() => {react('dislike')}} />
-					<Text style={{marginHorizontal: 7, color: colors.title}}>{videoDislikes}</Text>
+			<View style={{flexDirection: 'row'}}>
+				<View style={{flex: 3}}>
+					<Text style={{color: colors.title, fontSize: 20, fontWeight: 'bold'}}>{title}</Text>
+					<View style={{flexDirection: 'row', alignItems: 'center'}}>
+						<Icon name={'person'} color={colors.grey} size={15} />
+						<Text style={{marginHorizontal: 7, color: colors.grey}} onPress={goToProfile}>
+							{author}
+						</Text>
+					</View>
+					<View style={{flexDirection: 'row', alignItems: 'center'}}>
+						<Icon name={'location-on'} color={colors.grey} size={15} />
+						<Text style={{marginHorizontal: 7, color: colors.grey}}>{location}</Text>
+					</View>
+					<Text style={{color:colors.title, marginTop: 10}}>{description}</Text>
+				</View>
+				<View style={{flex: 1, alignItems: 'flex-end'}}>
+					<View style={styles.videoReactions}>
+						<Icon name={'thumb-up'} color={getReactionColor().up} onPress={() => {react('like')}}/>
+						<Text style={{marginHorizontal: 7, color: colors.title}}>{videoLikes}</Text>
+						<Icon name={'thumb-down'} color={getReactionColor().down} onPress={() => {react('dislike')}} />
+						<Text style={{marginHorizontal: 7, color: colors.title}}>{videoDislikes}</Text>
+					</View>
+					<View style={{flexDirection: 'row', alignItems: 'center'}}>
+						<Text style={{marginHorizontal: 7, color: colors.grey}}>{views} vistas</Text>
+					</View>					
 				</View>
 			</View>
-			<Text style={{color:colors.title, marginTop: 10}}>{description}</Text>
 		</View>
 	)
 }
@@ -280,7 +308,7 @@ function CommentInput(props){
 export default function VideoScreen({route}){
 	const {styles} = useContext(ThemeContext);
 	const vid_id = route.params.video_id;
-	const [{uuid, video_id, firebase_url, title, author, description, location, dislikes, likes, reaction}, setVideoData] = useState({});
+	const [{uuid, video_id, firebase_url, title, author, description, location, dislikes, likes, reaction, view_count}, setVideoData] = useState({});
 	const [userData, server] = useContext(AuthContext);
 	const [downloadURL, setDownloadURL] = useState(null);
 	const [comments, setComments] = useState([]);
@@ -382,6 +410,7 @@ export default function VideoScreen({route}){
 								authorName={author}
 								myReaction={reaction}
 								location={location}
+								views={view_count}
 							/>
 							<Text style={styles.videoCommentsTitle}>Comentarios</Text>
 							<CommentInput videoId={video_id} videoTime={time} onNewComment={addComment}/>
