@@ -14,10 +14,6 @@ Probar la App
 - [Staging](https://expo.io/@javier2409/Chotuve?release-channel=staging)
 - [Producción](https://expo.io/@javier2409/Chotuve?release-channel=prod)
 
-Trello
-========
-
-Roadmap en Trello: [Link](https://trello.com/invite/b/8W86DsUl/ab98b2135c832c132ce42357f1546798/chotuve-android)
 
 Contribuir al desarrollo
 =============================
